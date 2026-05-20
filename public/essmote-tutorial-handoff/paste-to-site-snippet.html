@@ -1,0 +1,41 @@
+<!--
+  Paste this snippet into the target website page.
+  Before publishing, upload the whole "tutorial-center-static-fixed" folder to the website,
+  then replace the iframe src below with the real online path.
+
+  Example:
+  src="/help/tutorial-center-static-fixed/index.html"
+  or
+  src="https://www.essmote.com/help/tutorial-center-static-fixed/index.html"
+-->
+
+<section class="essmote-tutorial-frame-wrap" aria-label="Essmote tutorial center">
+  <iframe
+    class="essmote-tutorial-frame"
+    src="/help/tutorial-center-static-fixed/index.html"
+    title="Essmote 教程中心"
+    loading="lazy"
+  ></iframe>
+</section>
+
+<style>
+  .essmote-tutorial-frame-wrap {
+    width: min(100%, 1180px);
+    margin: 0 auto;
+    background: #fff;
+  }
+
+  .essmote-tutorial-frame {
+    display: block;
+    width: 100%;
+    min-height: 4600px;
+    border: 0;
+    background: #fff;
+  }
+
+  @media (max-width: 900px) {
+    .essmote-tutorial-frame {
+      min-height: 7200px;
+    }
+  }
+</style>

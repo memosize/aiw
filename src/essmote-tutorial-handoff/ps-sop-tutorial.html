@@ -1,0 +1,1973 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PS 文书使用教程</title>
+  <style>
+    :root {
+      --green: #079642;
+      --green-2: #006f31;
+      --mint: #edf9f2;
+      --line: #a8dac0;
+      --soft-line: #d9eee3;
+      --ink: #111827;
+      --text: #223047;
+      --muted: #526177;
+      --red: #ff181f;
+      --blue: #2274df;
+      --purple: #7045da;
+      --orange: #f27604;
+      --shadow: 0 16px 38px rgba(23, 84, 50, .09);
+      --title-size: 58px;
+      --subtitle-size: 25px;
+      --section-title-size: 29px;
+      --body-size: 22px;
+      --caption-size: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--ink);
+      font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", Arial, sans-serif;
+      letter-spacing: 0;
+      overflow: hidden;
+    }
+
+    .deck {
+      width: 1380px;
+      max-width: none;
+      margin: 0;
+      padding: 16px;
+      transform-origin: top left;
+    }
+
+    .slide {
+      position: relative;
+      width: 100%;
+      margin: 0 auto 22px;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 14px 34px rgba(31, 65, 48, .06);
+    }
+
+    /* Intro */
+    .hero-slide {
+      padding: clamp(18px, 2.2vw, 28px);
+      overflow: visible;
+    }
+
+    .hero-banner {
+      width: 100%;
+      display: block;
+      overflow: hidden;
+      background: #fff;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+      aspect-ratio: 2172 / 724;
+    }
+
+    .hero-banner img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 0;
+      object-fit: cover;
+      object-position: center;
+      /* Crop out the baked-in top/bottom/side border lines in the PNG. */
+      transform: scaleX(1.02) scaleY(1.06);
+      transform-origin: center;
+    }
+
+    /* Make the hero visually wider than default .wide padding */
+    .slide.wide.hero-slide {
+      padding: clamp(12px, 1.25vw, 16px);
+    }
+
+    .wide {
+      min-height: auto;
+      padding: 62px 54px;
+    }
+    .tall {
+      min-height: auto;
+      padding: clamp(40px, 6%, 70px) clamp(38px, 6.2%, 66px);
+      max-width: 960px;
+    }
+    .portrait {
+      min-height: auto;
+      padding: clamp(38px, 5.8%, 64px) clamp(34px, 5%, 56px);
+      max-width: 1040px;
+    }
+
+    .header {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: clamp(18px, 2.2vw, 30px);
+      align-items: start;
+      margin-bottom: clamp(16px, 2.4%, 40px);
+    }
+
+    .num {
+      display: grid;
+      place-items: center;
+      width: 92px;
+      height: 92px;
+      border-radius: 16px;
+      color: #fff;
+      font-size: 52px;
+      font-weight: 900;
+      line-height: 1;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.2), transparent 34%),
+        linear-gradient(145deg, #12a84e 0%, #007d35 68%, #00692e 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 13px 26px rgba(0, 118, 49, .22);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: var(--title-size);
+      line-height: 1.16;
+      font-weight: 900;
+    }
+
+    .tall h1,
+    .portrait h1 {
+      font-size: var(--title-size);
+    }
+
+    .sub {
+      margin: 10px 0 0;
+      color: var(--text);
+      font-size: var(--subtitle-size);
+      line-height: 1.7;
+    }
+
+    .card {
+      border: 1.5px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.92);
+      box-shadow: var(--shadow);
+    }
+
+    .soft-card {
+      border: 1px solid var(--soft-line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(250,253,251,.98));
+      box-shadow: 0 13px 26px rgba(34, 76, 48, .07);
+    }
+
+    .icon-round {
+      display: grid;
+      place-items: center;
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: #eaf7ef;
+      color: var(--green);
+      font-weight: 900;
+      font-size: 34px;
+      flex: 0 0 auto;
+    }
+
+    .icon-round svg {
+      width: 58%;
+      height: 58%;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .icon-round .solid {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    .icon-round.red { background: #fff0f0; color: var(--red); }
+    .icon-round.blue { background: #edf5ff; color: var(--blue); }
+    .icon-round.purple { background: #f2ecff; color: var(--purple); }
+    .icon-round.orange { background: #fff2e7; color: var(--orange); }
+
+    .check {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: 23px;
+      font-weight: 900;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+
+    .bad .check { background: var(--red); }
+
+    .tip {
+      display: flex;
+      align-items: center;
+      gap: clamp(14px, 1.65vw, 28px);
+      min-height: 74px;
+      padding: 10px clamp(18px, 2.1vw, 34px);
+      border: 1.5px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(90deg, #f1fbf5, #fff);
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.5;
+      box-shadow: 0 10px 22px rgba(23, 84, 50, .055);
+    }
+
+    .tip b {
+      color: var(--green);
+      font-size: 23px;
+      line-height: 1.28;
+    }
+
+    .tip .tip-copy {
+      font-size: 18px;
+      line-height: 1.55;
+    }
+
+    .bulb {
+      display: grid;
+      place-items: center;
+      width: clamp(38px, 3.8vw, 58px);
+      height: clamp(42px, 4.2vw, 64px);
+      flex: 0 0 clamp(34px, 3.5vw, 54px);
+      color: var(--green);
+    }
+
+    .bulb svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* 01 */
+    .ps-sop-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: stretch;
+      gap: 4%;
+      margin-bottom: clamp(14px, 1.7%, 28px);
+    }
+
+    .vs {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      width: clamp(54px, 5vw, 78px);
+      height: clamp(54px, 5vw, 78px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 28%, #16ad52, #00772f);
+      color: #fff;
+      font-size: clamp(24px, 2.7vw, 38px);
+      font-weight: 900;
+      box-shadow: 0 14px 26px rgba(0, 118, 49, .22);
+      z-index: 2;
+    }
+
+    .compare-big {
+      position: relative;
+      min-height: 360px;
+      padding: 46px 188px 46px 36px;
+      display: block;
+      height: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .compare-big h2 {
+      margin: 0 0 30px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: var(--green);
+      font-size: var(--section-title-size);
+      line-height: 1.2;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .compare-big h2 .icon-round {
+      width: clamp(54px, 5.2vw, 82px);
+      height: clamp(54px, 5.2vw, 82px);
+    }
+
+    .compare-big ul {
+      display: grid;
+      gap: 21px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+      padding-left: clamp(16px, 1.45vw, 24px);
+    }
+
+    .compare-big li {
+      display: flex;
+      align-items: center;
+      gap: clamp(10px, 1vw, 16px);
+      color: var(--ink);
+      font-size: 20px;
+      line-height: 1.35;
+      min-height: 34px;
+      white-space: nowrap;
+    }
+
+    .compare-big li .check {
+      flex: 0 0 33px;
+      width: 33px;
+      height: 33px;
+      font-size: 22px;
+    }
+
+    .paper-art {
+      position: relative;
+      width: 194px;
+      aspect-ratio: 580 / 760;
+      height: auto;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .paper-art.illustration {
+      position: absolute;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: grid;
+      place-items: center;
+      padding: 0;
+      overflow: visible;
+    }
+
+    .paper-art.illustration::before,
+    .paper-art.illustration::after {
+      display: none;
+    }
+
+    .paper-art.illustration svg {
+      width: 92%;
+      height: 92%;
+      overflow: hidden;
+    }
+
+    .paper-art.illustration img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    .paper-art.illustration .ps-art {
+      object-position: center;
+      transform: translateX(-3%);
+    }
+
+    .paper-art.illustration .sop-art {
+      object-position: center;
+      transform: translateX(-4%);
+    }
+
+    .paper-art::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 22px;
+      height: 6px;
+      border-radius: 8px;
+      background: #d6dce0;
+      box-shadow: 0 -15px 0 #d6dce0, 0 -30px 0 #d6dce0, 0 -45px 0 #d6dce0;
+    }
+
+    .paper-art::after {
+      content: "";
+      position: absolute;
+      left: 52%;
+      top: 26px;
+      width: 46px;
+      height: 5px;
+      border-radius: 8px;
+      background: var(--green);
+      box-shadow: 0 16px 0 #d7dce0, 0 32px 0 #d7dce0;
+    }
+
+    .avatar {
+      position: absolute;
+      left: 22px;
+      top: 26px;
+      width: 50px;
+      height: 62px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 39%, #ffd8c2 0 14px, transparent 15px),
+        radial-gradient(circle at 50% 26%, #111827 0 20px, transparent 21px),
+        linear-gradient(145deg, transparent 0 56%, var(--green) 57% 100%);
+    }
+
+    .avatar::before {
+      content: "";
+      position: absolute;
+      left: 9px;
+      top: 16px;
+      width: 32px;
+      height: 32px;
+      border-radius: 0 0 18px 18px;
+      background: #111827;
+      clip-path: polygon(0 10%, 22% 0, 50% 12%, 78% 0, 100% 10%, 100% 100%, 0 100%);
+    }
+
+    .avatar::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      bottom: 0;
+      width: 30px;
+      height: 20px;
+      border-radius: 18px 18px 4px 4px;
+      background: var(--green);
+    }
+
+    .cap {
+      position: absolute;
+      left: 26px;
+      top: 28px;
+      width: 70px;
+      height: 28px;
+      background: var(--green);
+      clip-path: polygon(50% 0, 100% 45%, 50% 90%, 0 45%);
+    }
+
+    .cap::before {
+      content: "";
+      position: absolute;
+      left: 30px;
+      top: 19px;
+      width: 10px;
+      height: 16px;
+      border-left: 3px solid var(--green);
+      border-bottom: 7px solid var(--green);
+    }
+
+    .chart {
+      position: absolute;
+      left: 55px;
+      bottom: 34px;
+      display: flex;
+      align-items: end;
+      gap: 8px;
+      height: clamp(46px, 4.6vw, 74px);
+    }
+
+    .chart span {
+      width: clamp(10px, 1.12vw, 18px);
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(#7ade9b, var(--green));
+    }
+
+    .chart span:nth-child(1) { height: 22px; opacity: .45; }
+    .chart span:nth-child(2) { height: 42px; opacity: .62; }
+    .chart span:nth-child(3) { height: 64px; }
+
+    .paper-art .quote {
+      position: absolute;
+      left: 18px;
+      bottom: 62px;
+      color: var(--green);
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .paper-art .person-badge {
+      position: absolute;
+      right: 14px;
+      bottom: 18px;
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 8px 14px rgba(7,150,66,.18);
+    }
+
+    .paper-art .person-badge svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .sop-doc {
+      overflow: visible;
+    }
+
+    .sop-doc .book {
+      position: absolute;
+      right: -18px;
+      bottom: -8px;
+      width: 76px;
+      height: 28px;
+      border: 4px solid var(--green);
+      border-radius: 4px 8px 8px 4px;
+      background: #fff;
+      box-shadow: 0 -18px 0 -4px #fff, 0 -18px 0 0 var(--green);
+    }
+
+    .sop-doc .flask {
+      position: absolute;
+      right: 24px;
+      bottom: 38px;
+      width: 34px;
+      height: 52px;
+      border: 4px solid var(--green);
+      border-top: 0;
+      border-radius: 0 0 18px 18px;
+      background: linear-gradient(transparent 0 52%, #e5f7eb 53%);
+    }
+
+    .sop-doc .flask::before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: -26px;
+      width: 12px;
+      height: 28px;
+      border: 4px solid var(--green);
+      border-bottom: 0;
+      border-radius: 4px 4px 0 0;
+      background: #fff;
+    }
+
+    /* 02 */
+    .tips-five {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2.1%;
+      margin-top: 1%;
+      margin-bottom: 2.1%;
+    }
+
+    .tips-five .soft-card {
+      min-height: 348px;
+      padding: 32px 22px 28px;
+      text-align: center;
+      box-shadow: none;
+    }
+
+    .tips-five .icon-round {
+      width: clamp(82px, 8.4vw, 128px);
+      height: clamp(82px, 8.4vw, 128px);
+      margin: 0 auto clamp(10px, 1.2vw, 18px);
+      font-size: clamp(22px, 3vw, 44px);
+    }
+
+    .tips-five .icon-round svg,
+    .result-card .icon-round svg {
+      width: 66%;
+      height: 66%;
+      stroke-width: 1.35;
+    }
+
+    .tips-five .tip-illustration {
+      width: clamp(100px, 10.2vw, 154px);
+      height: clamp(100px, 10.2vw, 154px);
+      margin-bottom: clamp(10px, 1.2vw, 18px);
+      background: transparent;
+      box-shadow: none;
+      overflow: hidden;
+    }
+
+    .tips-five .tip-illustration svg {
+      width: 84%;
+      height: 84%;
+      stroke-width: 1.8;
+    }
+
+    .tips-five .tip-illustration img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      object-position: center;
+      filter: saturate(1.08);
+      clip-path: inset(20% 0 0 0);
+      transform: translate(-6%, -10%);
+      transform-origin: center;
+    }
+
+    .tips-five .soft-card:nth-child(1) .tip-illustration img,
+    .tips-five .soft-card:nth-child(4) .tip-illustration img {
+      transform: translate(-12%, -10%);
+    }
+
+    .tips-five .soft-card:nth-child(2) .tip-illustration img,
+    .tips-five .soft-card:nth-child(5) .tip-illustration img {
+      transform: translate(-10%, -10%);
+    }
+
+    .tips-five h2 {
+      margin: 0;
+      color: var(--green);
+      font-size: 21px;
+      line-height: 1.3;
+      font-weight: 900;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tips-five p {
+      max-width: 14em;
+      margin: 22px auto 0;
+      color: var(--text);
+      font-size: 19px;
+      line-height: 1.7;
+      text-align: left;
+      text-align-last: left;
+      word-break: normal;
+    }
+
+    .tip.tip-wide {
+      gap: clamp(20px, 2.2vw, 36px);
+      min-height: 96px;
+      padding-top: 18px;
+      padding-bottom: 18px;
+    }
+
+    .tip.tip-wide > span:last-child {
+      display: flex;
+      min-height: 52px;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .tip.tip-wide b {
+      font-size: 23px;
+      line-height: 1.28;
+    }
+
+    .tip.tip-wide .tip-copy {
+      display: block;
+      margin-top: 7px;
+      font-size: 18px;
+      line-height: 1.55;
+    }
+
+    /* 03 */
+    .mistake-layout {
+      display: grid;
+      grid-template-columns: minmax(270px, .78fr) 56px minmax(0, 1.34fr);
+      gap: 28px;
+      align-items: stretch;
+      margin-bottom: 3.5%;
+    }
+
+    .small-compare {
+      overflow: hidden;
+      min-height: auto;
+    }
+
+    .small-compare h2 {
+      margin: 0;
+      padding: 15px;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--green);
+      font-size: var(--section-title-size);
+      font-weight: 900;
+      background: #f4fcf7;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .small-compare.bad {
+      border-color: #ffb5b7;
+    }
+
+    .small-compare.bad h2 {
+      color: var(--red);
+      background: #fff5f5;
+      border-bottom-color: #ffb5b7;
+    }
+
+    .line-row {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 16px;
+      align-items: center;
+      height: 112px;
+      margin: 0 30px;
+      padding: 14px 0;
+      border-bottom: 1px dashed #aac2d6;
+      color: var(--text);
+      font-size: 21px;
+      line-height: 1.42;
+    }
+
+    .line-row:last-child { border-bottom: 0; }
+
+    .line-row .check {
+      justify-self: center;
+    }
+
+    .small-compare.bad .line-row {
+      height: 112px;
+      font-size: 21px;
+    }
+
+    .small-compare:not(.bad) .line-row {
+      margin: 0 34px;
+      height: 112px;
+      padding: 14px 0;
+    }
+
+    .small-compare.bad .line-row span:last-child {
+      white-space: normal;
+    }
+
+    .match-arrows {
+      display: grid;
+      grid-template-rows: repeat(5, 112px);
+      align-items: center;
+      align-content: start;
+      padding-top: 58px;
+      color: var(--green);
+      font-size: 24px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+	    .why-card {
+	      width: 100%;
+	      padding: 10px 20px 12px;
+	      margin: 0 auto 3.2%;
+	    }
+
+	    .why-card.why-card-img {
+	      padding: 0;
+	      border: 0;
+	      background: transparent;
+	      box-shadow: none;
+	      overflow: visible;
+	      border-radius: 0;
+	    }
+
+	    .why-card-img img {
+	      width: 100%;
+	      height: auto;
+	      display: block;
+	      /* Make the inner frame align with other card edges and slightly enlarge the content */
+	      width: calc(100% + 40px);
+	      margin: 0 -20px;
+	    }
+
+    .why-card h2 {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 0 0 8px;
+      color: var(--green);
+      font-size: var(--section-title-size);
+      font-weight: 900;
+    }
+
+    .why-flow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+      text-align: center;
+    }
+
+    .why-flow > div {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text);
+      font-size: var(--caption-size);
+      line-height: 1.45;
+    }
+
+    .why-flow .icon-round {
+      width: clamp(60px, 6.6vw, 88px);
+      height: clamp(60px, 6.6vw, 88px);
+      margin: 0 auto;
+    }
+
+    .why-flow .icon-round svg {
+      width: 76%;
+      height: 76%;
+      stroke-width: 1.38;
+    }
+
+    .why-flow > div:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -30px;
+      top: calc(clamp(60px, 6.6vw, 88px) / 2);
+      transform: translateY(-50%);
+      color: var(--green);
+      font-size: clamp(28px, 3vw, 38px);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .why-flow b {
+      display: block;
+      margin-top: 6px;
+      color: var(--green);
+      font-size: var(--section-title-size);
+    }
+
+    .why-flow .why-desc {
+      display: block;
+      max-width: 9.5em;
+      margin: 0 auto;
+      line-height: 1.28;
+    }
+
+    .example-pair {
+      display: grid;
+      grid-template-columns: minmax(270px, .78fr) 56px minmax(0, 1.34fr);
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .example {
+      min-height: 360px;
+      padding: 24px;
+      color: var(--text);
+      font-size: clamp(13px, 1.12vw, 18px);
+      line-height: 1.82;
+    }
+
+    .example p {
+      margin: 0;
+    }
+
+    .example-pair .example:last-child p {
+      text-align: justify;
+      text-align-last: left;
+      line-height: 1.8;
+    }
+
+    .example-pair .example:last-child {
+      padding: 28px clamp(32px, 3.2vw, 44px);
+    }
+
+    .example h2 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 18px;
+      color: var(--green);
+      font-size: var(--section-title-size);
+      font-weight: 900;
+    }
+
+    .circle-arrow {
+      display: grid;
+      place-items: center;
+      align-self: center;
+      justify-self: center;
+      width: 56px;
+      height: 56px;
+      border: 2px solid var(--orange);
+      border-radius: 50%;
+      color: var(--orange);
+      font-size: 34px;
+      font-weight: 900;
+    }
+
+    /* 04 */
+    .module-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 49%) minmax(0, 1fr);
+      gap: 3.4%;
+      align-items: center;
+      min-height: 0;
+    }
+
+    .form-visual {
+      min-height: clamp(320px, 31vw, 450px);
+      display: grid;
+      place-items: center;
+      overflow: visible;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .module-art {
+      width: min(108%, 560px);
+      max-width: none;
+      display: block;
+      height: auto;
+      object-fit: contain;
+    }
+    }
+
+    .module-list {
+      display: grid;
+      gap: 0;
+    }
+
+    .module-row {
+      display: grid;
+      grid-template-columns: clamp(50px, 4.4vw, 64px) minmax(0, 1fr);
+      gap: clamp(14px, 1.25vw, 20px);
+      align-items: center;
+      min-height: clamp(62px, 5.8vw, 82px);
+      padding: clamp(12px, 1.1vw, 16px) 0;
+      border-bottom: 1px dashed #a9d0b9;
+      color: var(--text);
+      font-size: clamp(19px, 1.55vw, 26px);
+      line-height: 1.45;
+    }
+
+    .module-row > span:last-child {
+      min-width: 0;
+      white-space: nowrap;
+    }
+
+    .module-row:last-child { border-bottom: 0; }
+
+    .mini-num {
+      display: grid;
+      place-items: center;
+      width: clamp(48px, 4.2vw, 62px);
+      height: clamp(34px, 3vw, 42px);
+      border: 1.5px solid rgba(7, 150, 66, .35);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #f4fff8, #e3f7eb);
+      color: var(--green);
+      font-size: clamp(16px, 1.55vw, 22px);
+      font-weight: 900;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 8px 14px rgba(7,150,66,.08);
+    }
+
+    .module-row b {
+      color: var(--green);
+      font-size: clamp(20px, 1.72vw, 28px);
+      white-space: nowrap;
+    }
+
+    /* 05 */
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4.2%;
+      margin: 4.7% 0 4.2%;
+    }
+
+    .result-card {
+      position: relative;
+      min-height: clamp(220px, 25vw, 300px);
+      padding: 54px 7% 28px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .result-card .mini-num {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: grid;
+      place-items: center;
+      width: clamp(52px, 5.2vw, 72px);
+      height: clamp(28px, 2.8vw, 38px);
+      border: 1.5px solid var(--green);
+      border-radius: 999px;
+      background: #f4fff8;
+      color: var(--green);
+      font-size: clamp(18px, 1.8vw, 25px);
+      font-weight: 900;
+      line-height: 1;
+      box-shadow: none;
+      overflow: hidden;
+    }
+
+    .result-card .icon-round {
+      width: clamp(64px, 8vw, 88px);
+      height: clamp(64px, 8vw, 88px);
+      margin: 0 auto 22px;
+      font-size: 42px;
+    }
+
+    .result-icon-wrap {
+      width: clamp(76px, 8.8vw, 104px);
+      height: clamp(76px, 8.8vw, 104px);
+      margin: 0 auto 18px;
+      display: grid;
+      place-items: center;
+    }
+
+    .result-icon-wrap img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    .result-card h2 {
+      margin: 0;
+      color: var(--ink);
+      font-size: var(--section-title-size);
+      line-height: 1.25;
+      font-weight: 900;
+    }
+
+    .result-card p {
+      margin: 14px 0 0;
+      color: var(--text);
+      font-size: clamp(16px, 1.38vw, 22px);
+      line-height: 1.68;
+      max-width: 92%;
+    }
+
+    /* 06 */
+    .service-top {
+      display: grid;
+      grid-template-columns: 1.72fr .75fr .66fr;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .service-slide {
+      padding: 22px 28px 24px;
+    }
+
+    .service-slide .header {
+      margin-bottom: 14px;
+    }
+
+    .service-slide .service-top {
+      grid-template-columns: 1.78fr .78fr .54fr;
+      gap: 14px;
+      margin-bottom: 12px;
+      align-items: stretch;
+    }
+
+    .service-box {
+      min-height: auto;
+      padding: 18px;
+    }
+
+    .service-slide .service-box {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      padding: 18px;
+    }
+
+    .service-box h2,
+    .flow-box h2 {
+      margin: 0 0 14px;
+      color: var(--green);
+      font-size: var(--section-title-size);
+      font-weight: 900;
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .service-slide .service-grid {
+      flex: 1;
+      gap: 10px;
+      grid-auto-rows: minmax(0, 1fr);
+    }
+
+    .service-mini {
+      display: grid;
+      grid-template-columns: 62px 1fr;
+      gap: 14px;
+      align-items: center;
+      min-height: 108px;
+      padding: 16px;
+      border: 1px solid var(--soft-line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.78);
+    }
+
+    .service-slide .service-mini {
+      min-height: 0;
+      padding: 15px;
+    }
+
+    .service-mini .icon-round {
+      width: 56px;
+      height: 56px;
+    }
+
+    .service-mini .icon-round img,
+    .flow-step .icon-round img,
+    .calendar .icon-round img,
+    .footer-item .icon-round img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    .service-mini b {
+      color: var(--green);
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .service-mini p,
+    .service-box p {
+      margin: 8px 0 0;
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.52;
+    }
+
+    .service-mini p { margin-top: 6px; }
+
+    .calendar {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .calendar .icon-round {
+      width: 96px;
+      height: 96px;
+      margin: 6px auto 10px;
+      font-size: 58px;
+    }
+
+    .calendar p {
+      margin: 6px 0 0;
+    }
+
+    .calendar p b {
+      font-size: clamp(11px, 1.05vw, 16px);
+    }
+
+    .calendar strong {
+      color: var(--green);
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .period-line {
+      display: inline-flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .period-line .unit {
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .materials-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .materials-grid.three {
+      grid-template-columns: 1fr;
+    }
+
+    .material {
+      display: grid;
+      place-items: center;
+      min-height: clamp(58px, 6.3vw, 84px);
+      border-radius: 14px;
+      color: #fff;
+      font-size: clamp(24px, 3.3vw, 36px);
+      font-weight: 900;
+      text-shadow: 0 2px 8px rgba(0,0,0,.18);
+      box-shadow: inset 0 7px 18px rgba(255,255,255,.22), 0 10px 18px rgba(43, 80, 54, .09);
+    }
+
+    .materials-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .service-slide .materials-list {
+      flex: 1;
+      align-content: center;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .material-row {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 8px;
+      align-items: center;
+      min-height: 44px;
+      padding: 7px 9px;
+      border: 1px solid rgba(0, 151, 67, .25);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .material-row.cv-line {
+      border-color: rgba(37, 112, 255, .28);
+      color: #2168f2;
+    }
+
+    .material-row.sop-line {
+      border-color: rgba(112, 69, 218, .30);
+      color: #7045da;
+    }
+
+    .material-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 20px;
+      margin: 0;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .material-badge img {
+      display: none;
+    }
+
+    .material-badge::before {
+      content: attr(data-label);
+    }
+
+    .material-row p {
+      margin: 0;
+      color: currentColor;
+      font-size: 15px;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    .ps { background: linear-gradient(145deg, #28a7ff, #006bd8); }
+    .cv { background: linear-gradient(145deg, #4cc970, #078a3b); }
+    .rl { background: linear-gradient(145deg, #8c66f0, #5b32bf); }
+    .sop { background: linear-gradient(145deg, #ffb23d, #f06902); }
+
+    .flow-box {
+      padding: 22px 24px;
+      margin-bottom: 12px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr) 30px minmax(0, 1fr) 30px minmax(0, 1fr) 30px minmax(0, 1fr);
+      gap: 0;
+      align-items: center;
+    }
+
+    .flow-step {
+      position: relative;
+      display: grid;
+      grid-template-columns: clamp(50px, 5vw, 70px) 1fr;
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .flow-step .icon-round,
+    .footer-item .icon-round {
+      width: clamp(50px, 5vw, 70px);
+      height: clamp(50px, 5vw, 70px);
+    }
+
+    .flow-step:not(:last-child)::after { display: none; }
+
+    .flow-arrow {
+      display: grid;
+      place-items: center;
+      height: 100%;
+      color: var(--green);
+      width: 30px;
+      justify-self: stretch;
+      align-self: center;
+    }
+
+    .flow-arrow svg {
+      width: 24px;
+      height: 14px;
+      display: block;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: .9;
+    }
+
+    .flow-step b {
+      color: var(--green);
+      font-size: clamp(16px, 1.55vw, 22px);
+      line-height: 1.24;
+    }
+
+    .flow-step p {
+      margin: 4px 0 0;
+      color: var(--text);
+      font-size: clamp(15px, 1.42vw, 20px);
+      line-height: 1.38;
+    }
+
+    .footer-band {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      padding: 82px 44px 34px;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .footer-band::before {
+      content: "✦  无论你在哪一步，都可以继续  ✦";
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--ink);
+      font-size: 30px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .service-choice {
+      position: relative;
+      display: grid;
+      grid-template-columns: 168px 1fr;
+      gap: 30px;
+      align-items: center;
+      min-height: 236px;
+      padding: 30px 44px 42px;
+      border: 1px solid rgba(9, 120, 54, .18);
+      border-radius: 24px;
+      background: rgba(255,255,255,.96);
+      box-shadow: 0 16px 34px rgba(20, 62, 42, .075);
+      text-decoration: none;
+    }
+
+    .service-choice.recommended {
+      border-color: rgba(7, 150, 66, .30);
+      background: linear-gradient(135deg, rgba(0, 151, 67, .10), rgba(255,255,255,.94));
+      box-shadow: 0 18px 36px rgba(7, 150, 66, .11);
+      padding-right: 66px;
+    }
+
+    .service-choice.recommended::after {
+      content: "★ 推荐";
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .choice-art {
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: rgba(7, 150, 66, .07);
+    }
+
+    .choice-art img {
+      width: 92px;
+      height: 92px;
+      object-fit: contain;
+      display: block;
+      mix-blend-mode: multiply;
+    }
+
+    .service-choice h2 {
+      margin: 0;
+      color: var(--green);
+      font-size: 25px;
+      line-height: 1.18;
+      white-space: nowrap;
+    }
+
+    .service-choice p {
+      margin: 11px 0 0;
+      color: var(--text);
+      font-size: 17px;
+      line-height: 1.45;
+    }
+
+    .service-choice > div:last-child {
+      display: grid;
+      grid-template-rows: auto auto auto;
+      align-content: center;
+      min-width: 0;
+    }
+
+    .service-choice.recommended > div:last-child {
+      padding-top: 10px;
+    }
+
+    .choice-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 22px;
+      height: 54px;
+      max-width: 430px;
+      border: 1px solid var(--green);
+      border-radius: 12px;
+      color: var(--green);
+      font-size: 21px;
+      font-weight: 900;
+      background: #fff;
+    }
+
+    .recommended .choice-button {
+      color: #fff;
+      background: linear-gradient(145deg, #12a84e, #008f3d);
+      box-shadow: 0 12px 22px rgba(0, 145, 64, .14);
+    }
+
+    @media (max-width: 320px) {
+      .deck { padding: 14px; }
+      .slide { aspect-ratio: auto; padding: 32px 22px; }
+      .header { gap: 16px; }
+      .num { width: 70px; height: 70px; font-size: 34px; border-radius: 10px; }
+      .ps-sop-grid,
+      .tips-five,
+      .mistake-layout,
+      .example-pair,
+      .module-layout,
+      .result-grid,
+      .service-top,
+      .flow,
+      .footer-band {
+        grid-template-columns: 1fr;
+      }
+      .vs,
+      .match-arrows,
+      .circle-arrow,
+      .why-flow > div::after,
+      .flow-step::after {
+        display: none;
+      }
+      .compare-big { grid-template-columns: 1fr; }
+      .tips-five .soft-card,
+      .small-compare,
+      .result-card,
+      .service-box,
+      .form-visual { min-height: auto; }
+      .module-art { width: 100%; }
+      .why-flow { grid-template-columns: 1fr 1fr; }
+      .footer-item { border-right: 0; border-bottom: 1px solid var(--line); }
+      .footer-item:last-child { border-bottom: 0; }
+    }
+
+    @media (max-width: 860px) { }
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 48 56"><path d="M24 6v-4"/><path d="M9 12 5.8 8.8"/><path d="M39 12l3.2-3.2"/><path d="M5 28H1"/><path d="M47 28h-4"/><path d="M24 10c-9 0-16 7-16 15 0 6 3 10 8 13v5h16v-5c5-3 8-7 8-13 0-8-7-15-16-15Z"/><path d="M17 48h14"/><path d="M19 53h10"/><path d="M19 39h10"/></symbol>
+    <symbol id="i-ps-ill" viewBox="0 0 170 210">
+      <defs>
+        <linearGradient id="ps_g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#16ad52"/>
+          <stop offset="1" stop-color="#00772f"/>
+        </linearGradient>
+        <filter id="ps_shadow" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+          <feDropShadow dx="0" dy="2.6" stdDeviation="2.2" flood-color="#0a7f3a" flood-opacity=".10"/>
+        </filter>
+      </defs>
+
+      <!-- ground -->
+      <ellipse cx="86" cy="186" rx="58" ry="11" fill="#e7f7ee"/>
+
+      <!-- soft leaves behind paper -->
+      <path d="M32 150c-18 8-22 19-16 33 14-5 22-14 22-23-1-4-2-6-6-10Z" fill="#e5f4eb"/>
+      <path d="M144 138c16-8 22-19 18-34-14 5-22 14-22 23 1 4 2 6 4 11Z" fill="#e5f4eb"/>
+
+      <!-- paper -->
+      <rect x="38" y="18" width="94" height="160" rx="10" fill="#fff" stroke="#b9e2c9" stroke-width="2.2" filter="url(#ps_shadow)"/>
+
+      <!-- avatar header -->
+      <circle cx="64" cy="46" r="20" fill="#eef3f0"/>
+      <path d="M52 46c2-14 15-18 24-11 3 2 5 6 5 11-6-2-11-5-14-10-4 5-8 8-15 10Z" fill="#0f172a" opacity=".92"/>
+      <circle cx="64" cy="50" r="10.5" fill="#ffd7c2"/>
+      <path d="M50 78c6-11 22-11 28 0v11H50z" fill="url(#ps_g)"/>
+
+      <!-- right header line + body lines -->
+      <path d="M86 34h40" stroke="url(#ps_g)" stroke-width="6.2" stroke-linecap="round"/>
+      <path d="M86 52h30M86 66h42" stroke="#d6dce1" stroke-width="5.2" stroke-linecap="round"/>
+      <path d="M48 110h74M48 126h82M48 142h74M48 158h56" stroke="#d6dce1" stroke-width="5.6" stroke-linecap="round"/>
+
+      <!-- quote mark bottom-left -->
+      <text x="50" y="178" font-family="Arial, sans-serif" font-size="32" font-weight="700" fill="#079642">“</text>
+
+      <!-- person badge bottom-right -->
+      <circle cx="128" cy="168" r="20" fill="url(#ps_g)"/>
+      <circle cx="128" cy="162" r="6.4" fill="#fff"/>
+      <path d="M116 180c2.4-10 21.6-10 24 0" fill="#fff"/>
+    </symbol>
+    <symbol id="i-sop-ill" viewBox="0 0 190 210">
+      <defs>
+        <linearGradient id="sop_g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#16ad52"/>
+          <stop offset="1" stop-color="#00772f"/>
+        </linearGradient>
+        <filter id="sop_shadow" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+          <feDropShadow dx="0" dy="2.6" stdDeviation="2.2" flood-color="#0a7f3a" flood-opacity=".10"/>
+        </filter>
+      </defs>
+
+      <ellipse cx="86" cy="186" rx="62" ry="11" fill="#e7f7ee"/>
+
+      <!-- soft leaves -->
+      <path d="M160 140c16-8 22-20 18-35-14 5-22 14-22 24 1 4 2 6 4 11Z" fill="#e5f4eb"/>
+      <path d="M30 156c-16 8-20 20-14 34 14-5 21-14 21-24-1-4-2-6-7-10Z" fill="#e5f4eb"/>
+
+      <!-- paper -->
+      <rect x="28" y="18" width="102" height="160" rx="10" fill="#fff" stroke="#b9e2c9" stroke-width="2.2" filter="url(#sop_shadow)"/>
+
+      <!-- graduation cap (more recognizable) -->
+      <path d="M44 44 80 28l40 16-40 16-36-16Z" fill="#0f172a" opacity=".92"/>
+      <path d="M50 44 80 32l34 12-34 12-30-12Z" fill="url(#sop_g)"/>
+      <path d="M58 50v14c9 6 23 6 32 0V50" fill="url(#sop_g)" opacity=".92"/>
+      <path d="M120 44v28" stroke="#079642" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="120" cy="74" r="4" fill="#079642"/>
+      <path d="M120 58c9 2 12 9 9 16" fill="none" stroke="#079642" stroke-width="3" stroke-linecap="round" opacity=".75"/>
+
+      <!-- bullets + lines -->
+      <circle cx="42" cy="92" r="4.2" fill="#079642"/>
+      <path d="M50 92h72" stroke="#d7dde2" stroke-width="5.6" stroke-linecap="round"/>
+      <circle cx="42" cy="110" r="4.2" fill="#079642"/>
+      <path d="M50 110h82" stroke="#d7dde2" stroke-width="5.6" stroke-linecap="round"/>
+      <circle cx="42" cy="128" r="4.2" fill="#079642"/>
+      <path d="M50 128h70" stroke="#d7dde2" stroke-width="5.6" stroke-linecap="round"/>
+
+      <!-- mini chart on paper bottom -->
+      <path d="M56 166v-12M74 166v-24M92 166v-38" stroke="#78d897" stroke-width="10" stroke-linecap="round"/>
+      <path d="M50 172h54" stroke="#d7dde2" stroke-width="4.6" stroke-linecap="round"/>
+
+      <!-- flask + books (right bottom) -->
+      <path d="M150 122h20" stroke="#0f172a" stroke-width="5.2" stroke-linecap="round" opacity=".15"/>
+      <path d="M156 122v18l10 22c3 6-1 12-8 12h-4c-7 0-11-6-8-12l10-22v-18" fill="#fff" stroke="#079642" stroke-width="4.8" stroke-linejoin="round"/>
+      <path d="M150 170h20" stroke="#78d897" stroke-width="9" stroke-linecap="round" opacity=".25"/>
+      <path d="M132 182h44c6 0 10 4 10 10v4h-64v-4c0-6 4-10 10-10Z" fill="#fff" stroke="#079642" stroke-width="5.4"/>
+      <path d="M126 196h76" stroke="#079642" stroke-width="5.4" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-cap" viewBox="0 0 24 24"><path d="M3 8.5 12 4l9 4.5-9 4.5-9-4.5Z"/><path d="M7 11.2V16c2.8 2 7.2 2 10 0v-4.8"/><path d="M21 9v6"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M9.5 14.5 14.5 9.5"/><path d="M8.5 10.5 7.2 11.8a4 4 0 0 0 5.6 5.6l1.3-1.3"/><path d="M15.5 13.5 16.8 12.2a4 4 0 0 0-5.6-5.6L9.9 7.9"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 12 20 4"/><path d="M18 4h2v2"/></symbol>
+    <symbol id="i-tip-truth" viewBox="0 0 120 120">
+      <ellipse cx="61" cy="100" rx="36" ry="7" fill="#dff3e7"/>
+      <rect x="29" y="18" width="58" height="76" rx="9" fill="#fff" stroke="#079642" stroke-width="4"/>
+      <path d="M42 40h32M42 53h24M42 66h30" stroke="#cfd9de" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="81" cy="78" r="19" fill="#079642"/>
+      <path d="m72 78 6 6 13-15" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M35 24h46" stroke="#b7e3c9" stroke-width="4"/>
+      <circle cx="40" cy="30" r="3" fill="#079642"/>
+    </symbol>
+    <symbol id="i-tip-specific" viewBox="0 0 120 120">
+      <ellipse cx="60" cy="101" rx="36" ry="7" fill="#ffe0e1"/>
+      <rect x="30" y="19" width="60" height="78" rx="8" fill="#fff" stroke="#111827" stroke-width="3.2"/>
+      <circle cx="60" cy="40" r="14" fill="#ff181f"/>
+      <path d="m54 34 12 12M66 34 54 46" stroke="#fff" stroke-width="4.8" stroke-linecap="round"/>
+      <path d="M48 61h30M48 73h30M48 85h30" stroke="#8da0ae" stroke-width="3.6" stroke-linecap="round"/>
+      <path d="m36 61 4 4 8-10M36 73l4 4 8-10M36 85l4 4 8-10" stroke="#ff181f" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-tip-english" viewBox="0 0 120 120">
+      <ellipse cx="60" cy="101" rx="37" ry="7" fill="#deecff"/>
+      <path d="M25 26c15-8 28-6 39 5 11-11 24-13 39-5v65c-15-7-28-5-39 6-11-11-24-13-39-6z" fill="#fff" stroke="#2274df" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M64 31v66" stroke="#b9d7ff" stroke-width="3"/>
+      <path d="M39 69 48 42l9 27M42 60h12" stroke="#2274df" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M77 51c3-3 13-3 13 5v14M90 62c-13-1-18 2-18 7 0 6 8 7 13 4 3-2 5-5 5-8" stroke="#2274df" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M34 35c7-2 14-2 21 1M73 36c7-3 15-3 22-1" stroke="#cfd9de" stroke-width="4" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-tip-consistency" viewBox="0 0 120 120">
+      <ellipse cx="60" cy="101" rx="37" ry="7" fill="#ebe2ff"/>
+      <circle cx="32" cy="36" r="13" fill="#fff" stroke="#7045da" stroke-width="4"/>
+      <circle cx="88" cy="36" r="13" fill="#fff" stroke="#7045da" stroke-width="4"/>
+      <circle cx="60" cy="79" r="15" fill="#7045da"/>
+      <path d="M45 43 53 66M75 43 67 66" stroke="#7045da" stroke-width="5" stroke-linecap="round"/>
+      <path d="m53 79 5 5 11-13" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="23" y="24" width="18" height="18" rx="4" fill="#f8f4ff"/>
+      <rect x="79" y="24" width="18" height="18" rx="4" fill="#f8f4ff"/>
+    </symbol>
+    <symbol id="i-tip-relevant" viewBox="0 0 120 120">
+      <ellipse cx="60" cy="101" rx="38" ry="7" fill="#ffe8d3"/>
+      <circle cx="59" cy="58" r="34" fill="#fff" stroke="#f27604" stroke-width="4"/>
+      <circle cx="59" cy="58" r="21" fill="#fff6ed" stroke="#f27604" stroke-width="4"/>
+      <circle cx="59" cy="58" r="8" fill="#f27604"/>
+      <path d="M59 58 94 23" stroke="#f27604" stroke-width="5" stroke-linecap="round"/>
+      <path d="M91 23h13v13M92 23l-1 13 13-1" fill="#fff6ed" stroke="#f27604" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M32 86c8 7 22 11 37 8" stroke="#ffd0a4" stroke-width="5" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-clipboard" viewBox="0 0 24 24"><path d="M9 5h6"/><path d="M9 3h6v4H9z"/><path d="M7 5H5v16h14V5h-2"/><path d="m8 13 2 2 4-5"/><path d="M8 18h8"/></symbol>
+    <symbol id="i-listboard" viewBox="0 0 24 24"><path d="M8 4h8v3H8z"/><path d="M10 3h4"/><path d="M6 6H4v15h16V6h-2"/><path d="M7 10.5 8.4 12 11 9.2"/><path d="M13 10.8h4"/><path d="M7 14.6 8.4 16 11 13.2"/><path d="M13 14.8h4"/><path d="M7 18.5 8.4 20 11 17.2"/><path d="M13 18.8h4"/><circle cx="16" cy="4.8" r="1.4"/></symbol>
+    <symbol id="i-no-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m8.5 8.5 7 7"/><path d="m15.5 8.5-7 7"/></symbol>
+    <symbol id="i-book-aa" viewBox="0 0 24 24"><path d="M4 6.4c2.8-1.5 5.4-1.2 8 .8 2.6-2 5.2-2.3 8-.8v12.2c-2.8-1.3-5.4-1.1-8 .9-2.6-2-5.2-2.2-8-.9z"/><path d="M12 7.2v12.2"/><path d="M6.8 15.8 8.9 10l2.1 5.8"/><path d="M7.5 14.1h2.8"/><path d="M15 12.2c.7-.5 2.4-.5 2.4.9v2.8"/><path d="M17.4 14.4c-1.9-.2-3 .2-3 1.2 0 .9 1 1.2 1.9.8.6-.2.9-.6 1.1-1"/><path d="M6.4 8.2c1.4-.4 2.7-.4 4.1.1"/><path d="M13.8 8.3c1.4-.5 2.7-.5 4.1-.1"/></symbol>
+    <symbol id="i-question-doc" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5"/><path d="M12 16v.01"/><path d="M10.2 11a2.2 2.2 0 1 1 3.4 1.85c-.85.55-1.6 1-1.6 2"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4.5 4.5 0 0 0 5 5L10.5 20.5a2.1 2.1 0 0 1-3-3l9.2-9.2a4.5 4.5 0 0 0-2-2Z"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M7 17v-5"/><path d="M12 17V7"/><path d="M17 17v-9"/></symbol>
+    <symbol id="i-why-experience" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="7" r="3.1"/>
+        <path d="M3.9 19.2a5.1 5.1 0 0 1 10.2 0"/>
+        <circle cx="17.3" cy="15.2" r="3.1"/>
+        <path d="M17.3 13.5V16.9M15.6 15.2H19"/>
+        <path d="M5.8 21h8.6"/>
+      </g>
+    </symbol>
+    <symbol id="i-why-method" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5.6"/>
+        <circle cx="12" cy="12" r="2.2"/>
+        <path d="M12 3.2v2.6M12 18.2v2.6M3.2 12h2.6M18.2 12h2.6"/>
+        <path d="M5.9 5.9 7.6 7.6M16.4 16.4l1.7 1.7M18.1 5.9l-1.7 1.7M7.6 16.4l-1.7 1.7"/>
+      </g>
+    </symbol>
+    <symbol id="i-why-result" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 20h16"/>
+        <rect x="5.8" y="13.2" width="3" height="5.2" rx=".7"/>
+        <rect x="10.5" y="10" width="3" height="8.4" rx=".7"/>
+        <rect x="15.2" y="6.6" width="3" height="11.8" rx=".7"/>
+        <path d="M5.6 9.6 10 8.2 13.6 6.2 18.4 3.9"/>
+        <path d="M16.8 3.9h3v3"/>
+      </g>
+    </symbol>
+    <symbol id="i-why-direction" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11.2" cy="12.8" r="7"/>
+        <circle cx="11.2" cy="12.8" r="3.8"/>
+        <path d="M11.2 12.8 20 4"/>
+        <path d="M17.6 4H20v2.4"/>
+      </g>
+      <circle cx="11.2" cy="12.8" r="1" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-eye-doc" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5"/><path d="M5 14s3-4 7-4 7 4 7 4-3 4-7 4-7-4-7-4Z"/><circle cx="12" cy="14" r="1.8"/></symbol>
+    <symbol id="i-select" viewBox="0 0 24 24"><path d="M5 5h9v9H5z" stroke-dasharray="3 3"/><path d="m14 14 6 6"/><path d="m15.5 18.5 2-2 2.5 5.5-5.5-2.5 2-2"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M5 7h14"/><path d="M5 12h14"/><path d="M5 17h14"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="11" cy="17" r="2"/></symbol>
+    <symbol id="i-spark-doc" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5"/><path d="M18 11l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2Z"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5"/><path d="M12 10v7"/><path d="m8.5 13.5 3.5 3.5 3.5-3.5"/></symbol>
+    <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M9 3h6v5h2a2 2 0 1 1 0 4h-2v9H9v-3a2 2 0 1 0-4 0v3H3v-7h3a2 2 0 1 0 0-4H3V3h6Z"/></symbol>
+    <symbol id="i-structure" viewBox="0 0 24 24"><path d="M5 6h6v4H5z"/><path d="M13 14h6v4h-6z"/><path d="M5 17h4"/><path d="M9 17v-5h7v2"/><path d="M11 8h5v3"/></symbol>
+    <symbol id="i-check-question" viewBox="0 0 24 24"><path d="M7 4h10v16H7z"/><path d="m9.5 9.5 1 1 2-2"/><path d="M14 10h1.5"/><path d="m9.5 14.5 1 1 2-2"/><path d="M14 15h1.5"/><circle cx="17" cy="17" r="4"/><path d="M16 16a1.2 1.2 0 1 1 1.5 1.2c-.5.2-.7.5-.7 1"/><path d="M16.8 20v.01"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M5 5h14v16H5z"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M5 10h14"/><path d="M8 14h2M14 14h2M8 18h2"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m14 7 3 3"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 20 6v6c0 5-3.4 8-8 9-4.6-1-8-4-8-9V6l8-3Z"/><path d="m9 12 2 2 4-5"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10 14"/><path d="m21 3-7 18-4-7-7-4 18-7Z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><path d="M6 10h12v11H6z"/><path d="M8.5 10V7.5a3.5 3.5 0 0 1 7 0V10"/><path d="M12 15v2"/></symbol>
+    <symbol id="i-team" viewBox="0 0 24 24"><path d="M12 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M5 21a7 7 0 0 1 14 0"/><path d="M5.5 10.5a2.5 2.5 0 0 0 0 5"/><path d="M18.5 10.5a2.5 2.5 0 0 1 0 5"/></symbol>
+  </svg>
+	  <main class="deck">
+	    <section class="slide wide hero-slide">
+	      <div class="hero-banner">
+	        <img src="assets/intro/hero.png" alt="PS / SOP 使用教程">
+	      </div>
+	    </section>
+
+	    <section class="slide wide">
+	      <header class="header">
+	        <div class="num">01</div>
+	        <div>
+	          <h1>PS 是什么 / PS 与 SOP 的区别</h1>
+	          <p class="sub">PS（Personal Statement）用于展示你的个人经历、成长路径与申请动机；<br>而 SOP（Statement of Purpose）更侧重学术背景、研究方向与未来规划。</p>
+	        </div>
+	      </header>
+
+      <div class="ps-sop-grid">
+        <article class="card compare-big">
+          <div>
+            <h2><span class="icon-round"><svg><use href="#i-user"/></svg></span>个人陈述（PS）</h2>
+            <ul>
+              <li><span class="check">✓</span>侧重个人经历与成长路径</li>
+              <li><span class="check">✓</span>解释申请动机与选择原因</li>
+              <li><span class="check">✓</span>展示个人特质与思考方式</li>
+              <li><span class="check">✓</span>突出独特性与价值观</li>
+            </ul>
+          </div>
+          <div class="paper-art illustration"><img class="ps-art" src="assets/section1-ref/ps-doc-art.png" alt="PS 个人陈述插图"></div>
+        </article>
+
+        <div class="vs">VS</div>
+
+        <article class="card compare-big">
+          <div>
+            <h2><span class="icon-round"><svg><use href="#i-cap"/></svg></span>目的陈述（SOP）</h2>
+            <ul>
+              <li><span class="check">✓</span>侧重学术背景与研究经历</li>
+              <li><span class="check">✓</span>明确研究方向与学习目标</li>
+              <li><span class="check">✓</span>展示学术能力与专业潜力</li>
+              <li><span class="check">✓</span>强调未来规划与发展路径</li>
+            </ul>
+          </div>
+          <div class="paper-art illustration"><img class="sop-art" src="assets/section1-ref/sop-doc-art.png" alt="SOP 目的陈述插图"></div>
+        </article>
+      </div>
+
+      <div class="tip"><span class="bulb"><svg><use href="#i-bulb"/></svg></span><span><b>核心差异一句话总结：</b> <span class="tip-copy">PS 以个人经历为主线，解释申请动机；SOP 以学术经历为基础，明确研究兴趣与未来规划。</span></span></div>
+    </section>
+
+    <section class="slide wide">
+      <header class="header">
+        <div class="num">02</div>
+        <div>
+          <h1>填写前的重要提示</h1>
+          <p class="sub">在开始填写前，先确保你的信息清晰、具体，这将直接影响生成内容的质量。</p>
+        </div>
+      </header>
+
+      <div class="tips-five">
+        <article class="soft-card"><div class="icon-round tip-illustration"><img src="assets/tips-new/tip-01.png" alt=""></div><h2>1. 填写真实且具体的信息</h2><p>写清楚做了什么、用了什么方法或工具、取得了什么结果，以及你的具体收获。</p></article>
+        <article class="soft-card"><div class="icon-round tip-illustration red"><img src="assets/tips-new/tip-02.png" alt=""></div><h2>2. 避免只写泛泛的兴趣</h2><p>不要只写“我感兴趣”，尽量用课程、项目、实习或研究经历来支撑动机。</p></article>
+        <article class="soft-card"><div class="icon-round tip-illustration blue"><img src="assets/tips-new/tip-03.png" alt=""></div><h2>3. 专业名词建议使用英文填写</h2><p>学校、课程、项目、职位、技术工具等名称建议用英文填写，系统识别会更准确。</p></article>
+        <article class="soft-card"><div class="icon-round tip-illustration purple"><img src="assets/tips-new/tip-04.png" alt=""></div><h2>4. 内容之间保持一致</h2><p>技能、项目经历、研究兴趣和申请方向之间，需要形成清晰的对应关系。</p></article>
+        <article class="soft-card"><div class="icon-round tip-illustration orange"><img src="assets/tips-new/tip-05.png" alt=""></div><h2>5. 优先填写相关经历</h2><p>强调与你的申请方向最相关、最能突出你能力与潜力的经历和成果。</p></article>
+      </div>
+
+      <div class="tip tip-wide"><span class="bulb"><svg><use href="#i-bulb"/></svg></span><span><b>填写要具体 → 内容越真实 → 表达越有说服力</b><span class="tip-copy">清晰、真实、相关的信息，是写出高质量 PS 的关键。</span></span></div>
+    </section>
+
+    <section class="slide wide">
+      <header class="header">
+        <div class="num">03</div>
+        <div>
+          <h1>常见误区与填写示例对比</h1>
+          <p class="sub">看看下面的常见误区和推荐写法对比，帮你写出更有说服力的内容。</p>
+        </div>
+      </header>
+
+      <div class="mistake-layout">
+        <article class="card small-compare bad">
+          <h2>常见误区（不建议这样写）</h2>
+          <div class="line-row"><span class="check">×</span><span>我对人工智能很感兴趣。</span></div>
+          <div class="line-row"><span class="check">×</span><span>我参加过机器学习项目，也做过数据分析实习。</span></div>
+          <div class="line-row"><span class="check">×</span><span>我觉得排名、课程丰富，所以想申请。</span></div>
+          <div class="line-row"><span class="check">×</span><span>我认为自己适合这个项目，并且能学到很多知识。</span></div>
+          <div class="line-row"><span class="check">×</span><span>我真的很想去贵校学习，拜托给我一个机会！</span></div>
+        </article>
+
+        <div class="match-arrows"><span>↔</span><span>↔</span><span>↔</span><span>↔</span><span>↔</span></div>
+
+        <article class="card small-compare">
+          <h2>推荐写法（建议这样写）</h2>
+          <div class="line-row"><span class="check">✓</span><span>我在课程项目中使用 CNN 处理医学影像后，开始关注 AI 在医疗诊断中的应用。</span></div>
+          <div class="line-row"><span class="check">✓</span><span>这些经历让我掌握了模型训练、数据清洗和结果评估的方法，也明确了继续学习 AI 的方向。</span></div>
+          <div class="line-row"><span class="check">✓</span><span>该项目中机器学习与医疗数据的课程，能帮助我继续深化 AI 在健康领域的应用能力。</span></div>
+          <div class="line-row"><span class="check">✓</span><span>我具备编程和统计背景，且在实践项目中解决过数据不平衡问题，能匹配该项目的培养目标。</span></div>
+          <div class="line-row"><span class="check">✓</span><span>我希望在贵校系统地培养下，将所学知识应用到解决实际问题中，为未来的研究和职业发展打下坚实基础。</span></div>
+        </article>
+      </div>
+
+	      <div class="card why-card why-card-img">
+	        <img src="assets/why/why-flow.png" alt="为什么这样更清晰">
+	      </div>
+
+      <div class="example-pair">
+        <article class="card example">
+          <h2>你在网站中填写的内容（示例）</h2>
+          <p>我做过一个 2D 平台游戏项目，主要负责团队协调、任务分配和进度管理，也参与玩法设计和页面规划。在项目过程中，通过用户调研收集反馈，对游戏体验和视觉效果进行了优化。同时我还参与了视频剪辑、动画制作和 Unity 游戏开发等数字内容与互动媒体相关项目。未来希望申请多媒体和互动媒体方向的研究生项目，继续提升自己的创造力与技术能力。</p>
+        </article>
+        <div class="circle-arrow">→</div>
+        <article class="card example">
+          <h2>AI 生成效果（示例）</h2>
+          <p>One notable project that inspired my pursuit of multimedia entertainment was working on XYZ Adventure, a 2D platformer game. I took on a leadership role in this project, which deepened my expertise in project management and technology implementation. My responsibilities included coordinating team tasks, creating work schedules, and monitoring progress throughout the project's lifecycle. Within the team, I defined key areas such as narrative brainstorming, mechanic design, and role assignments while establishing clear timelines to align with project milestones. During the execution phase, I introduced sprint reviews and issue resolution meetings to track progress and address challenges proactively. Utilizing a standard work breakdown structure supported by thorough documentation and progress tracking also enhanced transparency and accountability. Additionally, I conducted extensive user research to identify target audiences and incorporated their feedback to refine gameplay mechanics and visual elements, which helped me appreciate the importance of user-centric design in multimedia projects.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide wide">
+      <header class="header">
+        <div class="num">04</div>
+        <div>
+          <h1>各板块填写说明（按页面顺序）</h1>
+          <p class="sub">请根据自身情况如实填写以下信息，内容越具体，生成的文书质量越高。</p>
+        </div>
+      </header>
+
+      <div class="module-layout">
+        <div class="form-visual">
+          <img class="module-art" src="assets/section6-icons/module-fill-guide-clean.png" alt="各板块填写说明示意图">
+        </div>
+
+        <div class="module-list">
+          <div class="module-row"><span class="mini-num">01</span><span><b>申请目标：</b>说明你要申请的学校、项目和专业。</span></div>
+          <div class="module-row"><span class="mini-num">02</span><span><b>教育背景：</b>填写学校、专业、学位、GPA 等信息。</span></div>
+          <div class="module-row"><span class="mini-num">03</span><span><b>相关技能：</b>填写你掌握的技能和工具。</span></div>
+          <div class="module-row"><span class="mini-num">04</span><span><b>科研/项目经历：</b>描述项目背景、任务和成果。</span></div>
+          <div class="module-row"><span class="mini-num">05</span><span><b>工作经历：</b>说明实习或工作的职责与产出。</span></div>
+          <div class="module-row"><span class="mini-num">06</span><span><b>申请理由：</b>填写你申请的动机和未来方向。</span></div>
+        </div>
+      </div>
+    </section>
+
+	    <section class="slide wide">
+	      <header class="header">
+	        <div class="num">05</div>
+	        <div>
+	          <h1>生成结果页使用指南</h1>
+	          <p class="sub">生成结果页提供预览、修改与导出等功能，帮助你优化文书内容并生成最终版本。</p>
+        </div>
+      </header>
+
+      <div class="result-grid">
+        <article class="soft-card result-card"><span class="mini-num">01</span><div class="result-icon-wrap"><img src="assets/result-icons/result-d-01.png" alt=""></div><h2>预览文书</h2><p>查看生成的文书内容，整体了解文书结构与信息。</p></article>
+        <article class="soft-card result-card"><span class="mini-num">02</span><div class="result-icon-wrap"><img src="assets/result-icons/result-d-02.png" alt=""></div><h2>判断是否修改</h2><p>评估文书是否需要优化，决定是否进行修改或直接使用。</p></article>
+        <article class="soft-card result-card"><span class="mini-num">03</span><div class="result-icon-wrap"><img src="assets/result-icons/result-d-03.png" alt=""></div><h2>选择修改范围</h2><p>选择需要修改的部分内容，支持全文或局部调整。</p></article>
+        <article class="soft-card result-card"><span class="mini-num">04</span><div class="result-icon-wrap"><img src="assets/result-icons/result-d-04.png" alt=""></div><h2>设置修改方向</h2><p>设定修改要求与方向，如语气、侧重点、结构等。</p></article>
+        <article class="soft-card result-card"><span class="mini-num">05</span><div class="result-icon-wrap"><img src="assets/result-icons/result-d-05.png" alt=""></div><h2>应用修改并优化</h2><p>系统根据设置进行内容优化，生成更符合你需求的版本。</p></article>
+        <article class="soft-card result-card"><span class="mini-num">06</span><div class="result-icon-wrap"><img src="assets/result-icons/result-d-06.png" alt=""></div><h2>导出文档</h2><p>确认无误后导出最终文档，支持多种格式保存与使用。</p></article>
+      </div>
+
+      <div class="tip"><span class="bulb"><svg><use href="#i-bulb"/></svg></span><span><b>使用小提示：</b> <span class="tip-copy">生成结果可多次优化，建议先局部调整，再整体优化，逐步打造最满意的文书。</span></span></div>
+    </section>
+
+    <section class="slide wide service-slide">
+      <header class="header">
+        <div class="num">06</div>
+        <div>
+          <h1>人工润色服务指南</h1>
+          <p class="sub">专业导师为你优化文书表达、逻辑结构和内容深度，让你的申请更出彩。</p>
+        </div>
+      </header>
+
+      <div class="service-top">
+        <article class="card service-box">
+          <h2>我们的服务</h2>
+          <div class="service-grid">
+            <div class="service-mini"><div class="icon-round"><img src="assets/section6-icons/service-01.png" alt=""></div><div><b>优化表达与语言</b><p>提升语言准确性与流畅度，减少语法与用词错误。</p></div></div>
+            <div class="service-mini"><div class="icon-round"><img src="assets/section6-icons/service-02.png" alt=""></div><div><b>调整结构与逻辑</b><p>优化段落结构与逻辑衔接，使内容更清晰、更有说服力。</p></div></div>
+            <div class="service-mini"><div class="icon-round"><img src="assets/section6-icons/service-03.png" alt=""></div><div><b>提升内容深度</b><p>强化学术观点，补充专业视角与深度思考，提升整体质量。</p></div></div>
+            <div class="service-mini"><div class="icon-round"><img src="assets/section6-icons/service-04.png" alt=""></div><div><b>针对申请方向优化</b><p>结合目标院校特点，突出匹配优势，提升个人竞争力。</p></div></div>
+          </div>
+        </article>
+
+        <article class="card service-box calendar">
+          <h2>交付周期</h2>
+          <div class="icon-round"><img src="assets/section6-icons/calendar.png" alt=""></div>
+          <p><b>每份材料</b><br><span class="period-line"><strong>5-7</strong><span class="unit">个工作日</span></span></p>
+          <p>具体交付时间会根据总体材料数量及内容复杂度确定。</p>
+        </article>
+
+        <article class="card service-box">
+          <h2>适用材料</h2>
+          <div class="materials-list">
+            <div class="material-row"><div class="material-badge" data-label="PS"><img src="assets/material-badges/mat-svg-ps.svg" alt="PS"></div><p>个人陈述</p></div>
+            <div class="material-row cv-line"><div class="material-badge" data-label="CV"><img src="assets/material-badges/mat-svg-cv.svg" alt="CV"></div><p>简历</p></div>
+            <div class="material-row sop-line"><div class="material-badge" data-label="SOP"><img src="assets/material-badges/mat-svg-sop.svg" alt="SOP"></div><p>研究计划</p></div>
+          </div>
+        </article>
+      </div>
+
+      <article class="card flow-box">
+        <h2>服务流程</h2>
+        <div class="flow">
+          <div class="flow-step"><div class="icon-round"><img src="assets/section6-icons/flow-01.png" alt=""></div><div><b>01 提交材料</b><p>填写信息并上传材料。</p></div></div>
+          <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 44 12"><path d="M2 6h36"/><path d="m34 2 6 4-6 4"/></svg></div>
+          <div class="flow-step"><div class="icon-round"><img src="assets/section6-icons/flow-02.png" alt=""></div><div><b>02 编辑分配</b><p>了解目标并分配编辑。</p></div></div>
+          <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 44 12"><path d="M2 6h36"/><path d="m34 2 6 4-6 4"/></svg></div>
+          <div class="flow-step"><div class="icon-round"><img src="assets/section6-icons/flow-03.png" alt=""></div><div><b>03 人工润色</b><p>优化表达与结构。</p></div></div>
+          <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 44 12"><path d="M2 6h36"/><path d="m34 2 6 4-6 4"/></svg></div>
+          <div class="flow-step"><div class="icon-round"><img src="assets/section6-icons/flow-04.png" alt=""></div><div><b>04 质量审核</b><p>多轮审核确保质量。</p></div></div>
+          <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 44 12"><path d="M2 6h36"/><path d="m34 2 6 4-6 4"/></svg></div>
+          <div class="flow-step"><div class="icon-round"><img src="assets/section6-icons/flow-05.png" alt=""></div><div><b>05 交付反馈</b><p>交付文档并提供反馈。</p></div></div>
+        </div>
+      </article>
+
+      <div class="card footer-band" id="manual-polish-application">
+        <a class="service-choice" href="#" aria-label="开始写文书">
+          <div class="choice-art"><img src="assets/icons/writing-suggestion.png" alt=""></div>
+          <div>
+            <h2>还没写好？先去写文书</h2>
+            <p>先理清思路，完成初稿再润色，效果更好。</p>
+            <span class="choice-button">开始写文书 <span>→</span></span>
+          </div>
+        </a>
+        <a class="service-choice recommended" href="#manual-polish-application" aria-label="开始人工润色">
+          <div class="choice-art"><img src="assets/icons/fill-suggestion-icon-transparent.png" alt=""></div>
+          <div>
+            <h2>已经写完？开始人工润色</h2>
+            <p>专业导师为你打磨语言与结构，让文书更出彩。</p>
+            <span class="choice-button">开始人工润色 <span>→</span></span>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+  <script>
+    function fitPsTutorial() {
+      const deck = document.querySelector(".deck");
+      if (!deck) return;
+      const designWidth = 1380;
+      const scale = Math.min(1, window.innerWidth / designWidth);
+      deck.style.transform = `scale(${scale})`;
+      document.body.style.width = `${window.innerWidth}px`;
+      document.body.style.height = `${Math.ceil(deck.scrollHeight * scale)}px`;
+      document.documentElement.style.height = document.body.style.height;
+    }
+
+    window.addEventListener("resize", fitPsTutorial);
+    window.addEventListener("load", fitPsTutorial);
+    fitPsTutorial();
+    document.querySelectorAll("img").forEach((img) => img.addEventListener("load", fitPsTutorial, { once: true }));
+    setTimeout(fitPsTutorial, 120);
+    setTimeout(fitPsTutorial, 600);
+  </script>
+</body>
+</html>

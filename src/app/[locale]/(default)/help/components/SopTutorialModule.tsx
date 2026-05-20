@@ -140,6 +140,93 @@ function Card({
 export default function SopTutorialModule() {
   return (
     <div className="space-y-3">
+      <style>{`
+        .sop-compare-panel .border-b.border-red-200,
+        .sop-compare-panel .border-b.border-emerald-200 {
+          font-size: 14px !important;
+          line-height: 1.25 !important;
+          padding-top: 10px !important;
+          padding-bottom: 10px !important;
+        }
+        .sop-compare-panel .space-y-0 {
+          font-size: 10px !important;
+          line-height: 1.35 !important;
+        }
+        .sop-compare-panel .space-y-0 > div {
+          padding-top: 6px !important;
+          padding-bottom: 6px !important;
+        }
+        .sop-compare-panel .space-y-0 span:last-child {
+          font-size: 10px !important;
+          line-height: 1.35 !important;
+        }
+        .sop-compare-panel .space-y-0 .flex.h-5,
+        .sop-compare-panel .space-y-0 .flex.h-4 {
+          width: 18px !important;
+          height: 18px !important;
+          font-size: 9px !important;
+        }
+        .sop-service-panel .font-bold.text-slate-900,
+        .sop-service-panel .text-sm.font-bold.text-slate-900 {
+          font-size: 11px !important;
+          line-height: 1.25 !important;
+        }
+        .sop-service-panel .text-xs.leading-5.text-slate-700,
+        .sop-service-panel .mt-1.text-xs.leading-5.text-slate-700 {
+          font-size: 10px !important;
+          line-height: 1.35 !important;
+        }
+        .sop-service-panel .text-xs.text-slate-700,
+        .sop-service-panel .text-3xl.font-black.text-emerald-700 {
+          font-size: 10px !important;
+          line-height: 1.25 !important;
+        }
+        .sop-service-panel .mt-1.text-3xl.font-black.text-emerald-700 {
+          font-size: 22px !important;
+        }
+        .sop-service-panel .text-xs.font-extrabold.text-emerald-700,
+        .sop-service-panel .text-sm.font-extrabold.text-emerald-700,
+        .sop-service-panel .text-sm.font-extrabold.text-emerald-700 {
+          font-size: 11px !important;
+          line-height: 1.25 !important;
+        }
+        .sop-service-panel .mt-1.5.text-xs.leading-5.text-slate-700,
+        .sop-service-panel .mt-1.5.text-xs.leading-5.text-slate-700 {
+          font-size: 10px !important;
+          line-height: 1.35 !important;
+        }
+        .sop-service-panel .text-sm.font-bold.text-slate-900 {
+          font-size: 11px !important;
+        }
+        .sop-service-panel .text-sm.font-extrabold.text-emerald-700 {
+          font-size: 11px !important;
+        }
+        .sop-service-panel .grid.gap-3 > div,
+        .sop-service-panel .grid.gap-2.5 > div {
+          padding-top: 8px !important;
+          padding-bottom: 8px !important;
+        }
+        .sop-service-panel .flex.h-10.w-10,
+        .sop-service-panel .flex.h-9.w-9 {
+          width: 28px !important;
+          height: 28px !important;
+        }
+        .sop-service-panel .choice-button {
+          font-size: 10px !important;
+          height: 30px !important;
+          margin-top: 10px !important;
+        }
+        .sop-service-panel .footer-band::before {
+          top: 10px !important;
+          font-size: 24px !important;
+          line-height: 1.1 !important;
+        }
+        .sop-service-panel .footer-band {
+          padding-top: 72px !important;
+          padding-bottom: 20px !important;
+          z-index: 2 !important;
+        }
+      `}</style>
       <div className="w-[86%] space-y-3">
         <Card className="overflow-hidden p-3">
           <div className="relative aspect-[2172/724] w-full overflow-hidden rounded-xl">
@@ -248,44 +335,44 @@ export default function SopTutorialModule() {
             description="看看下面的常见误区和推荐写法对比，帮你写出更有说服力的内容。"
           />
 
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+          <div className="sop-compare-panel grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
             <Card className="border-red-200">
-              <div className="border-b border-red-200 bg-red-50 px-5 py-4 text-center text-base font-extrabold text-red-600">
+              <div className="border-b border-red-200 bg-red-50 px-5 py-4 text-center font-extrabold text-red-600" style={{ fontSize: "11px", lineHeight: "1.25" }}>
                 常见误区（不建议这样写）
               </div>
-              <div className="space-y-0 px-5 py-4 text-sm leading-7 text-slate-700">
+              <div className="space-y-0 px-4 py-3 text-slate-700" style={{ fontSize: "9px", lineHeight: "1.3" }}>
                 {wrongExamples.map((text) => (
                   <div
                     key={text}
-                    className="flex items-start gap-3 border-b border-dashed border-slate-200 py-3 last:border-b-0"
+                    className="flex items-start gap-2.5 border-b border-dashed border-slate-200 py-2 last:border-b-0"
                   >
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-red-500 text-sm font-black text-white">
+                    <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-red-500 font-black text-white" style={{ fontSize: "8px" }}>
                       ×
                     </span>
-                    <span>{text}</span>
+                    <span style={{ fontSize: "9px", lineHeight: "1.3" }}>{text}</span>
                   </div>
                 ))}
               </div>
             </Card>
 
             <div className="hidden items-center justify-center lg:flex">
-              <div className="text-3xl font-black text-emerald-700">↔</div>
+              <div className="font-black text-emerald-700" style={{ fontSize: "14px", lineHeight: "1" }}>↔</div>
             </div>
 
             <Card>
-              <div className="border-b border-emerald-200 bg-emerald-50 px-5 py-4 text-center text-base font-extrabold text-emerald-700">
+              <div className="border-b border-emerald-200 bg-emerald-50 px-5 py-4 text-center font-extrabold text-emerald-700" style={{ fontSize: "11px", lineHeight: "1.25" }}>
                 推荐写法（建议这样写）
               </div>
-              <div className="space-y-0 px-5 py-4 text-sm leading-7 text-slate-700">
+              <div className="space-y-0 px-4 py-3 text-slate-700" style={{ fontSize: "9px", lineHeight: "1.3" }}>
                 {goodExamples.map((text) => (
                   <div
                     key={text}
-                    className="flex items-start gap-3 border-b border-dashed border-slate-200 py-3 last:border-b-0"
+                    className="flex items-start gap-2.5 border-b border-dashed border-slate-200 py-2 last:border-b-0"
                   >
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-sm font-black text-white">
+                    <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-600 font-black text-white" style={{ fontSize: "8px" }}>
                       ✓
                     </span>
-                    <span>{text}</span>
+                    <span style={{ fontSize: "9px", lineHeight: "1.3" }}>{text}</span>
                   </div>
                 ))}
               </div>
@@ -402,18 +489,19 @@ export default function SopTutorialModule() {
             description="专业导师为你优化文书表达、逻辑结构和内容深度，让你的申请更出彩。"
           />
 
-          <div className="grid gap-4 xl:grid-cols-[2fr_1fr_1fr]">
+          <div className="sop-service-panel grid gap-4 xl:grid-cols-[2fr_1fr_1fr]">
             <Card className="p-4">
-              <h3 className="mb-4 text-base font-extrabold text-emerald-700">
+              <h3 className="mb-3 font-extrabold text-emerald-700" style={{ fontSize: "11px", lineHeight: "1.25" }}>
                 我们的服务
               </h3>
               <div className="grid gap-3">
                 {serviceItems.map(([title, description, image]) => (
                   <div
                     key={title}
-                    className="grid grid-cols-[46px_minmax(0,1fr)] gap-3 rounded-xl border border-emerald-100 p-3"
+                    className="grid gap-2.5 rounded-xl border border-emerald-100 p-2.5"
+                    style={{ gridTemplateColumns: "clamp(50px, 5vw, 50px) 1fr" }}
                   >
-                    <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-emerald-50">
+                    <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-emerald-50">
                       <Image
                         src={image}
                         alt={title}
@@ -424,8 +512,8 @@ export default function SopTutorialModule() {
                       />
                     </div>
                     <div>
-                      <div className="font-bold text-slate-900">{title}</div>
-                      <p className="mt-1 text-sm leading-6 text-slate-700">
+                      <div className="font-bold text-slate-900" style={{ fontSize: "11px", lineHeight: "1.25" }}>{title}</div>
+                      <p className="mt-1 text-slate-700" style={{ fontSize: "10px", lineHeight: "1.35" }}>
                         {description}
                       </p>
                     </div>
@@ -435,10 +523,10 @@ export default function SopTutorialModule() {
             </Card>
 
             <Card className="flex flex-col items-center justify-center p-4 text-center">
-              <h3 className="mb-4 text-base font-extrabold text-emerald-700">
+              <h3 className="mb-3 font-extrabold text-emerald-700" style={{ fontSize: "11px", lineHeight: "1.25" }}>
                 交付周期
               </h3>
-              <div className="mb-4 flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-emerald-50">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-emerald-50">
                 <Image
                   src={asset("section6-icons/calendar.png")}
                   alt="交付周期"
@@ -448,13 +536,13 @@ export default function SopTutorialModule() {
                   unoptimized
                 />
               </div>
-              <p className="text-sm text-slate-700">每份材料</p>
-              <div className="mt-2 text-4xl font-black text-emerald-700">5-7</div>
-              <p className="text-sm text-slate-700">个工作日</p>
+              <p className="text-slate-700" style={{ fontSize: "10px", lineHeight: "1.3" }}>每份材料</p>
+              <div className="mt-1 font-black text-emerald-700" style={{ fontSize: "22px", lineHeight: "1" }}>5-7</div>
+              <p className="text-slate-700" style={{ fontSize: "10px", lineHeight: "1.3" }}>个工作日</p>
             </Card>
 
             <Card className="p-4">
-              <h3 className="mb-4 text-base font-extrabold text-emerald-700">
+              <h3 className="mb-3 font-extrabold text-emerald-700" style={{ fontSize: "11px", lineHeight: "1.25" }}>
                 适用材料
               </h3>
               <div className="space-y-3">
@@ -482,16 +570,16 @@ export default function SopTutorialModule() {
           </div>
 
           <Card className="mt-5 p-4">
-            <h3 className="mb-4 text-base font-extrabold text-emerald-700">
+            <h3 className="mb-3 font-extrabold text-emerald-700" style={{ fontSize: "11px", lineHeight: "1.25" }}>
               服务流程
             </h3>
-            <div className="grid gap-4 xl:grid-cols-5">
+            <div className="grid gap-1.5 xl:grid-cols-[repeat(5,minmax(0,1fr))]">
               {flowSteps.map(([index, title, description, image]) => (
                 <div
                   key={index}
-                  className="rounded-xl border border-emerald-100 p-4 text-center"
+                  className="rounded-xl border border-emerald-100 px-2 py-1.5 text-center"
                 >
-                  <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-emerald-50">
+                  <div className="mx-auto mb-1 flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-emerald-50">
                     <Image
                       src={image}
                       alt={title}
@@ -501,10 +589,10 @@ export default function SopTutorialModule() {
                       unoptimized
                     />
                   </div>
-                  <div className="font-bold text-slate-900">
+                  <div className="mx-auto whitespace-nowrap font-bold text-slate-900" style={{ fontSize: "10px", lineHeight: "1.15" }}>
                     {index} {title}
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-slate-700">
+                  <p className="mx-auto mt-0.5 max-w-[96%] text-slate-700" style={{ fontSize: "9px", lineHeight: "1.25" }}>
                     {description}
                   </p>
                 </div>
@@ -514,31 +602,31 @@ export default function SopTutorialModule() {
 
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             <Card className="p-4">
-              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
+              <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
                 <Send className="h-5 w-5" />
               </div>
-              <div className="font-bold text-slate-900">提交人工润色申请</div>
-              <p className="mt-2 text-sm leading-6 text-slate-700">
+              <div className="text-sm font-bold text-slate-900">提交人工润色申请</div>
+              <p className="mt-1.5 text-xs leading-5 text-slate-700">
                 一键提交，专业团队为你服务。
               </p>
             </Card>
 
             <Card className="p-4">
-              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
+              <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
                 <ShieldCheck className="h-5 w-5" />
               </div>
-              <div className="font-bold text-slate-900">信息安全保障</div>
-              <p className="mt-2 text-sm leading-6 text-slate-700">
+              <div className="text-sm font-bold text-slate-900">信息安全保障</div>
+              <p className="mt-1.5 text-xs leading-5 text-slate-700">
                 严格保密机制，保护隐私安全。
               </p>
             </Card>
 
             <Card className="p-4">
-              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
+              <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
                 <Users className="h-5 w-5" />
               </div>
-              <div className="font-bold text-slate-900">专业导师团队</div>
-              <p className="mt-2 text-sm leading-6 text-slate-700">
+              <div className="text-sm font-bold text-slate-900">专业导师团队</div>
+              <p className="mt-1.5 text-xs leading-5 text-slate-700">
                 资深导师把关，助你申请更出彩。
               </p>
             </Card>

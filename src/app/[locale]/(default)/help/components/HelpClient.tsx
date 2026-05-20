@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import SopTutorialModule from "./SopTutorialModule";
+import TutorialCenterModule from "./TutorialCenterModule";
 
 import zhMessages from "@/i18n/pages/help/zh.json";
 import enMessages from "@/i18n/pages/help/en.json";
@@ -125,6 +126,7 @@ export default function HelpClient({ locale }: HelpClientProps) {
   const [selectedPageKey, setSelectedPageKey] =
     useState<TutorialPage["key"]>("resume_page_1");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const lastLegacyMainKeyRef = useRef("resume_cv_tutorial");
   const pageRootRef = useRef<HTMLDivElement | null>(null);
   const layoutRef = useRef<HTMLDivElement | null>(null);
   const asideRef = useRef<HTMLElement | null>(null);
@@ -159,6 +161,12 @@ export default function HelpClient({ locale }: HelpClientProps) {
   const goToResumePage = (pageKey: TutorialPage["key"]) => {
     setSelectedMainKey("resume_cv_tutorial");
     setSelectedPageKey(pageKey);
+    setIsMobileMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const goToTutorialCenter = () => {
+    setSelectedMainKey("tutorial_center");
     setIsMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -271,6 +279,16 @@ export default function HelpClient({ locale }: HelpClientProps) {
   };
 
   useEffect(() => {
+    if (selectedMainKey !== "tutorial_center") {
+      lastLegacyMainKeyRef.current = selectedMainKey;
+    }
+  }, [selectedMainKey]);
+
+  useEffect(() => {
+    if (selectedMainKey === "tutorial_center") {
+      return;
+    }
+
     const aside = asideRef.current;
     if (!aside) return;
 
@@ -339,7 +357,7 @@ export default function HelpClient({ locale }: HelpClientProps) {
       window.visualViewport?.removeEventListener("scroll", updateAsideHeight);
       resizeObserver?.disconnect();
     };
-  }, []);
+  }, [selectedMainKey]);
 
   useEffect(() => {
     const footer = document.querySelector("footer") as HTMLElement | null;
@@ -365,8 +383,26 @@ export default function HelpClient({ locale }: HelpClientProps) {
     };
   }, []);
 
+  if (selectedMainKey === "tutorial_center") {
+    return (
+      <TutorialCenterModule
+        onBack={() => setSelectedMainKey(lastLegacyMainKeyRef.current)}
+      />
+    );
+  }
+
   return (
     <div ref={pageRootRef} className="min-h-screen bg-background">
+      <div className="fixed bottom-6 right-6 z-[80]">
+        <Button
+          type="button"
+          onClick={goToTutorialCenter}
+          className="bg-emerald-600 text-white shadow-lg hover:bg-emerald-700"
+        >
+          进入新内容
+        </Button>
+      </div>
+
       <div className="fixed left-4 top-20 z-50 lg:hidden">
         <Button
           variant="outline"
@@ -497,7 +533,7 @@ export default function HelpClient({ locale }: HelpClientProps) {
 
         <main className="flex-1 lg:ml-[30%]">
           <div className="bg-muted/30">
-            <div className="w-[80%] max-w-5xl px-6 py-3">
+            <div className="w-[76%] max-w-4xl px-6 py-3">
               <div className="ml-1 flex items-center gap-2 text-sm text-muted-foreground">
                 <span>{messages.label}</span>
                 <ChevronRight className="h-3 w-3" />
@@ -512,7 +548,7 @@ export default function HelpClient({ locale }: HelpClientProps) {
             </div>
           </div>
 
-          <div className="w-[80%] max-w-5xl px-6 py-8">
+          <div className="w-[76%] max-w-4xl px-6 py-8">
             <div className="mb-8">
               <h1 className="ml-1 mb-3 text-3xl font-bold">
                 {selectedMainKey === "resume_cv_tutorial"
