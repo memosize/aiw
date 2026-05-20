@@ -417,7 +417,7 @@ export default function TutorialCenterModule({
           className="inline-flex items-center gap-2 border-emerald-200 bg-white text-emerald-700 shadow-md hover:bg-emerald-50"
         >
           <ArrowLeft className="h-4 w-4" />
-          {"\u8fd4\u56de\u65e7\u5185\u5bb9"}
+          {"\u8fd4\u56de\u65e7\u9875\u9762"}
         </Button>
       </div>
 

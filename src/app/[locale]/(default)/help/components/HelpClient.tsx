@@ -399,7 +399,7 @@ export default function HelpClient({ locale }: HelpClientProps) {
           onClick={goToTutorialCenter}
           className="bg-emerald-600 text-white shadow-lg hover:bg-emerald-700"
         >
-          进入新内容
+          进入新页面
         </Button>
       </div>
 
