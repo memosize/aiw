@@ -317,7 +317,7 @@ export default function SopTutorialModule() {
                     unoptimized
                   />
                 </div>
-                <h3 className="text-center text-sm font-extrabold leading-6 text-emerald-700">
+                <h3 className="text-center text-xs font-extrabold leading-5 text-emerald-700 md:text-sm">
                   {item.title}
                 </h3>
                 <p className="mt-3 text-sm leading-7 text-slate-700">

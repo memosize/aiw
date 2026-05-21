@@ -71,6 +71,18 @@ export default function TutorialCenterModule({
         });
       };
 
+      const wrapAiChipText = (selector: string) => {
+        doc.querySelectorAll<HTMLElement>(selector).forEach((node) => {
+          if (node.querySelector(".cv-ai-chip-text")) return;
+          const wrapper = doc.createElement("span");
+          wrapper.className = "cv-ai-chip-text";
+          while (node.firstChild) {
+            wrapper.appendChild(node.firstChild);
+          }
+          node.appendChild(wrapper);
+        });
+      };
+
       setStyle(".compare-big h2", {
         fontSize: "16px",
         lineHeight: "1.25",
@@ -120,6 +132,14 @@ export default function TutorialCenterModule({
       setStyle(".tip .bulb svg", {
         width: "36px",
         height: "36px",
+      });
+      wrapAiChipText(".cv-ai-chip");
+      wrapAiChipText(".cv-replica-ai-pill");
+      wrapAiChipText(".cv-inline-pill");
+      setStyle(".cv-ai-chip-text", {
+        display: "inline-block",
+        position: "relative",
+        top: "3px",
       });
       setStyle(".module-row", {
         minHeight: "40px",
@@ -564,12 +584,13 @@ export default function TutorialCenterModule({
               line-height: 1 !important;
             }
             .essmote-tutorial-center .cv-module-table-row.header > span:last-child {
-              justify-self: end !important;
-              text-align: right !important;
+              justify-self: start !important;
+              text-align: left !important;
               align-self: center !important;
               margin-bottom: 0 !important;
               padding-bottom: 0 !important;
               line-height: 1 !important;
+              padding-left: 12px !important;
             }
             .essmote-tutorial-center #panel-ps .deck {
               width: 100% !important;
@@ -714,6 +735,11 @@ export default function TutorialCenterModule({
             .essmote-tutorial-center #panel-ps .tip .bulb svg {
               width: 36px !important;
               height: 36px !important;
+            }
+            .essmote-tutorial-center #panel-ps .cv-ai-chip-text {
+              display: inline-block !important;
+              position: relative !important;
+              top: 3px !important;
             }
             .essmote-tutorial-center #panel-ps .slide.wide .tip {
               min-height: 48px !important;

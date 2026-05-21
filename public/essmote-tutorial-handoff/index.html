@@ -836,7 +836,7 @@
 
     .cv-final-hybrid-row {
       display: grid;
-      grid-template-columns: minmax(280px, .56fr) minmax(0, 1fr);
+      grid-template-columns: minmax(340px, .64fr) minmax(0, .92fr);
       gap: clamp(22px, 2.5cqw, 34px);
       align-items: start;
       padding: 22px 0;
@@ -899,14 +899,14 @@
     }
 
     .cv-final-pair {
-      --pair-card-width: clamp(220px, 19vw, 270px);
+      --pair-card-width: clamp(200px, 17vw, 250px);
       display: grid;
       grid-template-columns: var(--pair-card-width) 28px var(--pair-card-width);
       gap: 5px;
       align-items: center;
       justify-content: end;
       width: 100%;
-      max-width: 720px;
+      max-width: 660px;
       justify-self: end;
     }
 
@@ -2140,6 +2140,7 @@
       line-height: 1.35;
       font-weight: 950;
       white-space: nowrap;
+      padding-top: 4px;
     }
 
     .cv-replica-section {
@@ -2890,6 +2891,12 @@
       white-space: nowrap;
     }
 
+    .cv-ai-chip-text {
+      display: inline-block;
+      position: relative;
+      top: 3px;
+    }
+
     .cv-ai-inset {
       position: static;
       margin-left: auto;
@@ -3267,7 +3274,7 @@
                     <div><div class="cv-replica-label">开始时间 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">▣ 选择开始时间</div></div>
                     <div><div class="cv-replica-label">结束时间 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">▣ 选择结束时间</div></div>
                   </div>
-                  <div class="cv-replica-row"><div class="cv-replica-label">主要贡献 <span class="cv-replica-required">*</span></div><div class="cv-replica-textarea cv-replica-muted">Describe your specific contributions to the project<span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">主要贡献 <span class="cv-replica-required">*</span></div><div class="cv-replica-textarea cv-replica-muted">Describe your specific contributions to the project<span class="cv-ai-chip cv-ai-inset" style="margin-left: -50px;">✧ AI 生成</span></div></div>
                 </div>
                 <div class="cv-replica-helper"><span class="cv-replica-info">i</span><span>请聚焦你的实际工作和成果，避免冗长的论文摘要。</span></div>
               </div>
@@ -3298,7 +3305,7 @@
                   <div class="cv-replica-row"><div class="cv-replica-label">起始时间 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">▣ Select start date</div></div>
                   <div class="cv-replica-row"><div class="cv-replica-label">结束时间 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">▣ Select end date</div></div>
                   <div class="cv-replica-row"><div class="cv-replica-label">活动地点 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">e.g. Shanghai</div></div>
-                  <div class="cv-replica-row"><div class="cv-replica-label">主要内容与贡献 <span class="cv-replica-required">*</span></div><div class="cv-replica-textarea cv-replica-muted">Describe your responsibilities and contributions<span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">主要内容与贡献 <span class="cv-replica-required">*</span></div><div class="cv-replica-textarea cv-replica-muted">Describe your responsibilities and contributions<span class="cv-ai-chip cv-ai-inset" style="margin-left: -50px;">✧ AI 生成</span></div></div>
                 </div>
                 <div class="cv-replica-helper"><span class="cv-replica-info">i</span><span>请用英文填写 3-4 条你在活动中的具体工作和贡献，每条以动词开头，用 · 符号分隔。</span></div>
               </div>
@@ -3343,7 +3350,7 @@
               <div class="cv-replica-layout">
                 <div class="cv-replica-form">
                   <div class="cv-replica-fields">
-                    <div class="cv-replica-row"><div class="cv-replica-label">专业技能 <span class="cv-replica-required">*</span></div><div class="cv-replica-textarea cv-replica-muted">例如：Python, SQL, Excel, PowerPoint, Data Analysis<span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">专业技能 <span class="cv-replica-required">*</span></div><div class="cv-replica-textarea cv-replica-muted">例如：Python, SQL, Excel, PowerPoint, Data Analysis<span class="cv-ai-chip cv-ai-inset" style="margin-left: -50px;">✧ AI 生成</span></div></div>
                     <div class="cv-replica-row"><div class="cv-replica-label">英语能力 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">例如：IELTS 7.0、TOEFL 100、CET-6</div></div>
                     <div class="cv-replica-row"><div class="cv-replica-label">母语 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">例如：Chinese</div></div>
                     <div class="cv-replica-row"><div class="cv-replica-label">其他语言（可选）</div><div class="cv-replica-input cv-replica-muted">例如：Japanese — Basic、French — Intermediate</div></div>
@@ -3390,7 +3397,7 @@
                 </article>
               </div>
               <div class="cv-module-table">
-                <div class="cv-module-table-row header"><span>模块</span><span>状态</span></div>
+                <div class="cv-module-table-row" style="background-color: #f9fafb;"><span>模块</span><span>状态</span></div>
                 <div class="cv-module-table-row"><span><span class="cv-check">✓</span>个人背景</span><span class="cv-status">已填写（建议保留）</span></div>
                 <div class="cv-module-table-row"><span><span class="cv-check">✓</span>教育经历</span><span class="cv-status">已填写（建议保留）</span></div>
                 <div class="cv-module-table-row"><span><span class="cv-check">✓</span>实习 / 工作经历</span><span class="cv-status">已填写（建议保留）</span></div>
@@ -3420,7 +3427,7 @@
               <div class="cv-final-hybrid-row">
                 <div class="cv-final-hybrid-copy">
                   <span class="cv-final-icon">✎</span>
-                  <div>
+                  <div style="width: 200px;">
                     <h3>内容仍可手动修改</h3>
                     <p>预览页面中的所有内容均可编辑。</p>
                     <ul>
@@ -3439,7 +3446,7 @@
               <div class="cv-final-hybrid-row">
                 <div class="cv-final-hybrid-copy">
                   <span class="cv-module-dot-icon"></span>
-                  <div>
+                  <div style="width: 195px;">
                     <h3>右侧可拖动调整模块顺序</h3>
                     <span class="cv-green-tag">重点功能</span>
                     <p>在右侧「布局管理」区域，拖动模块即可调整上下顺序。</p>
@@ -3459,7 +3466,7 @@
               <div class="cv-final-hybrid-row">
                 <div class="cv-final-hybrid-copy">
                   <span class="cv-doc-preview-icon"></span>
-                  <div>
+                  <div style="width: 195px;">
                     <h3>选择模板并预览效果</h3>
                     <p>选择不同模板，预览不同排版效果。</p>
                     <ul>
@@ -3631,8 +3638,8 @@
                     <div class="cv-field-row"><div class="cv-label">国家<span class="cv-required">*</span></div><div class="cv-input">China</div></div>
                     <div class="cv-field-row"><div class="cv-label">起始时间<span class="cv-required">*</span></div><div class="cv-date">▣ Jun 2024</div></div>
                     <div class="cv-field-row"><div class="cv-label">结束时间<span class="cv-required">*</span></div><div class="cv-date">▣ Aug 2024</div></div>
-                    <div class="cv-note-line">中文或英文填写均可，填写后建议点击 <span class="cv-ai-chip">✧ AI 生成</span> 进行优化，优化结果将自动为英文</div>
-                    <div class="cv-field-row cv-tall"><div class="cv-label">具体职责<span class="cv-required">*</span></div><div class="cv-input cv-textarea cv-bullet-box"><div>Assisted in backend API development for internal tools</div><div>Used Java and Spring Boot to build and test service features</div><div>Improved query efficiency and supported cross-team feature&nbsp;delivery</div><span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                    <div class="cv-note-line">中文或英文填写均可，填写后建议点击 <span class="cv-ai-chip" style="margin-left: -50px;">✧ AI 生成</span> 进行优化，优化结果将自动为英文</div>
+                    <div class="cv-field-row cv-tall"><div class="cv-label">具体职责<span class="cv-required">*</span></div><div class="cv-input cv-textarea cv-bullet-box"><div>Assisted in backend API development for internal tools</div><div>Used Java and Spring Boot to build and test service features</div><div>Improved query efficiency and supported cross-team feature&nbsp;delivery</div><span class="cv-ai-chip cv-ai-inset" style="margin-left: -50px;">✧ AI 生成</span></div></div>
                   </div>
                 </div>
                 <div class="cv-helper green"><span class="cv-info-icon">i</span><span>填写框右下角的“AI 生成”可多次使用，建议对比不同版本后，选择最满意的一版，再做少量手动修改即可。</span></div>
@@ -3642,7 +3649,7 @@
                 <ul>
                   <li>围绕三点展开：做了什么、使用了什么方法 / 工具、产生了什么结果或影响</li>
                   <li>不确定英文表达时，可先用 <b>中文或中英混合</b> 描述</li>
-                  <li>点击 <span class="cv-ai-chip">✧ AI 生成</span> 按钮，可优化为专业英文简历表达</li>
+                  <li>点击 <span class="cv-ai-chip" style="margin-left: -50px;">✧ AI 生成</span> 按钮，可优化为专业英文简历表达</li>
                   <li><span>如有多段经历，可点击<span class="cv-inline-pill">添加工作经历</span>继续补充</span></li>
                 </ul>
               </aside>
@@ -3663,7 +3670,7 @@
                     <div class="cv-field-row"><div class="cv-label">开始时间<span class="cv-required">*</span></div><div class="cv-input muted">▣ 选择开始时间</div></div>
                     <div class="cv-field-row"><div class="cv-label">结束时间<span class="cv-required">*</span></div><div class="cv-input muted">▣ 选择结束时间</div></div>
                   </div>
-                  <div class="cv-field-row cv-tall"><div class="cv-label">主要贡献<span class="cv-required">*</span></div><div class="cv-textarea muted">Describe your specific contributions to the project<span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                  <div class="cv-field-row cv-tall"><div class="cv-label">主要贡献<span class="cv-required">*</span></div><div class="cv-textarea muted">Describe your specific contributions to the project<span class="cv-ai-chip cv-ai-inset" style="margin-left: -50px;">✧ AI 生成</span></div></div>
                 </div>
                 <div class="cv-helper"><span class="cv-info-icon">i</span><span>请聚焦你的实际工作和成果，避免冗长的论文摘要。</span></div>
               </div>
@@ -3672,7 +3679,7 @@
                 <ul>
                   <li>项目名称简洁准确，突出研究主题</li>
                   <li>说明你在项目中的具体角色和贡献</li>
-                  <li>可点击 <span class="cv-ai-chip">✧ AI 生成</span> 优化描述内容</li>
+                  <li>可点击 <span class="cv-ai-chip" style="margin-left: -50px;">✧ AI 生成</span> 优化描述内容</li>
                   <li>如有多段经历，点击上方按钮继续添加</li>
                 </ul>
               </aside>
@@ -3692,7 +3699,7 @@
                   <div class="cv-field-row"><div class="cv-label">起始时间<span class="cv-required">*</span></div><div class="cv-input muted">▣ 选择开始时间</div></div>
                   <div class="cv-field-row"><div class="cv-label">结束时间<span class="cv-required">*</span></div><div class="cv-input muted">▣ 选择结束时间</div></div>
                   <div class="cv-field-row"><div class="cv-label">活动地点<span class="cv-required">*</span></div><div class="cv-input muted">e.g. Shanghai</div></div>
-                  <div class="cv-field-row cv-tall"><div class="cv-label">主要内容与贡献<span class="cv-required">*</span></div><div class="cv-textarea muted">Describe your responsibilities and contributions<span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                  <div class="cv-field-row cv-tall"><div class="cv-label">主要内容与贡献<span class="cv-required">*</span></div><div class="cv-textarea muted">Describe your responsibilities and contributions<span class="cv-ai-chip cv-ai-inset" style="margin-left: -50px;">✧ AI 生成</span></div></div>
                 </div>
                 <div class="cv-helper"><span class="cv-info-icon">i</span><span>请用英文填写 3-4 条你在活动中的具体工作和贡献，每条以动词开头，用 · 符号分隔。</span></div>
               </div>
@@ -3738,7 +3745,7 @@
             <div class="cv-layout">
               <div class="cv-form-card">
                 <div class="cv-fields">
-                  <div class="cv-field-row cv-tall"><div class="cv-label">专业技能<span class="cv-required">*</span></div><div class="cv-textarea muted">例如：Python, SQL, Excel, PowerPoint, Data Analysis<span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                  <div class="cv-field-row cv-tall"><div class="cv-label">专业技能<span class="cv-required">*</span></div><div class="cv-textarea muted">例如：Python, SQL, Excel, PowerPoint, Data Analysis<span class="cv-ai-chip cv-ai-inset" style="margin-left: -50px;">✧ AI 生成</span></div></div>
                   <div class="cv-field-row"><div class="cv-label">英语能力<span class="cv-required">*</span></div><div class="cv-input muted">例如：IELTS 7.0、TOEFL 100、CET-6</div></div>
                   <div class="cv-field-row"><div class="cv-label">母语<span class="cv-required">*</span></div><div class="cv-input muted">例如：Chinese</div></div>
                   <div class="cv-field-row"><div class="cv-label">其他语言（可选）</div><div class="cv-input muted">例如：Japanese — Basic、French — Intermediate</div></div>
