@@ -1,0 +1,3850 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>教程中心静态版</title>
+  <style>
+    :root {
+      --green: #079642;
+      --deep: #006f31;
+      --mint: #effaf4;
+      --line: #a8dac0;
+      --soft-line: #d9eee3;
+      --ink: #111827;
+      --text: #26364f;
+      --muted: #68758a;
+      --red: #ff242b;
+      --blue: #2b76e5;
+      --orange: #f27604;
+    }
+
+    * { box-sizing: border-box; }
+
+    .tc-shell,
+    .tc-shell * {
+      min-width: 0;
+    }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--ink);
+      font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", Arial, sans-serif;
+    }
+
+    .tc-shell {
+      display: grid;
+      grid-template-columns: 390px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      width: 1360px;
+      max-width: none;
+      margin: 0 auto;
+      padding: 16px;
+      transform: scale(.77);
+      transform-origin: top center;
+    }
+
+    .tc-sidebar {
+      position: sticky;
+      top: 18px;
+      align-self: start;
+      min-height: calc(100vh - 36px);
+      padding: 14px;
+      border: 1px solid var(--soft-line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 16px 36px rgba(23, 84, 50, .07);
+    }
+
+    .tc-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      width: fit-content;
+      padding: 10px 18px 10px 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(231,248,239,.9));
+      color: var(--green);
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    .tc-brand-mark {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: transparent;
+    }
+
+    .book-mark {
+      position: relative;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      color: var(--green);
+      font-size: 0;
+      background: url("assets/icons/tutorial-book-icon.png") center / contain no-repeat;
+    }
+
+    .tc-side-label {
+      margin: 18px 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .tc-nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .tc-nav button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 44px;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.28;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .tc-nav button:hover {
+      background: #f4fbf7;
+      border-color: var(--soft-line);
+    }
+
+    .tc-nav button.is-active {
+      background: #eaf8f0;
+      border-color: var(--line);
+      color: var(--green);
+      box-shadow: inset 3px 0 0 var(--green);
+    }
+
+    .tc-subnav {
+      display: grid;
+      gap: 8px;
+      margin: 6px 0 14px 28px;
+      padding-left: 12px;
+      border-left: 1px solid #dceee3;
+    }
+
+    .tc-subnav a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.25;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .tc-subnav a::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #a7b1bf;
+      flex: 0 0 auto;
+    }
+
+    .tc-subnav a:hover,
+    .tc-subnav a.is-current {
+      background: #eaf8f0;
+      color: var(--green);
+    }
+
+    .tc-subnav a:hover::before,
+    .tc-subnav a.is-current::before {
+      background: var(--green);
+    }
+
+    .tc-dot {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #eef7f2;
+      color: var(--green);
+      font-size: 18px;
+      flex: 0 0 auto;
+    }
+
+    .tc-main {
+      min-width: 0;
+      align-self: start;
+    }
+
+    .tc-panel {
+      display: none;
+      container-type: inline-size;
+      width: min(100%, 920px);
+      margin: 0 auto;
+    }
+
+    .tc-panel.is-active {
+      display: block;
+    }
+
+    .ps-embed-shell {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      overflow: hidden;
+    }
+
+    .ps-embed-frame {
+      display: block;
+      width: 117.647%;
+      min-height: 6600px;
+      border: 0;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .tc-hero,
+    .tc-section {
+      margin-bottom: 22px;
+      border: 1px solid var(--soft-line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 16px 36px rgba(23, 84, 50, .06);
+      overflow: hidden;
+    }
+
+    .tc-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr);
+      gap: 26px;
+      align-items: center;
+      padding: clamp(28px, 4cqw, 52px);
+    }
+
+    .tc-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 7px 12px;
+      border: 1px solid var(--soft-line);
+      border-radius: 999px;
+      background: #f5fbf8;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    .tc-hero h1 {
+      font-size: clamp(34px, 5cqw, 64px);
+      line-height: 1.08;
+      font-weight: 950;
+    }
+
+    .tc-hero p {
+      margin-top: 16px;
+      color: var(--text);
+      font-size: clamp(16px, 1.7cqw, 22px);
+      line-height: 1.75;
+    }
+
+    .tc-hero-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #fff, #f5fbf8);
+    }
+
+    .tc-mini-form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .tc-field {
+      height: 42px;
+      padding: 0 16px;
+      border: 1px solid #dfe7f0;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+    }
+
+    .tc-save {
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .tc-section {
+      padding: clamp(28px, 4.2cqw, 54px);
+    }
+
+    .tc-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 22px;
+      align-items: start;
+      margin-bottom: clamp(22px, 3cqw, 36px);
+    }
+
+    .tc-num {
+      display: grid;
+      place-items: center;
+      width: clamp(54px, 6cqw, 78px);
+      height: clamp(54px, 6cqw, 78px);
+      border-radius: 16px;
+      color: #fff;
+      background: linear-gradient(145deg, #12a84e, #007d35);
+      box-shadow: 0 13px 26px rgba(0,118,49,.2);
+      font-size: clamp(26px, 3cqw, 42px);
+      font-weight: 950;
+    }
+
+    .tc-head h2 {
+      font-size: clamp(26px, 4cqw, 48px);
+      line-height: 1.18;
+      font-weight: 950;
+    }
+
+    .tc-head p {
+      margin-top: 10px;
+      color: var(--text);
+      font-size: clamp(15px, 1.7cqw, 22px);
+      line-height: 1.7;
+    }
+
+    .tc-grid-3,
+    .tc-grid-4,
+    .tc-grid-5,
+    .tc-grid-6,
+    .tc-two {
+      display: grid;
+      gap: 18px;
+    }
+
+    .tc-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .tc-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .tc-grid-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .tc-grid-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .tc-two { grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); }
+
+    .tc-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.96);
+      box-shadow: 0 12px 26px rgba(23,84,50,.055);
+    }
+
+    .tc-info {
+      padding: 20px;
+    }
+
+    .tc-icon {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      margin-bottom: 14px;
+      background: #eaf7ef;
+      color: var(--green);
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .tc-info h3 {
+      color: var(--green);
+      font-size: clamp(18px, 2cqw, 24px);
+      line-height: 1.35;
+      font-weight: 950;
+    }
+
+    .tc-info p {
+      margin-top: 10px;
+      color: var(--text);
+      font-size: clamp(14px, 1.45cqw, 18px);
+      line-height: 1.75;
+    }
+
+    .tc-flow {
+      display: grid;
+      gap: 12px;
+    }
+
+    .tc-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 14px;
+      align-items: center;
+      padding: 16px 18px;
+      border: 1px solid var(--soft-line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .tc-badge {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .tc-row b {
+      color: var(--green);
+      font-size: clamp(15px, 1.65cqw, 20px);
+    }
+
+    .tc-row p {
+      margin-top: 4px;
+      color: var(--text);
+      font-size: clamp(14px, 1.4cqw, 18px);
+      line-height: 1.58;
+    }
+
+    .tc-warning {
+      display: grid;
+      grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .tc-list-box h3 {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      text-align: center;
+      font-size: clamp(18px, 2cqw, 24px);
+      color: var(--green);
+    }
+
+    .tc-list-box.bad {
+      border-color: #ffb8ba;
+      background: #fffafa;
+    }
+
+    .tc-list-box.bad h3 {
+      color: var(--red);
+      border-color: #ffb8ba;
+      background: #fff4f4;
+    }
+
+    .tc-list-line {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 12px;
+      align-items: center;
+      min-height: 70px;
+      margin: 0 18px;
+      padding: 12px 0;
+      border-bottom: 1px dashed #bbccdc;
+      color: var(--text);
+      font-size: clamp(14px, 1.5cqw, 18px);
+      line-height: 1.55;
+    }
+
+    .tc-list-line:last-child { border-bottom: 0; }
+
+    .tc-check,
+    .tc-x {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .tc-check { background: var(--green); }
+    .tc-x { background: var(--red); }
+
+    .tc-note {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 20px;
+      padding: 18px 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(90deg, #f0fbf5, #fff);
+      color: var(--text);
+      font-size: clamp(15px, 1.55cqw, 20px);
+      line-height: 1.58;
+    }
+
+    .tc-note b { color: var(--green); }
+
+    .tc-ps-compare {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .tc-paper {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 150px;
+      gap: 12px;
+      align-items: center;
+      min-height: 270px;
+      padding: 22px;
+    }
+
+    .tc-paper h3 {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      color: var(--green);
+      font-size: clamp(20px, 2.3cqw, 28px);
+    }
+
+    .tc-paper ul {
+      list-style: none;
+      padding: 0;
+      margin: 18px 0 0;
+      display: grid;
+      gap: 13px;
+      color: var(--text);
+      font-size: clamp(14px, 1.45cqw, 18px);
+      line-height: 1.4;
+    }
+
+    .tc-paper li {
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .tc-paper img {
+      width: 150px;
+      max-width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .tc-tips img,
+    .tc-result img {
+      width: 88px;
+      height: 88px;
+      object-fit: contain;
+      margin: 0 auto 10px;
+      display: block;
+    }
+
+    .tc-tips .tc-info,
+    .tc-result .tc-info {
+      text-align: center;
+      min-height: 260px;
+    }
+
+    .tc-cta {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .tc-action {
+      display: grid;
+      grid-template-columns: 58px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: #fff;
+    }
+
+    .tc-action strong {
+      display: block;
+      color: var(--green);
+      font-size: 20px;
+    }
+
+    .tc-action span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tc-action .tc-pill {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .cv-page {
+      display: grid;
+      gap: 18px;
+    }
+
+    .cv-page-marker {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border: 1px solid #dceee3;
+      border-radius: 8px;
+      background: #f0fbf5;
+      color: var(--green);
+      font-size: clamp(17px, 1.7cqw, 22px);
+      font-weight: 950;
+    }
+
+    .cv-page-marker span {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--green);
+      color: #fff;
+      font-size: 18px;
+      flex: 0 0 auto;
+    }
+
+    .cv-tutorial-pages {
+      display: block;
+    }
+
+    .cv-tutorial-page {
+      display: none;
+      gap: 18px;
+    }
+
+    .cv-tutorial-page.is-active {
+      display: grid;
+    }
+
+    .cv-page-nav {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 4px 0 8px;
+    }
+
+    .cv-page-nav.between {
+      justify-content: space-between;
+    }
+
+    .cv-page-btn {
+      min-width: 150px;
+      min-height: 42px;
+      padding: 9px 18px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .cv-page-btn.secondary {
+      background: #fff;
+      color: var(--green);
+    }
+
+    .cv-title-step {
+      display: inline-grid;
+      place-items: center;
+      min-width: 42px;
+      width: auto;
+      height: 40px;
+      padding: 0 12px;
+      margin-right: 12px;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #10ad50, #00893a);
+      color: #fff;
+      font-size: 28px;
+      font-weight: 950;
+      line-height: 1;
+      vertical-align: .08em;
+      box-shadow: 0 10px 18px rgba(0, 143, 61, .18);
+    }
+
+    .cv-module-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .cv-module-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 38px;
+      padding: 8px 12px;
+      border: 1px solid #e3e8ed;
+      border-radius: 8px;
+      background: #fff;
+      color: #2d343e;
+      font-size: clamp(13px, 1.18cqw, 15px);
+      font-weight: 800;
+    }
+
+    .cv-module-switch {
+      width: 34px;
+      height: 18px;
+      border-radius: 999px;
+      background: #dfe7ee;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .cv-module-switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(20, 32, 46, .18);
+    }
+
+    .cv-module-switch.on {
+      background: var(--green);
+    }
+
+    .cv-module-switch.on::after {
+      left: 19px;
+    }
+
+    .cv-preview-mini {
+      padding: 16px;
+      border: 1px solid #dfe7ee;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 10px 22px rgba(18, 34, 53, .06);
+    }
+
+    .cv-preview-mini h4 {
+      margin: 0 0 10px;
+      color: var(--green);
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .cv-mini-line {
+      height: 7px;
+      margin: 8px 0;
+      border-radius: 999px;
+      background: #e8eef2;
+    }
+
+    .cv-mini-line.green { width: 42%; background: #cdebd9; }
+    .cv-mini-line.short { width: 62%; }
+    .cv-mini-line.mid { width: 80%; }
+
+    .cv-template-grid,
+    .cv-export-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .cv-template-card,
+    .cv-export-card {
+      min-height: 86px;
+      padding: 12px;
+      border: 1px solid #dfe7ee;
+      border-radius: 8px;
+      background: #fff;
+      color: #2d343e;
+      font-size: 13px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .cv-template-card.active,
+    .cv-export-card.active {
+      border-color: var(--green);
+      background: #f0fbf5;
+      color: var(--green);
+    }
+
+    .cv-color-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .cv-color-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 1px #dfe7ee;
+    }
+
+    .cv-color-dot.green { background: #079642; }
+    .cv-color-dot.blue { background: #2b76e5; }
+    .cv-color-dot.black { background: #111827; }
+    .cv-color-dot.orange { background: #f27604; }
+    .cv-color-dot.purple { background: #6d4aff; }
+
+    .cv-final-section {
+      padding: clamp(20px, 2.4cqw, 30px);
+      border: 1px solid #dfe7ee;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .cv-final-hybrid {
+      display: grid;
+      gap: 22px;
+    }
+
+    .cv-final-hybrid-row {
+      display: grid;
+      grid-template-columns: minmax(280px, .56fr) minmax(0, 1fr);
+      gap: clamp(22px, 2.5cqw, 34px);
+      align-items: start;
+      padding: 22px 0;
+      border-bottom: 1px solid #e8edf2;
+    }
+
+    .cv-final-hybrid-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .cv-final-hybrid-copy {
+      display: grid;
+      grid-template-columns: 62px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .cv-final-hybrid-copy h3 {
+      margin: 2px 0 14px;
+      color: #111827;
+      font-size: clamp(20px, 1.95cqw, 27px);
+      line-height: 1.35;
+      font-weight: 950;
+    }
+
+    .cv-final-hybrid-copy p,
+    .cv-final-hybrid-copy li {
+      color: #34445f;
+      font-size: clamp(13px, 1.1cqw, 16px);
+      line-height: 1.85;
+    }
+
+    .cv-final-hybrid-copy ul {
+      display: grid;
+      gap: 10px;
+      margin: 22px 0 0;
+      padding-left: 18px;
+    }
+
+    .cv-final-hybrid-art {
+      display: block;
+      width: 100%;
+      max-width: 790px;
+      height: auto;
+      border-radius: 8px;
+      justify-self: center;
+    }
+
+    .cv-final-hybrid-art.narrow {
+      width: 94%;
+      max-width: 592px;
+      justify-self: start;
+    }
+
+    .cv-final-hybrid-art.template-preview {
+      width: 88%;
+      max-width: 554px;
+      justify-self: start;
+    }
+
+    .cv-final-pair {
+      --pair-card-width: clamp(220px, 19vw, 270px);
+      display: grid;
+      grid-template-columns: var(--pair-card-width) 28px var(--pair-card-width);
+      gap: 5px;
+      align-items: center;
+      justify-content: end;
+      width: 100%;
+      max-width: 720px;
+      justify-self: end;
+    }
+
+    .cv-final-pair-img {
+      display: block;
+      width: var(--pair-card-width);
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .cv-final-pair-arrow {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #11a84d, #00843a);
+      color: #fff;
+      font-size: 19px;
+      line-height: 1;
+      font-weight: 950;
+      box-shadow: 0 8px 16px rgba(7, 150, 66, .18);
+      justify-self: center;
+    }
+
+    .cv-final-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+
+    .cv-final-head .cv-title-step { margin: 0; }
+
+    .cv-final-head h2 {
+      color: #080e18;
+      font-size: clamp(24px, 3cqw, 34px);
+      line-height: 1.15;
+      font-weight: 950;
+    }
+
+    .cv-final-head p {
+      margin-top: 12px;
+      color: #34445f;
+      font-size: clamp(14px, 1.25cqw, 17px);
+      line-height: 1.55;
+    }
+
+    .cv-final-tip {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      max-width: none;
+      box-sizing: border-box;
+      grid-column: 1 / -1;
+      align-self: stretch;
+      margin-top: 22px;
+      padding: 16px 24px;
+      border-radius: 8px;
+      background: #f6f8fa;
+      color: #34445f;
+      font-size: clamp(14px, 1.12cqw, 16px);
+      line-height: 1.6;
+    }
+
+    .cv-final-tip strong {
+      color: var(--green);
+      font-weight: 950;
+      min-width: 52px;
+    }
+
+    .cv-final-tip .cv-info-icon {
+      flex: 0 0 auto;
+    }
+
+    .cv-final-tip .cv-final-tip-text {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .cv-final-icon {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #e8f8ef;
+      color: var(--green);
+      font-size: 23px;
+      font-weight: 950;
+      flex: 0 0 auto;
+    }
+
+    .cv-preview-guide {
+      display: grid;
+      grid-template-columns: minmax(205px, .4fr) minmax(0, .6fr);
+      gap: 24px;
+      align-items: center;
+    }
+
+    .cv-guide-list {
+      display: grid;
+      gap: 30px;
+      border-right: 1px solid #dfe7ee;
+      padding-right: 24px;
+    }
+
+    .cv-guide-item {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .cv-guide-item h3 {
+      margin: 6px 0 10px;
+      color: #101827;
+      font-size: clamp(16px, 1.35cqw, 19px);
+      font-weight: 950;
+    }
+
+    .cv-guide-item p {
+      color: #34445f;
+      font-size: clamp(13px, 1.05cqw, 15px);
+      line-height: 1.65;
+    }
+
+    .cv-module-table {
+      border: 1px solid #dfe7ee;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .cv-module-table-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 150px;
+      gap: 14px;
+      align-items: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border-bottom: 1px solid #e8edf2;
+      color: #101827;
+      font-size: clamp(13px, 1.1cqw, 16px);
+      font-weight: 800;
+    }
+
+    .cv-module-table-row.header {
+      background: #f9fafb;
+      font-weight: 900;
+    }
+
+    .cv-module-table-row:last-child {
+      border-bottom: 0;
+    }
+
+    .cv-check,
+    .cv-empty-check {
+      display: inline-grid;
+      place-items: center;
+      width: 19px;
+      height: 19px;
+      margin-right: 14px;
+      border-radius: 5px;
+      vertical-align: middle;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .cv-check {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .cv-empty-check {
+      border: 2px solid #748096;
+      background: #fff;
+    }
+
+    .cv-status {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: #e9f8ef;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .cv-status.optional {
+      background: #fff2e0;
+      color: #f27604;
+    }
+
+    .cv-module-legend {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 16px 34px;
+      border-top: 1px solid #e8edf2;
+      color: #101827;
+      font-size: 13px;
+      line-height: 1.55;
+      justify-items: center;
+      align-items: center;
+    }
+
+    .cv-module-legend > span {
+      display: grid;
+      grid-template-columns: 24px auto;
+      gap: 10px;
+      align-items: start;
+      justify-content: center;
+      min-width: 112px;
+    }
+
+    .cv-module-legend .cv-check,
+    .cv-module-legend .cv-empty-check,
+    .cv-module-legend .cv-option-check {
+      margin: 1px 0 0;
+    }
+
+    .cv-option-check {
+      display: inline-grid;
+      place-items: center;
+      width: 19px;
+      height: 19px;
+      border-radius: 5px;
+      border: 2px solid #ffc77f;
+      background: #fffaf2;
+    }
+
+    .cv-edit-row {
+      display: grid;
+      grid-template-columns: minmax(190px, .82fr) minmax(0, 1fr) 34px minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid #e8edf2;
+    }
+
+    .cv-edit-row:first-of-type {
+      padding-top: 0;
+    }
+
+    .cv-edit-row:last-of-type {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .cv-edit-copy {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .cv-edit-copy h3 {
+      margin: 6px 0 12px;
+      color: #111827;
+      font-size: clamp(16px, 1.35cqw, 19px);
+      line-height: 1.45;
+      font-weight: 950;
+    }
+
+    .cv-edit-copy p,
+    .cv-edit-copy li {
+      color: #34445f;
+      font-size: clamp(12px, 1cqw, 14px);
+      line-height: 1.65;
+    }
+
+    .cv-edit-copy ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+    }
+
+    .cv-edit-row.showcase {
+      grid-template-columns: minmax(210px, .78fr) minmax(220px, 1fr) 34px minmax(220px, 1fr);
+      gap: clamp(18px, 2.1cqw, 28px);
+      align-items: center;
+      padding: 26px 0;
+    }
+
+    .cv-edit-row.showcase .cv-edit-copy {
+      grid-template-columns: 58px 1fr;
+      gap: 16px;
+    }
+
+    .cv-edit-row.showcase .cv-edit-copy h3 {
+      margin: 4px 0 14px;
+      font-size: clamp(18px, 1.7cqw, 24px);
+      line-height: 1.36;
+    }
+
+    .cv-edit-row.showcase .cv-edit-copy p,
+    .cv-edit-row.showcase .cv-edit-copy li {
+      font-size: clamp(12px, 1.05cqw, 15px);
+      line-height: 1.78;
+    }
+
+    .cv-edit-row.showcase .cv-edit-copy ul {
+      display: grid;
+      gap: 10px;
+      margin-top: 22px;
+      padding-left: 18px;
+    }
+
+    .cv-module-dot-icon,
+    .cv-doc-preview-icon {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #e5f8ee;
+      color: var(--green);
+      flex: 0 0 auto;
+    }
+
+    .cv-module-dot-icon::before {
+      content: "";
+      width: 30px;
+      height: 30px;
+      background:
+        radial-gradient(circle, var(--green) 0 3px, transparent 3.5px) 0 0 / 10px 10px;
+      border-radius: 4px;
+    }
+
+    .cv-doc-preview-icon::before {
+      content: "";
+      width: 28px;
+      height: 34px;
+      border: 3px solid var(--green);
+      border-radius: 4px;
+      background:
+        linear-gradient(var(--green), var(--green)) 7px 11px / 13px 3px no-repeat,
+        linear-gradient(var(--green), var(--green)) 7px 19px / 13px 3px no-repeat;
+      box-sizing: border-box;
+    }
+
+    .cv-green-tag {
+      display: inline-flex;
+      margin: 4px 0 12px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #dff5e7;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .cv-before-after-title {
+      margin-bottom: 10px;
+      color: #34445f;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .cv-edit-row.showcase .cv-before-after-title {
+      margin: 0 0 12px 8px;
+      color: #62708a;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .cv-resume-demo,
+    .cv-order-demo,
+    .cv-template-demo {
+      min-height: 230px;
+      padding: 16px;
+      border: 1px solid #dfe7ee;
+      border-radius: 8px;
+      background: #fff;
+      position: relative;
+    }
+
+    .cv-resume-demo h4,
+    .cv-order-demo h4 {
+      margin: 0 0 18px;
+      color: #101827;
+      font-size: 15px;
+      font-weight: 950;
+    }
+
+    .cv-company {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: #101827;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .cv-resume-demo ul {
+      margin: 18px 0 0;
+      padding-left: 18px;
+      border-top: 1px solid #e5ebf0;
+      padding-top: 16px;
+      color: #111827;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .cv-resume-demo.after ul {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .cv-pencil {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #e8f8ef;
+      color: var(--green);
+      font-size: 17px;
+      font-weight: 950;
+    }
+
+    .cv-final-arrow {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 950;
+    }
+
+    .cv-order-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .cv-order-item {
+      display: grid;
+      grid-template-columns: 26px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      color: #111827;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .cv-order-item.active {
+      border: 1px solid #a9dcff;
+      background: #e6f5ff;
+    }
+
+    .cv-order-item.changed {
+      background: #e7f5ff;
+    }
+
+    .cv-drag {
+      color: #2b76e5;
+      font-size: 16px;
+    }
+
+    .cv-drag-cursor {
+      position: absolute;
+      right: 12px;
+      top: 78px;
+      z-index: 2;
+      color: #111827;
+      font-size: 28px;
+      line-height: 1;
+      filter: drop-shadow(0 2px 2px rgba(15, 23, 42, .12));
+      transform: rotate(-8deg);
+    }
+
+    .cv-sync {
+      margin-top: 18px;
+      color: var(--green);
+      text-align: center;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .cv-order-demo.detailed {
+      min-height: 300px;
+      padding: 24px 18px;
+      box-shadow: inset 0 0 0 1px rgba(223, 231, 238, .35);
+    }
+
+    .cv-order-demo.detailed .cv-order-list {
+      gap: 10px;
+    }
+
+    .cv-order-demo.detailed .cv-order-item {
+      min-height: 38px;
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+
+    .cv-order-demo.detailed .cv-order-item span:first-child {
+      color: #111827;
+      font-size: 16px;
+    }
+
+    .cv-order-demo.detailed .cv-order-item.active {
+      box-shadow: inset 0 0 0 1px #b7e1ff;
+    }
+
+    .cv-order-demo.detailed .cv-order-item.changed {
+      background: #e5f4ff;
+    }
+
+    .cv-sync-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      margin: 18px auto 0;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .cv-sync-pill::before {
+      content: "✓";
+      display: grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .cv-template-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .cv-template-demo {
+      min-height: 250px;
+      padding: 12px;
+      font-size: 11px;
+    }
+
+    .cv-template-demo.compact {
+      display: grid;
+      gap: 8px;
+    }
+
+    .cv-template-demo.pro {
+      display: grid;
+      grid-template-columns: 62px 1fr;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .cv-template-side {
+      background: #203b6b;
+      color: #fff;
+      padding: 12px 8px;
+    }
+
+    .cv-template-body {
+      padding: 12px;
+    }
+
+    .cv-avatar {
+      width: 40px;
+      height: 48px;
+      border-radius: 4px;
+      background: linear-gradient(160deg, #f1c7a5, #253247 65%);
+      margin-bottom: 10px;
+    }
+
+    .cv-template-name {
+      color: #203b6b;
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .cv-template-line {
+      height: 6px;
+      margin: 8px 0;
+      border-radius: 999px;
+      background: #dfe7ee;
+    }
+
+    .cv-template-line.green {
+      width: 38%;
+      background: #cdebd9;
+    }
+
+    .cv-template-check {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-weight: 950;
+    }
+
+    .cv-real-resume {
+      min-height: 350px;
+      padding: 20px 20px 18px;
+      border: 1px solid #dfe7ee;
+      border-radius: 8px;
+      background: #fff;
+      position: relative;
+      color: #182235;
+      box-shadow: 0 1px 0 rgba(15, 23, 42, .02);
+    }
+
+    .cv-real-resume.simple .cv-real-head {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 14px;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #e8edf2;
+    }
+
+    .cv-real-photo {
+      width: 54px;
+      height: 66px;
+      border-radius: 6px;
+      background:
+        radial-gradient(circle at 50% 20%, #f2c4a1 0 16%, transparent 17%),
+        linear-gradient(160deg, transparent 0 42%, #253247 43% 100%),
+        linear-gradient(#edf3f6, #f7fafc);
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .08);
+    }
+
+    .cv-real-name {
+      color: #111827;
+      font-size: 17px;
+      font-weight: 950;
+      line-height: 1.2;
+    }
+
+    .cv-real-role {
+      margin-top: 4px;
+      color: #34445f;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .cv-real-contact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-top: 9px;
+      color: #475569;
+      font-size: 8px;
+      line-height: 1.2;
+    }
+
+    .cv-real-section {
+      padding-top: 13px;
+      border-top: 1px solid #edf2f5;
+      margin-top: 12px;
+    }
+
+    .cv-real-section h5 {
+      margin: 0 0 7px;
+      color: var(--green);
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 950;
+    }
+
+    .cv-real-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 5px;
+      color: #182235;
+      font-size: 9px;
+      line-height: 1.35;
+    }
+
+    .cv-real-line strong {
+      font-size: 10px;
+    }
+
+    .cv-real-resume.pro {
+      display: grid;
+      grid-template-columns: 78px 1fr;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .cv-real-side {
+      padding: 18px 10px;
+      background: #203b6b;
+      color: #fff;
+    }
+
+    .cv-real-side .cv-real-photo {
+      width: 52px;
+      height: 64px;
+      margin: 0 auto 18px;
+      border: 3px solid rgba(255, 255, 255, .9);
+    }
+
+    .cv-real-side p {
+      margin: 8px 0;
+      font-size: 7px;
+      line-height: 1.35;
+      color: rgba(255, 255, 255, .9);
+    }
+
+    .cv-real-body {
+      padding: 20px 17px 16px;
+    }
+
+    .cv-real-resume.pro .cv-real-name {
+      color: #203b6b;
+    }
+
+    .cv-real-resume.pro .cv-real-section h5 {
+      color: #203b6b;
+    }
+
+    .cv-export-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+      gap: 14px;
+      padding-left: clamp(18px, 2.2cqw, 34px);
+    }
+
+    .cv-export-panel {
+      padding: clamp(18px, 2cqw, 26px);
+      border: 1px solid #dfe7ee;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .cv-export-panel h3 {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin: 0 0 18px;
+      color: #111827;
+      font-size: clamp(18px, 1.8cqw, 24px);
+      font-weight: 950;
+    }
+
+    .cv-export-panel.check-panel h3 {
+      padding-left: 48px;
+    }
+
+    .cv-export-checks {
+      display: grid;
+      gap: 0;
+      margin: 12px 0 20px;
+    }
+
+    .cv-export-check {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-left: 48px;
+      min-height: 54px;
+      border-bottom: 1px dashed #ccd6e2;
+      color: #111827;
+      font-size: clamp(14px, 1.25cqw, 18px);
+      font-weight: 800;
+    }
+
+    .cv-export-hint {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 8px;
+      background: #eef9f2;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.7;
+    }
+
+    .cv-format-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .cv-format-card {
+      display: grid;
+      place-items: center;
+      min-height: 140px;
+      padding: 14px 10px;
+      border: 1px solid #dfe7ee;
+      border-radius: 8px;
+      text-align: center;
+      color: #111827;
+    }
+
+    .cv-file-icon {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 58px;
+      margin-bottom: 12px;
+      border-radius: 7px;
+      background: #eb242d;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 950;
+    }
+
+    .cv-file-icon.word { background: #1474ef; }
+    .cv-file-icon.more { background: #8b95a3; }
+
+    .cv-format-card strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 950;
+    }
+
+    .cv-format-card span {
+      display: block;
+      margin-top: 6px;
+      color: #34445f;
+      font-size: 12px;
+    }
+
+    .cv-export-confirm {
+      padding-top: 16px;
+      border-top: 1px solid #dfe7ee;
+      text-align: center;
+      color: #111827;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .cv-export-main-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 56px;
+      margin-top: 16px;
+      border-radius: 8px;
+      background: var(--green);
+      color: #fff;
+      font-size: clamp(18px, 1.8cqw, 24px);
+      font-weight: 950;
+    }
+
+    .cv-shot-hero {
+      position: relative;
+      display: block;
+      min-height: clamp(286px, 30cqw, 358px);
+      padding: clamp(22px, 2.7cqw, 38px);
+      border: 1px solid #e3efe8;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 14px 30px rgba(18, 34, 53, .045);
+      overflow: hidden;
+    }
+
+    .cv-shot-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, .94) 0 30%, rgba(255, 255, 255, .42) 38%, rgba(255, 255, 255, 0) 48%),
+        radial-gradient(circle at 4% 98%, rgba(205, 241, 219, .38), transparent 22%);
+      pointer-events: none;
+    }
+
+    .cv-shot-hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      z-index: 1;
+      height: 24%;
+      background: linear-gradient(0deg, rgba(226, 248, 235, .82), rgba(226, 248, 235, 0));
+      pointer-events: none;
+    }
+
+    .cv-hero-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      image-rendering: auto;
+      transform: none;
+    }
+
+    .cv-hero-copy {
+      position: relative;
+      z-index: 2;
+      width: min(40%, 560px);
+      transform: translateX(14px);
+    }
+
+    .cv-hero-kicker {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding: 9px 16px 9px 10px;
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(231,248,239,.92));
+      color: var(--green);
+      font-size: 14px;
+      font-weight: 950;
+      box-shadow: 0 12px 26px rgba(0, 106, 46, .08), inset 0 1px 0 rgba(255,255,255,.85);
+    }
+
+    .cv-hero-kicker span {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 0;
+      background: url("assets/icons/tutorial-book-icon.png") center / contain no-repeat;
+      color: var(--green);
+      box-shadow: none;
+    }
+
+    .cv-shot-hero h1 {
+      color: #0b1323;
+      font-size: clamp(30px, 3.7cqw, 48px);
+      line-height: 1.08;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .cv-shot-hero h1 strong {
+      color: var(--green);
+      font-weight: inherit;
+    }
+
+    .cv-hero-copy p {
+      max-width: 390px;
+      margin-top: 18px;
+      color: #314057;
+      font-size: clamp(14px, 1.25cqw, 18px);
+      line-height: 1.72;
+    }
+
+    .cv-hero-start {
+      display: inline-flex;
+      align-items: center;
+      gap: 20px;
+      margin-top: 24px;
+      min-height: 44px;
+      padding: 0 26px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #09a74d, #008738);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 950;
+      box-shadow: 0 14px 22px rgba(0, 136, 56, .22);
+    }
+
+    .cv-resume-sheet {
+      position: absolute;
+      top: 4px;
+      left: 42%;
+      width: min(35%, 300px);
+      min-width: 250px;
+      padding: 22px 22px 24px;
+      border: 1px solid #dde6ea;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 22px 44px rgba(27, 72, 50, .14);
+      transform: rotate(2deg);
+    }
+
+    .cv-resume-top {
+      display: grid;
+      grid-template-columns: 1fr 58px;
+      gap: 14px;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #edf1f3;
+    }
+
+    .cv-resume-name {
+      color: #111827;
+      font-size: 20px;
+      font-weight: 950;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .cv-resume-role {
+      margin-top: 6px;
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .cv-resume-avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 34%, #f4c6ad 0 16%, transparent 17%),
+        radial-gradient(circle at 50% 60%, #1e293b 0 22%, transparent 23%),
+        #e9eef1;
+    }
+
+    .cv-resume-lines {
+      display: grid;
+      gap: 7px;
+      margin-top: 16px;
+    }
+
+    .cv-resume-line {
+      height: 6px;
+      border-radius: 999px;
+      background: #e7eef1;
+    }
+
+    .cv-resume-line.green { background: #bfe9cf; }
+    .cv-resume-line.short { width: 60%; }
+    .cv-resume-line.mid { width: 78%; }
+
+    .cv-hero-mini-card {
+      position: absolute;
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 10px;
+      align-items: center;
+      width: 166px;
+      min-height: 76px;
+      padding: 12px 13px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .94);
+      border: 1px solid #edf1f3;
+      box-shadow: 0 16px 30px rgba(27, 72, 50, .11);
+      backdrop-filter: blur(2px);
+    }
+
+    .cv-hero-mini-card b {
+      display: block;
+      color: var(--green);
+      font-size: 14px;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    .cv-hero-mini-card small {
+      display: block;
+      margin-top: 3px;
+      color: #415064;
+      font-size: 10px;
+      line-height: 1.38;
+      font-weight: 700;
+    }
+
+    .cv-mini-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #dff3e8;
+      color: var(--green);
+      font-size: 20px;
+      font-weight: 950;
+    }
+
+    .cv-mini-ai { top: 32px; left: 10%; transform: rotate(-4deg); }
+    .cv-mini-order { top: 142px; left: 6%; transform: rotate(-3deg); }
+    .cv-mini-export { bottom: 4px; left: 20%; transform: rotate(-4deg); }
+    .cv-mini-template { top: 34px; right: 3%; transform: rotate(3deg); }
+    .cv-mini-ats { top: 156px; right: 7%; transform: rotate(-3deg); }
+    .cv-mini-edit { bottom: 28px; right: 5%; transform: rotate(2deg); }
+
+    .cv-hero-paper-plane {
+      position: absolute;
+      left: 22%;
+      bottom: 42px;
+      width: 94px;
+      height: 44px;
+      background: linear-gradient(135deg, rgba(108, 214, 149, .9), rgba(220, 248, 230, .96));
+      clip-path: polygon(0 42%, 100% 0, 58% 100%, 42% 54%);
+      transform: rotate(-16deg);
+      opacity: .75;
+    }
+
+    .cv-shot-feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .cv-shot-card {
+      border: 1px solid #e6ebef;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 14px 30px rgba(18, 34, 53, .05);
+      overflow: hidden;
+    }
+
+    .cv-shot-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .cv-shot-section {
+      padding: clamp(20px, 2.4cqw, 30px);
+    }
+
+    .cv-shot-section img {
+      border: 1px solid #eef1f3;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .cv-shot-note {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 22px;
+      border: 1px solid #dceee3;
+      border-radius: 8px;
+      background: #f4fbf7;
+      color: var(--text);
+      font-size: clamp(16px, 1.35cqw, 20px);
+      line-height: 1.55;
+    }
+
+    .cv-shot-note strong {
+      color: var(--green);
+      font-size: 1.12em;
+    }
+
+    .cv-shot-note span {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--green);
+      color: var(--green);
+      font-weight: 950;
+      flex: 0 0 auto;
+    }
+
+    .cv-replica-feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .cv-replica-feature {
+      display: grid;
+      grid-template-columns: 76px 1fr;
+      gap: 24px;
+      align-items: center;
+      min-height: 166px;
+      padding: 34px 38px;
+      border: 1px solid #dfe6e2;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 14px 30px rgba(20, 32, 46, .045);
+    }
+
+    .cv-replica-symbol {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: #eaf5ef;
+      color: var(--green);
+      font-size: 42px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .cv-replica-feature h2 {
+      color: var(--green);
+      font-size: clamp(21px, 2.05cqw, 28px);
+      line-height: 1.25;
+      font-weight: 950;
+    }
+
+    .cv-replica-feature p {
+      margin-top: 10px;
+      color: #333842;
+      font-size: clamp(14px, 1.24cqw, 17px);
+      line-height: 1.78;
+    }
+
+    .cv-replica-ai-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 9px;
+      border: 1px solid #ffcaa7;
+      border-radius: 999px;
+      background: #fff8f2;
+      color: #df6d3f;
+      font-size: .9em;
+      line-height: 1.35;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .cv-replica-section {
+      padding: clamp(20px, 2.6cqw, 32px);
+      border: 1px solid #e6ebef;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 14px 30px rgba(18, 34, 53, .045);
+      container-type: inline-size;
+    }
+
+    .cv-replica-head {
+      margin-bottom: 18px;
+    }
+
+    .cv-replica-head.inline {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .cv-replica-num {
+      display: grid;
+      place-items: center;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: var(--deep);
+      color: #fff;
+      font-size: 30px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .cv-replica-head h2 {
+      color: #07111d;
+      font-size: clamp(24px, 2.9cqw, 36px);
+      line-height: 1.15;
+      font-weight: 950;
+    }
+
+    .cv-replica-head p {
+      margin-top: 10px;
+      color: #303847;
+      font-size: clamp(14px, 1.35cqw, 17px);
+      line-height: 1.55;
+    }
+
+    .cv-replica-layout {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 274px !important;
+      gap: clamp(16px, 2cqw, 24px) !important;
+      align-items: stretch !important;
+    }
+
+    .cv-replica-form,
+    .cv-replica-advice {
+      border: 1px solid #e5ebef;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .cv-replica-form {
+      min-width: 0;
+      padding: clamp(14px, 1.55cqw, 20px);
+    }
+
+    .cv-replica-advice {
+      min-width: 0;
+      width: 274px;
+      justify-self: end;
+      padding: clamp(20px, 1.95cqw, 25px) clamp(20px, 2cqw, 26px);
+      background: #f8fcfa;
+      border-color: #e3f0e8;
+    }
+
+    .cv-replica-advice h3 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      color: #05070a;
+      font-size: clamp(17px, 1.55cqw, 20px);
+      font-weight: 950;
+    }
+
+    .cv-replica-tip-icon {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #d9f3e3;
+      color: var(--green);
+      font-size: 0;
+      flex: 0 0 auto;
+      overflow: visible;
+    }
+
+    .cv-replica-tip-icon::before {
+      content: "";
+      width: 48px;
+      height: 48px;
+      background: url("assets/icons/fill-suggestion-icon-strong.png") center / contain no-repeat;
+      filter: saturate(1.85) contrast(1.22) brightness(.78);
+    }
+
+    .cv-replica-advice ul {
+      display: grid;
+      gap: 18px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: #30353d;
+      font-size: clamp(13px, 1.12cqw, 15px);
+      line-height: 1.78;
+    }
+
+    .cv-replica-advice li {
+      position: relative;
+      display: block;
+      padding-left: 26px;
+      min-width: 0;
+      white-space: normal;
+      word-break: normal;
+      overflow-wrap: normal;
+    }
+
+    .cv-replica-advice li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .86em;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .cv-replica-advice .cv-replica-ai-pill,
+    .cv-replica-advice .cv-inline-pill {
+      padding: 2px 9px;
+      border-width: 1px;
+      font-size: .86em;
+      line-height: 1.35;
+      vertical-align: .06em;
+    }
+
+    .cv-replica-fields {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 10px !important;
+      min-width: 0;
+    }
+
+    .cv-replica-row {
+      display: grid !important;
+      grid-template-columns: 124px minmax(0, 1fr) !important;
+      gap: 10px !important;
+      align-items: center !important;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .cv-replica-label {
+      color: #05070a;
+      font-size: clamp(13px, 1.2cqw, 15px);
+      font-weight: 950;
+      line-height: 1.35;
+      min-width: 0;
+      align-self: center;
+    }
+
+    .cv-replica-required {
+      color: var(--green);
+      margin-left: 8px;
+    }
+
+    .cv-replica-input,
+    .cv-replica-textarea,
+    .cv-replica-date {
+      display: flex;
+      align-items: center;
+      min-height: 34px;
+      width: 100%;
+      min-width: 0;
+      padding: 6px 11px;
+      border: 1px solid #e2e8ee;
+      border-radius: 8px;
+      background: #fff;
+      color: #2d343e;
+      font-size: clamp(13px, 1.18cqw, 15px);
+      line-height: 1.45;
+      box-shadow: inset 0 1px 0 rgba(20, 32, 46, .025);
+      word-break: keep-all;
+      overflow-wrap: normal;
+    }
+
+    .cv-replica-muted {
+      color: #6f7786;
+    }
+
+    .cv-replica-select {
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cv-replica-date {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-width: 0;
+      border-radius: 999px;
+    }
+
+    .cv-replica-textarea {
+      position: relative;
+      min-height: 58px;
+      align-items: center;
+      gap: 14px;
+      padding-right: 11px;
+      padding-bottom: 6px;
+    }
+
+    .cv-replica-textarea:not(.cv-replica-bullets) {
+      justify-content: space-between;
+    }
+
+    .cv-replica-add {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 34px;
+      margin-bottom: 12px;
+      padding: 0 15px;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      font-size: clamp(14px, 1.25cqw, 16px);
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .cv-replica-helper {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 18px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background: #f5f7f6;
+      color: #333b46;
+      font-size: clamp(12px, 1.08cqw, 14px);
+      line-height: 1.55;
+    }
+
+    .cv-replica-helper strong,
+    .cv-helper b,
+    .cv-final-tip strong {
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .cv-replica-helper > span:last-child,
+    .cv-helper > span:last-child,
+    .cv-final-tip > span {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .cv-replica-helper.green {
+      background: #f2f8f4;
+    }
+
+    .cv-replica-info {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: url("assets/icons/info-note-icon.png") center / contain no-repeat;
+      color: transparent;
+      font-size: 0;
+      flex: 0 0 auto;
+    }
+
+    .cv-replica-note-line {
+      grid-column: auto;
+      margin-left: 134px;
+      color: #697386;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .cv-replica-date-grid {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 10px !important;
+      min-width: 0;
+    }
+
+    .cv-replica-date-grid > div {
+      display: grid;
+      grid-template-columns: 124px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .cv-replica-mini-sections {
+      display: grid;
+      gap: 14px;
+    }
+
+    .cv-replica-bullets {
+      position: relative;
+      display: grid;
+      gap: 10px;
+      align-content: center;
+      align-items: center;
+      grid-template-columns: minmax(0, 1fr);
+      min-height: 126px;
+      padding-right: 11px;
+      padding-bottom: 50px;
+    }
+
+    .cv-replica-bullets div {
+      grid-column: 1;
+    }
+
+    .cv-replica-bullets .cv-ai-inset {
+      position: absolute;
+      right: 12px;
+      bottom: 10px;
+      margin-left: 0;
+    }
+
+    .cv-replica-bullets div::before {
+      content: "•";
+      margin-right: 12px;
+      color: #111827;
+    }
+
+    .cv-replica-split {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 12px !important;
+      min-width: 0;
+    }
+
+    .cv-replica-section.compact {
+      padding: clamp(20px, 2.4cqw, 30px);
+    }
+
+    .cv-replica-section.compact .cv-replica-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .cv-replica-section.compact .cv-replica-layout {
+      grid-template-columns: minmax(0, 1fr) 274px !important;
+    }
+
+    .cv-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+      gap: 28px;
+      align-items: center;
+      padding: clamp(30px, 4cqw, 56px);
+      border: 1px solid #e6ebef;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 14px 30px rgba(18, 34, 53, .06);
+    }
+
+    .cv-hero h1 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(40px, 5.2cqw, 72px);
+      line-height: 1.08;
+      font-weight: 950;
+    }
+
+    .cv-hero p {
+      margin-top: 16px;
+      color: #303847;
+      font-size: clamp(18px, 1.85cqw, 26px);
+      line-height: 1.65;
+    }
+
+    .cv-hero-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 22px;
+    }
+
+    .cv-step-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid #cfe8db;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .75);
+      color: var(--green);
+      font-size: clamp(13px, 1.05cqw, 15px);
+      font-weight: 900;
+      white-space: nowrap;
+      box-shadow: 0 8px 18px rgba(7, 150, 66, .055);
+    }
+
+    .cv-hero-preview {
+      padding: 24px;
+      border: 1px solid #dceee3;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #fff, #f8fcfa);
+    }
+
+    .cv-resume-paper {
+      padding: 26px;
+      border: 1px solid #d2e2da;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 12px 28px rgba(18, 34, 53, .08);
+    }
+
+    .cv-resume-name {
+      margin-bottom: 18px;
+      color: var(--green);
+      font-size: 28px;
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .cv-resume-line {
+      height: 8px;
+      margin: 9px 0;
+      border-radius: 999px;
+      background: #e8eef2;
+    }
+
+    .cv-resume-line.short { width: 60%; }
+    .cv-resume-line.mid { width: 78%; }
+    .cv-resume-line.green { width: 42%; background: #cdebd9; }
+
+    .cv-feature-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .cv-feature {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      gap: 20px;
+      align-items: center;
+      min-height: 172px;
+      padding: 24px;
+      border: 1px solid #e6ebef;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 14px 30px rgba(18, 34, 53, .06);
+    }
+
+    .cv-feature-icon {
+      display: grid;
+      place-items: center;
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: #eaf7ef;
+      color: var(--green);
+      font-size: 46px;
+    }
+
+    .cv-feature h2 {
+      margin: 0;
+      color: var(--green);
+      font-size: clamp(24px, 2.3cqw, 34px);
+      line-height: 1.25;
+      font-weight: 950;
+    }
+
+    .cv-feature p {
+      margin-top: 10px;
+      color: #38404c;
+      font-size: clamp(16px, 1.45cqw, 22px);
+      line-height: 1.65;
+    }
+
+    .cv-form-section {
+      padding: clamp(28px, 4cqw, 48px);
+      border: 1px solid #e6ebef;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 14px 30px rgba(18, 34, 53, .06);
+      container-type: inline-size;
+    }
+
+    .cv-title {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(34px, 4.2cqw, 54px);
+      line-height: 1.12;
+      font-weight: 950;
+    }
+
+    .cv-title .cv-order {
+      display: grid;
+      place-items: center;
+      width: clamp(50px, 5.4cqw, 70px);
+      height: clamp(50px, 5.4cqw, 70px);
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: clamp(24px, 2.5cqw, 34px);
+      flex: 0 0 auto;
+    }
+
+    .cv-subtitle {
+      margin: 14px 0 28px;
+      color: #303847;
+      font-size: clamp(18px, 1.85cqw, 28px);
+      line-height: 1.6;
+    }
+
+    .cv-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(330px, 36%);
+      gap: clamp(28px, 3.2cqw, 44px);
+      align-items: stretch;
+    }
+
+    .cv-form-card,
+    .cv-advice {
+      border: 1px solid #e7ecef;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .cv-form-card {
+      overflow: hidden;
+      padding: 28px 36px;
+    }
+
+    .cv-advice {
+      padding: 40px 36px;
+      background: #f8fcfa;
+      border-color: #e3f0e8;
+    }
+
+    .cv-advice-head {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 34px;
+      color: var(--ink);
+      font-size: clamp(24px, 2.4cqw, 34px);
+      font-weight: 950;
+    }
+
+    .cv-advice-icon {
+      display: grid;
+      place-items: center;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background: #d9f3e3;
+      color: var(--green);
+      font-size: 0;
+      flex: 0 0 auto;
+      overflow: visible;
+    }
+
+    .cv-advice-icon::before {
+      content: "";
+      width: 74px;
+      height: 74px;
+      background: url("assets/icons/fill-suggestion-icon-strong.png") center / contain no-repeat;
+      filter: saturate(1.85) contrast(1.22) brightness(.78);
+    }
+
+    .cv-advice ul {
+      display: grid;
+      gap: 24px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: #2c3440;
+      font-size: clamp(15px, 1.12cqw, 19px);
+      line-height: 1.78;
+      word-break: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .cv-advice li {
+      display: grid;
+      grid-template-columns: 12px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .cv-advice li > span,
+    .cv-advice li b {
+      word-break: normal;
+    }
+
+    .cv-advice li::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      margin-top: .72em;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .cv-required {
+      color: var(--green);
+      margin-left: 6px;
+    }
+
+    .cv-add-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 50px;
+      padding: 0 28px;
+      margin-bottom: 24px;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      font-size: clamp(18px, 1.8cqw, 24px);
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .cv-inline-pill {
+      display: inline-flex;
+      align-items: center;
+      margin: 0 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      font-size: .86em;
+      font-weight: 900;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
+    .cv-plus {
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 300;
+    }
+
+    .cv-fields {
+      display: grid;
+      gap: 22px;
+    }
+
+    .cv-field-row {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 24px;
+      align-items: center;
+    }
+
+    .cv-field-row.cv-tall {
+      align-items: start;
+    }
+
+    .cv-label {
+      color: #05070a;
+      font-size: clamp(18px, 1.75cqw, 26px);
+      font-weight: 950;
+      line-height: 1.35;
+    }
+
+    .cv-input,
+    .cv-textarea,
+    .cv-date {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-height: 58px;
+      padding: 0 30px;
+      border: 1px solid #e3e8ed;
+      border-radius: 8px;
+      background: #fff;
+      color: #272f3b;
+      font-size: clamp(18px, 1.6cqw, 25px);
+      line-height: 1.5;
+      box-shadow: inset 0 1px 0 rgba(20, 32, 46, .025);
+    }
+
+    .cv-input.muted,
+    .cv-textarea.muted {
+      color: #687386;
+    }
+
+    .cv-select {
+      justify-content: space-between;
+    }
+
+    .cv-date {
+      display: inline-flex;
+      width: auto;
+      min-width: 190px;
+      border-radius: 999px;
+      gap: 14px;
+    }
+
+    .cv-date-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .cv-textarea {
+      position: relative;
+      min-height: 126px;
+      align-items: flex-start;
+      padding-top: 20px;
+      padding-bottom: 58px;
+    }
+
+    .cv-ai-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border: 1px solid #ffcfae;
+      border-radius: 999px;
+      background: #fff8f2;
+      color: #fa6f16;
+      font-size: clamp(14px, 1.25cqw, 18px);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .cv-ai-inset {
+      position: static;
+      margin-left: auto;
+    }
+
+    .cv-replica-textarea .cv-ai-inset,
+    .cv-textarea .cv-ai-inset {
+      gap: 5px;
+      min-height: 28px;
+      padding: 4px 11px;
+      border-width: 1px;
+      font-size: clamp(12px, 1cqw, 14px);
+      line-height: 1.2;
+    }
+
+    .cv-helper {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 24px;
+      padding: 18px 24px;
+      border-radius: 8px;
+      background: #f6f8f7;
+      color: #333c49;
+      font-size: clamp(13px, 1.08cqw, 15px);
+      line-height: 1.55;
+    }
+
+    .cv-helper.green {
+      background: #f1f8f3;
+    }
+
+    .cv-info-icon {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: url("assets/icons/info-note-icon.png") center / contain no-repeat;
+      color: transparent;
+      font-size: 0;
+      flex: 0 0 auto;
+    }
+
+    .cv-note-line {
+      grid-column: 2;
+      margin-top: -8px;
+      color: #6b7280;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .cv-bullet-box {
+      display: grid;
+      gap: 12px;
+      padding: 20px 26px;
+    }
+
+    .cv-bullet-box div {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 12px;
+    }
+
+    .cv-bullet-box div::before {
+      content: "•";
+      color: #0f172a;
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    @container (max-width: 760px) {
+      .cv-replica-feature-grid,
+      .cv-replica-layout,
+      .cv-replica-section.compact .cv-replica-layout,
+      .cv-preview-guide,
+      .cv-edit-row,
+      .cv-export-wrap,
+      .cv-template-pair,
+      .cv-format-grid,
+      .cv-module-legend {
+        grid-template-columns: 1fr !important;
+      }
+      .cv-guide-list {
+        border-right: 0;
+        padding-right: 0;
+      }
+      .cv-final-arrow {
+        margin: 0 auto;
+        transform: rotate(90deg);
+      }
+      .cv-module-table-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 14px 18px;
+      }
+      .cv-replica-row,
+      .cv-replica-date-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .cv-replica-note-line {
+        grid-column: 1;
+        margin-left: 0;
+      }
+      .cv-shot-hero {
+        grid-template-columns: 1fr;
+      }
+      .cv-hero-art {
+        min-height: 330px;
+      }
+      .cv-resume-sheet {
+        left: 34%;
+        width: min(48%, 320px);
+      }
+      .cv-hero-mini-card {
+        width: 190px;
+      }
+      .cv-shot-feature-grid {
+        grid-template-columns: 1fr;
+      }
+      .cv-hero,
+      .cv-layout {
+        grid-template-columns: 1fr;
+      }
+      .cv-feature-grid {
+        grid-template-columns: 1fr;
+      }
+      .cv-field-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .cv-note-line {
+        grid-column: 1;
+      }
+      .cv-date-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .cv-replica-layout,
+      .cv-replica-section.compact .cv-replica-layout,
+      .cv-replica-row,
+      .cv-replica-date-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .cv-replica-note-line,
+      .cv-note-line {
+        grid-column: 1;
+        margin-left: 0;
+      }
+      .cv-replica-input,
+      .cv-replica-textarea,
+      .cv-replica-date {
+        white-space: normal;
+        word-break: keep-all;
+        overflow-wrap: break-word;
+      }
+    }
+
+    @container (max-width: 980px) {
+      .tc-grid-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .tc-grid-4, .tc-grid-6 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .tc-hero, .tc-two, .tc-warning, .tc-ps-compare { grid-template-columns: 1fr; }
+      .tc-paper { grid-template-columns: 1fr; }
+      .tc-paper img { margin: 0 auto; }
+    }
+
+    @media (max-width: 720px) {
+      .tc-shell { grid-template-columns: 1fr; padding: 14px; }
+      .tc-sidebar { position: relative; top: 0; min-height: 0; }
+      .tc-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .tc-subnav {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: 0;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .tc-nav, .tc-grid-3, .tc-grid-4, .tc-grid-5, .tc-grid-6, .tc-cta { grid-template-columns: 1fr; }
+      .tc-head { grid-template-columns: 1fr; }
+      .tc-action { grid-template-columns: 48px 1fr; }
+      .tc-action .tc-pill { grid-column: 1 / -1; text-align: center; }
+      .cv-shot-hero {
+        padding: 22px;
+      }
+      .cv-hero-art {
+        display: grid;
+        gap: 12px;
+        min-height: 0;
+      }
+      .cv-resume-sheet,
+      .cv-hero-mini-card,
+      .cv-hero-paper-plane {
+        position: relative;
+        inset: auto;
+        left: auto;
+        right: auto;
+        top: auto;
+        bottom: auto;
+        width: 100%;
+        min-width: 0;
+        transform: none;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="tc-shell">
+    <aside class="tc-sidebar">
+      <div class="tc-brand"><span class="tc-brand-mark book-mark"></span><span>教程中心</span></div>
+      <div class="tc-side-label">文档工具</div>
+      <nav class="tc-nav" aria-label="教程导航">
+        <button class="is-active" data-panel="cv"><span class="tc-dot">CV</span>简历 CV 教程</button>
+        <div class="tc-subnav" aria-label="简历教程页码">
+          <a class="is-current" href="#cv-page-1" data-cv-goto="1">第1页：基础信息与主要经历</a>
+          <a href="#cv-page-2" data-cv-goto="2">第2页：经历补充与 AI 优化</a>
+          <a href="#cv-page-3" data-cv-goto="3">第3页：预览、编辑与导出</a>
+        </div>
+        <button data-panel="ps"><span class="tc-dot">PS</span>PS/SOP 教程</button>
+      </nav>
+    </aside>
+
+    <main class="tc-main">
+      <section class="tc-panel is-active" id="panel-cv">
+        <div class="cv-page">
+          <section class="cv-shot-hero">
+            <img class="cv-hero-bg" src="assets/cv-hero/resume-cv-hero-clean.png" alt="">
+            <div class="cv-hero-copy">
+              <div class="cv-hero-kicker"><span class="book-mark"></span>教程中心</div>
+              <h1><strong>简历 CV</strong> 使用教程</h1>
+              <p>从填写信息、内容优化到预览导出，带你高效完成一份清晰、专业的英文简历。</p>
+              <div class="cv-hero-start">立即开始 <span>→</span></div>
+            </div>
+          </section>
+
+          <div class="cv-tutorial-pages">
+          <section class="cv-tutorial-page is-active" id="cv-page-1" data-cv-page="1">
+
+          <section class="cv-replica-feature-grid" aria-label="简历功能提示">
+            <article class="cv-replica-feature">
+              <div class="cv-replica-symbol">✦</div>
+              <div>
+                <h2>AI 生成可多次尝试</h2>
+                <p>带有 <span class="cv-replica-ai-pill">✧ AI 生成</span> 按钮的输入框可多次生成，可对比后选择最优版本。</p>
+              </div>
+            </article>
+            <article class="cv-replica-feature">
+              <div class="cv-replica-symbol">✎</div>
+              <div>
+                <h2>预览页仍可手动修改</h2>
+                <p>生成后可直接切换到预览与排版，但预览阶段不再支持 <span class="cv-replica-ai-pill">✧ AI 生成</span>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section class="cv-replica-section">
+            <header class="cv-replica-head">
+              <h2><span class="cv-title-step">1</span>填写基础信息</h2>
+              <p>请填写你的基本信息，包括姓名、联系方式、邮箱、当前身份、所在城市。</p>
+            </header>
+            <div class="cv-replica-layout">
+              <div class="cv-replica-form">
+                <div class="cv-replica-fields">
+                  <div class="cv-replica-row"><div class="cv-replica-label">姓名 <span class="cv-replica-required">*</span></div><div class="cv-replica-input">Zhang Tongxue</div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">联系方式 <span class="cv-replica-required">*</span></div><div class="cv-replica-input">+86 138 0000 0000</div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">邮箱 <span class="cv-replica-required">*</span></div><div class="cv-replica-input">zhang@gmail.com</div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">当前身份 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-select">BSc in Computer Science <span>⌄</span></div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">所在城市 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-select">Beijing <span>⌄</span></div></div>
+                </div>
+                <div class="cv-replica-helper"><span class="cv-replica-info">i</span><span>LinkedIn、GitHub 有就填，没有不影响简历。</span></div>
+              </div>
+              <aside class="cv-replica-advice">
+                <h3><span class="cv-replica-tip-icon">♢</span><span>填写建议</span></h3>
+                <ul>
+                  <li>姓名建议填写英文或拼音</li>
+                  <li><strong>学校、专业、城市、国家等专有名词建议使用英文</strong></li>
+                  <li>邮箱建议使用 Gmail 或学校邮箱</li>
+                  <li>手机号请使用国际格式填写（如中国大陆 +86，美国 +1）</li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <section class="cv-replica-section">
+            <header class="cv-replica-head">
+              <h2><span class="cv-title-step">2</span>教育经历</h2>
+              <p>请填写你的教育经历，包括学校信息、学位、时间等详细信息。</p>
+            </header>
+            <div class="cv-replica-layout">
+              <div class="cv-replica-split">
+                <div class="cv-replica-form">
+                  <div class="cv-replica-add">＋ 添加教育经历</div>
+                  <div class="cv-replica-fields">
+                    <div class="cv-replica-row"><div class="cv-replica-label">学校英文名 <span class="cv-replica-required">*</span></div><div class="cv-replica-input">Peking University</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">城市 <span class="cv-replica-required">*</span></div><div class="cv-replica-input">Beijing</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">国家 <span class="cv-replica-required">*</span></div><div class="cv-replica-input">China</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">学位 <span class="cv-replica-required">*</span></div><div class="cv-replica-input">Bachelor of Arts in Psychology</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">入学时间 <span class="cv-replica-required">*</span></div><div class="cv-replica-date">▣ Sep 2021</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">毕业时间（预计） <span class="cv-replica-required">*</span></div><div class="cv-replica-date">▣ Jun 2025</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">GPA 或排名 <span class="cv-replica-required">*</span></div><div class="cv-replica-input">3.8/4.0 or Top 10%</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">相关课程（可选）</div><div class="cv-replica-input">Advanced Statistics, Research Methods, Cognitive Psychology</div></div>
+                  </div>
+                </div>
+                <div class="cv-replica-helper green"><span class="cv-replica-info">i</span><strong>说明：</strong><span>教育经历越清晰，系统在生成简历和文书时，对你学术背景的判断就越准确。</span></div>
+              </div>
+              <aside class="cv-replica-advice">
+                <h3><span class="cv-replica-tip-icon">♢</span><span>填写建议</span></h3>
+                <ul>
+                  <li>点击 <span class="cv-inline-pill">添加教育经历</span> 按钮，可添加多段学历（如本科 + 硕士）</li>
+                  <li>学校名称、专业名称、学位名称 <strong>直接使用英文填写</strong></li>
+                  <li><strong>GPA</strong> 可填写分数或排名（如 3.7/4.0，Top 10%）</li>
+                  <li>相关课程填写与你申请方向 <strong>最相关的 3-5 门</strong> 即可</li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <section class="cv-replica-section">
+            <header class="cv-replica-head">
+              <h2><span class="cv-title-step">3</span>实习 / 工作经历</h2>
+              <p>请填写你的实习 / 工作经历，包括公司信息、职位、时间及具体职责。</p>
+            </header>
+            <div class="cv-replica-layout">
+              <div class="cv-replica-split">
+                <div class="cv-replica-form">
+                  <div class="cv-replica-add">＋ 添加工作经历</div>
+                  <div class="cv-replica-fields">
+                    <div class="cv-replica-row"><div class="cv-replica-label">公司名称 <span class="cv-replica-required">*</span></div><div class="cv-replica-input">Tencent Technology Co., Ltd.</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">职位名称 <span class="cv-replica-required">*</span></div><div class="cv-replica-input">Software Engineer Intern</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">城市 <span class="cv-replica-required">*</span></div><div class="cv-replica-input">Shenzhen</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">国家 <span class="cv-replica-required">*</span></div><div class="cv-replica-input">China</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">起始时间 <span class="cv-replica-required">*</span></div><div class="cv-replica-date">▣ Jun 2024</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">结束时间 <span class="cv-replica-required">*</span></div><div class="cv-replica-date">▣ Aug 2024</div></div>
+                    <div class="cv-replica-note-line">中文或英文填写均可，填写后建议点击 <span class="cv-replica-ai-pill">✧ AI 生成</span> 进行优化，优化结果将自动为英文</div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">具体职责 <span class="cv-replica-required">*</span></div><div class="cv-replica-textarea cv-replica-bullets"><div>Assisted in backend API development for internal tools</div><div>Used Java and Spring Boot to build and test service features</div><div>Improved query efficiency and supported cross-team feature&nbsp;delivery</div><span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                  </div>
+                </div>
+                <div class="cv-replica-helper green"><span class="cv-replica-info">i</span><span>填写框右下角的“AI 生成”可多次使用，建议对比不同版本后，选择最满意的一版，再做少量手动修改即可。</span></div>
+              </div>
+              <aside class="cv-replica-advice">
+                <h3><span class="cv-replica-tip-icon">♢</span><span>填写建议</span></h3>
+                <ul>
+                  <li>围绕三点展开：做了什么、使用了什么方法 / 工具、产生了什么结果或影响（如有）</li>
+                  <li>不确定英文表达时，可先用 <strong>中文或中英混合</strong> 描述</li>
+                  <li>点击 <span class="cv-replica-ai-pill">✧ AI 生成</span> 按钮，可优化为专业英文简历表达</li>
+                  <li>如有多段经历，可点击<span class="cv-inline-pill">添加工作经历</span>继续补充</li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <div class="cv-page-nav">
+            <button class="cv-page-btn" type="button" data-cv-goto="2">下一页：经历补充与 AI 优化</button>
+          </div>
+          </section>
+
+          <section class="cv-tutorial-page" id="cv-page-2" data-cv-page="2">
+
+          <section class="cv-replica-section">
+            <header class="cv-replica-head">
+              <h2><span class="cv-title-step">4</span>科研 / 项目经历</h2>
+              <p>请填写你的科研经历，包括项目信息、研究内容、贡献和成果等详细信息。</p>
+            </header>
+            <div class="cv-replica-layout">
+              <div class="cv-replica-form">
+                <div class="cv-replica-add">＋ 添加科研项目</div>
+                <div class="cv-replica-fields">
+                  <div class="cv-replica-row"><div class="cv-replica-label">研究名称 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">例：Deep Learning for Medical Image Analysis</div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">研究单位 / 实验室（可选）</div><div class="cv-replica-input cv-replica-muted">例：AI Lab, Tsinghua University</div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">项目类型 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-select cv-replica-muted">选择项目类型 <span>⌄</span></div></div>
+                  <div class="cv-replica-date-grid">
+                    <div><div class="cv-replica-label">开始时间 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">▣ 选择开始时间</div></div>
+                    <div><div class="cv-replica-label">结束时间 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">▣ 选择结束时间</div></div>
+                  </div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">主要贡献 <span class="cv-replica-required">*</span></div><div class="cv-replica-textarea cv-replica-muted">Describe your specific contributions to the project<span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                </div>
+                <div class="cv-replica-helper"><span class="cv-replica-info">i</span><span>请聚焦你的实际工作和成果，避免冗长的论文摘要。</span></div>
+              </div>
+              <aside class="cv-replica-advice">
+                <h3><span class="cv-replica-tip-icon">♢</span><span>填写建议</span></h3>
+                <ul>
+                  <li>项目名称简洁准确，突出研究主题</li>
+                  <li>说明你在项目中的具体角色和贡献</li>
+                  <li>可点击 <span class="cv-replica-ai-pill">✧ AI 生成</span> 优化描述内容</li>
+                  <li>如有多段经历，点击上方按钮继续添加</li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <section class="cv-replica-section">
+            <header class="cv-replica-head">
+              <h2><span class="cv-title-step">5</span>活动 / 志愿经历</h2>
+              <p>请填写你的课外活动、社团参与、志愿服务、竞赛等经历。</p>
+            </header>
+            <div class="cv-replica-layout">
+              <div class="cv-replica-form">
+                <div class="cv-replica-add">＋ 添加活动经历</div>
+                <div class="cv-replica-fields">
+                  <div class="cv-replica-row"><div class="cv-replica-label">活动名称 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">e.g. Student Union Executive Committee</div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">你的角色 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">e.g. Team Leader, Volunteer, Member</div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">活动类型 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-select cv-replica-muted">Select activity type <span>⌄</span></div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">起始时间 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">▣ Select start date</div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">结束时间 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">▣ Select end date</div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">活动地点 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">e.g. Shanghai</div></div>
+                  <div class="cv-replica-row"><div class="cv-replica-label">主要内容与贡献 <span class="cv-replica-required">*</span></div><div class="cv-replica-textarea cv-replica-muted">Describe your responsibilities and contributions<span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                </div>
+                <div class="cv-replica-helper"><span class="cv-replica-info">i</span><span>请用英文填写 3-4 条你在活动中的具体工作和贡献，每条以动词开头，用 · 符号分隔。</span></div>
+              </div>
+              <aside class="cv-replica-advice">
+                <h3><span class="cv-replica-tip-icon">♢</span><span>填写建议</span></h3>
+                <ul>
+                  <li>用于填写课外活动、社团参与、志愿服务、竞赛等经历。</li>
+                  <li>支持填写多条活动或志愿经历，如内容不够，可点击 <span class="cv-inline-pill">添加活动经历</span> 按钮继续补充。</li>
+                  <li>填写重点不在于“活动多”，而在于你在活动中的角色和实际做了哪些事情。</li>
+                  <li>同样支持中文填写，填写后可点击填写框右下角的“AI 生成”按钮转为英文描述。</li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <div class="cv-replica-mini-sections">
+            <section class="cv-replica-section compact">
+              <header class="cv-replica-head">
+                <div><h2><span class="cv-title-step">6</span>获奖情况</h2><p>请填写奖学金、竞赛奖项或荣誉称号等信息。</p></div>
+              </header>
+              <div class="cv-replica-layout">
+                <div class="cv-replica-form">
+                  <div class="cv-replica-fields">
+                    <div class="cv-replica-row"><div class="cv-replica-label">奖项名称 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">e.g. National Scholarship, First Prize in Mathematical Modeling</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">获奖年份 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-select cv-replica-muted">Select year <span>⌄</span></div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">授予机构（可选）</div><div class="cv-replica-input cv-replica-muted">e.g. Ministry of Education, Tsinghua University</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">排名 / 比例（可选）</div><div class="cv-replica-input cv-replica-muted">e.g. Top 5%, Top 10</div></div>
+                  </div>
+                  <div class="cv-replica-helper"><span class="cv-replica-info">i</span><span>优先填写含金量较高、与你申请方向相关的奖项。</span></div>
+                </div>
+                <aside class="cv-replica-advice">
+                  <h3><span class="cv-replica-tip-icon">♢</span><span>填写建议</span></h3>
+                  <ul><li>奖项名称尽量写完整</li><li>如有排名或比例可一并填写</li><li>优先填写含金量较高的奖项</li></ul>
+                </aside>
+              </div>
+            </section>
+
+            <section class="cv-replica-section compact">
+              <header class="cv-replica-head">
+                <div><h2><span class="cv-title-step">7</span>技能语言</h2><p>请填写您的专业技能、编程语言、外语水平等信息。</p></div>
+              </header>
+              <div class="cv-replica-layout">
+                <div class="cv-replica-form">
+                  <div class="cv-replica-fields">
+                    <div class="cv-replica-row"><div class="cv-replica-label">专业技能 <span class="cv-replica-required">*</span></div><div class="cv-replica-textarea cv-replica-muted">例如：Python, SQL, Excel, PowerPoint, Data Analysis<span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">英语能力 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">例如：IELTS 7.0、TOEFL 100、CET-6</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">母语 <span class="cv-replica-required">*</span></div><div class="cv-replica-input cv-replica-muted">例如：Chinese</div></div>
+                    <div class="cv-replica-row"><div class="cv-replica-label">其他语言（可选）</div><div class="cv-replica-input cv-replica-muted">例如：Japanese — Basic、French — Intermediate</div></div>
+                  </div>
+                  <div class="cv-replica-helper"><span class="cv-replica-info">i</span><span>建议使用逗号分隔技能，语言请注明熟练程度。</span></div>
+                </div>
+                <aside class="cv-replica-advice">
+                  <h3><span class="cv-replica-tip-icon">♢</span><span>填写建议</span></h3>
+                  <ul><li>技能请使用逗号分隔</li><li>语言请注明考试成绩或熟练程度</li><li>优先填写与申请方向相关的技能</li></ul>
+                </aside>
+              </div>
+            </section>
+          </div>
+
+          <div class="cv-page-nav between">
+            <button class="cv-page-btn secondary" type="button" data-cv-goto="1">上一页：基础信息</button>
+            <button class="cv-page-btn" type="button" data-cv-goto="3">下一页：预览、编辑与导出</button>
+          </div>
+          </section>
+
+          <section class="cv-tutorial-page" id="cv-page-3" data-cv-page="3">
+
+          <section class="cv-final-section">
+            <header class="cv-final-head">
+              <span class="cv-title-step">8</span>
+              <div>
+                <h2>预览页面使用说明</h2>
+                <p>进入预览页面后，可继续检查简历整体效果，并确认需要展示的模块。</p>
+              </div>
+            </header>
+            <div class="cv-preview-guide">
+              <div class="cv-guide-list">
+                <article class="cv-guide-item">
+                  <span class="cv-final-icon">◉</span>
+                  <div><h3>勾选需要展示的模块</h3><p>在预览页面中，您可以勾选或取消勾选模块，决定哪些内容展示在最终简历中。</p></div>
+                </article>
+                <article class="cv-guide-item">
+                  <span class="cv-final-icon">☒</span>
+                  <div><h3>未勾选的模块不会显示</h3><p>未勾选的模块将不会出现在最终简历中，简历将只展示您选择的内容。</p></div>
+                </article>
+                <article class="cv-guide-item">
+                  <span class="cv-final-icon">↓</span>
+                  <div><h3>确认无误后再继续</h3><p>请先确认所有展示内容无误后，再进行预览、编辑与导出操作。</p></div>
+                </article>
+              </div>
+              <div class="cv-module-table">
+                <div class="cv-module-table-row header"><span>模块</span><span>状态</span></div>
+                <div class="cv-module-table-row"><span><span class="cv-check">✓</span>个人背景</span><span class="cv-status">已填写（建议保留）</span></div>
+                <div class="cv-module-table-row"><span><span class="cv-check">✓</span>教育经历</span><span class="cv-status">已填写（建议保留）</span></div>
+                <div class="cv-module-table-row"><span><span class="cv-check">✓</span>实习 / 工作经历</span><span class="cv-status">已填写（建议保留）</span></div>
+                <div class="cv-module-table-row"><span><span class="cv-check">✓</span>科研 / 项目经历</span><span class="cv-status">已填写（建议保留）</span></div>
+                <div class="cv-module-table-row"><span><span class="cv-check">✓</span>活动经历</span><span class="cv-status">已填写（建议保留）</span></div>
+                <div class="cv-module-table-row"><span><span class="cv-empty-check"></span>获奖情况</span><span class="cv-status optional">可选</span></div>
+                <div class="cv-module-table-row"><span><span class="cv-check">✓</span>技能语言</span><span class="cv-status">已填写（建议保留）</span></div>
+                <div class="cv-module-legend">
+                  <span><span class="cv-check">✓</span>已勾选：<br>将在简历中显示</span>
+                  <span><span class="cv-empty-check"></span>未勾选：<br>不会显示</span>
+                  <span><span class="cv-option-check"></span><span><span class="cv-status optional">可选</span><br>按需选择</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="cv-final-tip"><span class="cv-info-icon">i</span><strong>说明：</strong><span class="cv-final-tip-text">您可以随时返回上一步修改内容，或直接在预览页面调整模块的展示状态。</span></div>
+          </section>
+
+          <section class="cv-final-section">
+            <header class="cv-final-head">
+              <span class="cv-title-step">9</span>
+              <div>
+                <h2>预览与编辑</h2>
+                <p>你可以自由编辑内容、调整模块顺序和选择模板，打造最适合自己的简历。</p>
+              </div>
+            </header>
+            <div class="cv-final-hybrid">
+              <div class="cv-final-hybrid-row">
+                <div class="cv-final-hybrid-copy">
+                  <span class="cv-final-icon">✎</span>
+                  <div>
+                    <h3>内容仍可手动修改</h3>
+                    <p>预览页面中的所有内容均可编辑。</p>
+                    <ul>
+                      <li>修改时间、措辞、细节</li>
+                      <li>增删经历，补充项目亮点</li>
+                      <li>优化句子，使表达更准确</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="cv-final-pair" aria-label="修改前后内容对比示意">
+                  <img class="cv-final-pair-img" src="assets/cv-screens/final-piece-01.png" alt="修改前：实习经历">
+                  <span class="cv-final-pair-arrow">→</span>
+                  <img class="cv-final-pair-img" src="assets/cv-screens/final-piece-03.png" alt="修改后：实习经历">
+                </div>
+              </div>
+              <div class="cv-final-hybrid-row">
+                <div class="cv-final-hybrid-copy">
+                  <span class="cv-module-dot-icon"></span>
+                  <div>
+                    <h3>右侧可拖动调整模块顺序</h3>
+                    <span class="cv-green-tag">重点功能</span>
+                    <p>在右侧「布局管理」区域，拖动模块即可调整上下顺序。</p>
+                    <ul>
+                      <li>拖动即可自由调整模块位置</li>
+                      <li>调整后，简历内容顺序将同步更新</li>
+                      <li>所见即所得，实时预览最终效果</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="cv-final-pair" aria-label="拖动调整模块顺序示意">
+                  <img class="cv-final-pair-img" src="assets/cv-screens/final-piece-02.png" alt="调整前：模块顺序">
+                  <span class="cv-final-pair-arrow">→</span>
+                  <img class="cv-final-pair-img" src="assets/cv-screens/final-piece-04.png" alt="调整后：模块顺序">
+                </div>
+              </div>
+              <div class="cv-final-hybrid-row">
+                <div class="cv-final-hybrid-copy">
+                  <span class="cv-doc-preview-icon"></span>
+                  <div>
+                    <h3>选择模板并预览效果</h3>
+                    <p>选择不同模板，预览不同排版效果。</p>
+                    <ul>
+                      <li>模板影响整体风格和版式</li>
+                      <li>可切换简约、专业、学术等风格</li>
+                      <li>不同模板设置不影响内容</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="cv-final-pair" aria-label="不同简历模板预览示意">
+                  <img class="cv-final-pair-img" src="assets/cv-screens/final-piece-05.png" alt="模板预览：简约风格">
+                  <span class="cv-final-pair-arrow">→</span>
+                  <img class="cv-final-pair-img" src="assets/cv-screens/final-piece-06.png" alt="模板预览：专业风格">
+                </div>
+              </div>
+            </div>
+            <div class="cv-final-tip"><span class="cv-info-icon">i</span><strong>提示</strong><span class="cv-final-tip-text">所有修改和顺序调整均为实时生效，可随时预览和调整，直到满意后再导出简历。</span></div>
+          </section>
+
+          <section class="cv-final-section">
+            <header class="cv-final-head">
+              <span class="cv-title-step">10</span>
+              <div>
+                <h2>导出简历</h2>
+                <p>最后一步，完成检查并导出简历，支持多种格式，方便投递与分享。</p>
+              </div>
+            </header>
+            <div class="cv-export-wrap">
+              <article class="cv-export-panel check-panel">
+                <h3>导出前检查建议</h3>
+                <div class="cv-export-checks">
+                  <div class="cv-export-check"><span class="cv-check">✓</span>确认联系方式准确</div>
+                  <div class="cv-export-check"><span class="cv-check">✓</span>检查英文表达自然</div>
+                  <div class="cv-export-check"><span class="cv-check">✓</span>确保结构完整清晰</div>
+                  <div class="cv-export-check"><span class="cv-check">✓</span>建议预览再导出一次</div>
+                </div>
+              </article>
+              <article class="cv-export-panel">
+                <h3><span class="cv-final-icon">↓</span>导出为多种格式</h3>
+                <div class="cv-format-grid">
+                  <div class="cv-format-card"><div class="cv-file-icon">PDF</div><strong>导出为 PDF</strong><span>保持排版不变</span></div>
+                  <div class="cv-format-card"><div class="cv-file-icon word">W</div><strong>导出为 Word</strong><span>可编辑文档</span></div>
+                  <div class="cv-format-card"><div class="cv-file-icon more">...</div><strong>更多格式</strong><span>RTF / TXT 等</span></div>
+                </div>
+                <div class="cv-export-confirm">ⓘ 确认无误后即可导出简历</div>
+                <div class="cv-export-main-btn">↓ 导出简历</div>
+              </article>
+            </div>
+          </section>
+
+          <div class="cv-page-nav">
+            <button class="cv-page-btn secondary" type="button" data-cv-goto="2">上一页：经历补充与 AI 优化</button>
+          </div>
+          </section>
+          </div>
+
+          <div class="cv-legacy-content" hidden>
+          <section class="cv-hero">
+            <div>
+              <span class="tc-kicker">Resume Tutorial</span>
+              <h1>简历 CV 使用教程</h1>
+              <p>从基础信息、教育经历、实习项目到技能语言，按页面顺序填写，帮助你快速生成结构清晰、重点明确的英文简历。</p>
+              <div class="cv-hero-steps">
+                <span class="cv-step-chip">1 基础信息</span>
+                <span class="cv-step-chip">2 教育经历</span>
+                <span class="cv-step-chip">3 工作 / 项目</span>
+                <span class="cv-step-chip">4 技能语言</span>
+                <span class="cv-step-chip">5 预览导出</span>
+              </div>
+            </div>
+            <div class="cv-hero-preview" aria-label="简历预览示意">
+              <div class="cv-resume-paper">
+                <div class="cv-resume-name">Alex Chen</div>
+                <div class="cv-resume-line green"></div>
+                <div class="cv-resume-line mid"></div>
+                <div class="cv-resume-line short"></div>
+                <div class="cv-resume-line green"></div>
+                <div class="cv-resume-line"></div>
+                <div class="cv-resume-line mid"></div>
+                <div class="cv-resume-line"></div>
+                <div class="cv-resume-line short"></div>
+                <div class="cv-resume-line green"></div>
+                <div class="cv-resume-line"></div>
+                <div class="cv-resume-line mid"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="cv-feature-grid">
+            <article class="cv-feature">
+              <div class="cv-feature-icon">✦</div>
+              <div><h2>AI 生成可多次尝试</h2><p>带有 <span class="cv-ai-chip">✧ AI 生成</span> 按钮的输入框可多次生成，对比后选择最优版本。</p></div>
+            </article>
+            <article class="cv-feature">
+              <div class="cv-feature-icon">✎</div>
+              <div><h2>预览页仍可手动修改</h2><p>生成后可切换到预览与排版，继续手动调整细节。</p></div>
+            </article>
+          </section>
+
+          <section class="cv-form-section">
+            <h1 class="cv-title"><span class="cv-order">01</span><span>填写基础信息</span></h1>
+            <p class="cv-subtitle">请填写你的基本信息，包括姓名、联系方式、邮箱、当前身份、所在城市。</p>
+            <div class="cv-layout">
+              <div class="cv-form-card">
+                <div class="cv-fields">
+                  <div class="cv-field-row"><div class="cv-label">姓名<span class="cv-required">*</span></div><div class="cv-input">Zhang Tongxue</div></div>
+                  <div class="cv-field-row"><div class="cv-label">联系方式<span class="cv-required">*</span></div><div class="cv-input">+86 138 0000 0000</div></div>
+                  <div class="cv-field-row"><div class="cv-label">邮箱<span class="cv-required">*</span></div><div class="cv-input">zhang@gmail.com</div></div>
+                  <div class="cv-field-row"><div class="cv-label">当前身份<span class="cv-required">*</span></div><div class="cv-input cv-select">BSc in Computer Science <span>⌄</span></div></div>
+                  <div class="cv-field-row"><div class="cv-label">所在城市<span class="cv-required">*</span></div><div class="cv-input cv-select">Beijing <span>⌄</span></div></div>
+                </div>
+                <div class="cv-helper"><span class="cv-info-icon">i</span><span>LinkedIn、GitHub 有就填，没有不影响简历。</span></div>
+              </div>
+              <aside class="cv-advice">
+                <div class="cv-advice-head"><span class="cv-advice-icon">♢</span><span>填写建议</span></div>
+                <ul>
+                  <li>姓名建议填写英文或拼音</li>
+                  <li><b>学校、专业、城市、国家等专有名词建议使用英文</b></li>
+                  <li>邮箱建议使用 Gmail 或学校邮箱</li>
+                  <li>手机号请使用国际格式填写（如中国大陆 +86，美国 +1）</li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <section class="cv-form-section">
+            <h1 class="cv-title"><span class="cv-order">02</span><span>教育经历</span></h1>
+            <p class="cv-subtitle">请填写你的教育经历，包括学校信息、学位、时间等详细信息。</p>
+            <div class="cv-layout">
+              <div>
+                <div class="cv-form-card">
+                  <div class="cv-add-button"><span class="cv-plus">＋</span><span>添加教育经历</span></div>
+                  <div class="cv-fields">
+                    <div class="cv-field-row"><div class="cv-label">学校英文名<span class="cv-required">*</span></div><div class="cv-input">Peking University</div></div>
+                    <div class="cv-field-row"><div class="cv-label">城市<span class="cv-required">*</span></div><div class="cv-input">Beijing</div></div>
+                    <div class="cv-field-row"><div class="cv-label">国家<span class="cv-required">*</span></div><div class="cv-input">China</div></div>
+                    <div class="cv-field-row"><div class="cv-label">学位<span class="cv-required">*</span></div><div class="cv-input">Bachelor of Arts in Psychology</div></div>
+                    <div class="cv-field-row"><div class="cv-label">入学时间<span class="cv-required">*</span></div><div class="cv-date">▣ Sep 2021</div></div>
+                    <div class="cv-field-row"><div class="cv-label">毕业时间（预计）<span class="cv-required">*</span></div><div class="cv-date">▣ Jun 2025</div></div>
+                    <div class="cv-field-row"><div class="cv-label">GPA 或排名<span class="cv-required">*</span></div><div class="cv-input">3.8/4.0 or Top 10%</div></div>
+                    <div class="cv-field-row"><div class="cv-label">相关课程（可选）</div><div class="cv-input">Advanced Statistics, Research Methods, Cognitive Psychology</div></div>
+                  </div>
+                </div>
+                <div class="cv-helper green"><span class="cv-info-icon">i</span><b>说明：</b><span>教育经历越清晰，系统在生成简历和文书时，对你学术背景的判断就越准确。</span></div>
+              </div>
+              <aside class="cv-advice">
+                <div class="cv-advice-head"><span class="cv-advice-icon">♢</span><span>填写建议</span></div>
+                <ul>
+                  <li><span>点击 <span class="cv-inline-pill">添加教育经历</span> 按钮，可添加多段学历</span></li>
+                  <li><span>学校名称、专业名称、学位名称建议 <b>直接使用英文填写</b></span></li>
+                  <li><span><b>GPA</b> 可填写分数或排名（如 3.7/4.0，Top 10%）</span></li>
+                  <li><span>相关课程填写与你申请方向 <b>最相关的 3-5 门</b> 即可</span></li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <section class="cv-form-section">
+            <h1 class="cv-title"><span class="cv-order">03</span><span>实习 / 工作经历</span></h1>
+            <p class="cv-subtitle">请填写你的实习 / 工作经历，包括公司信息、职位、时间及具体职责。</p>
+            <div class="cv-layout">
+              <div>
+                <div class="cv-form-card">
+                  <div class="cv-add-button"><span class="cv-plus">＋</span><span>添加工作经历</span></div>
+                  <div class="cv-fields">
+                    <div class="cv-field-row"><div class="cv-label">公司名称<span class="cv-required">*</span></div><div class="cv-input">Tencent Technology Co., Ltd.</div></div>
+                    <div class="cv-field-row"><div class="cv-label">职位名称<span class="cv-required">*</span></div><div class="cv-input">Software Engineer Intern</div></div>
+                    <div class="cv-field-row"><div class="cv-label">城市<span class="cv-required">*</span></div><div class="cv-input">Shenzhen</div></div>
+                    <div class="cv-field-row"><div class="cv-label">国家<span class="cv-required">*</span></div><div class="cv-input">China</div></div>
+                    <div class="cv-field-row"><div class="cv-label">起始时间<span class="cv-required">*</span></div><div class="cv-date">▣ Jun 2024</div></div>
+                    <div class="cv-field-row"><div class="cv-label">结束时间<span class="cv-required">*</span></div><div class="cv-date">▣ Aug 2024</div></div>
+                    <div class="cv-note-line">中文或英文填写均可，填写后建议点击 <span class="cv-ai-chip">✧ AI 生成</span> 进行优化，优化结果将自动为英文</div>
+                    <div class="cv-field-row cv-tall"><div class="cv-label">具体职责<span class="cv-required">*</span></div><div class="cv-input cv-textarea cv-bullet-box"><div>Assisted in backend API development for internal tools</div><div>Used Java and Spring Boot to build and test service features</div><div>Improved query efficiency and supported cross-team feature&nbsp;delivery</div><span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                  </div>
+                </div>
+                <div class="cv-helper green"><span class="cv-info-icon">i</span><span>填写框右下角的“AI 生成”可多次使用，建议对比不同版本后，选择最满意的一版，再做少量手动修改即可。</span></div>
+              </div>
+              <aside class="cv-advice">
+                <div class="cv-advice-head"><span class="cv-advice-icon">♢</span><span>填写建议</span></div>
+                <ul>
+                  <li>围绕三点展开：做了什么、使用了什么方法 / 工具、产生了什么结果或影响</li>
+                  <li>不确定英文表达时，可先用 <b>中文或中英混合</b> 描述</li>
+                  <li>点击 <span class="cv-ai-chip">✧ AI 生成</span> 按钮，可优化为专业英文简历表达</li>
+                  <li><span>如有多段经历，可点击<span class="cv-inline-pill">添加工作经历</span>继续补充</span></li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <section class="cv-form-section">
+            <h1 class="cv-title"><span class="cv-order">04</span><span>科研 / 项目经历</span></h1>
+            <p class="cv-subtitle">请填写你的科研经历，包括项目信息、研究内容、贡献和成果等详细信息。</p>
+            <div class="cv-layout">
+              <div class="cv-form-card">
+                <div class="cv-add-button"><span class="cv-plus">＋</span><span>添加科研项目</span></div>
+                <div class="cv-fields">
+                  <div class="cv-field-row"><div class="cv-label">研究名称<span class="cv-required">*</span></div><div class="cv-input muted">例：Deep Learning for Medical Image Analysis</div></div>
+                  <div class="cv-field-row"><div class="cv-label">研究单位 / 实验室（可选）</div><div class="cv-input muted">例：AI Lab, Tsinghua University</div></div>
+                  <div class="cv-field-row"><div class="cv-label">项目类型<span class="cv-required">*</span></div><div class="cv-input cv-select muted">选择项目类型 <span>⌄</span></div></div>
+                  <div class="cv-date-grid">
+                    <div class="cv-field-row"><div class="cv-label">开始时间<span class="cv-required">*</span></div><div class="cv-input muted">▣ 选择开始时间</div></div>
+                    <div class="cv-field-row"><div class="cv-label">结束时间<span class="cv-required">*</span></div><div class="cv-input muted">▣ 选择结束时间</div></div>
+                  </div>
+                  <div class="cv-field-row cv-tall"><div class="cv-label">主要贡献<span class="cv-required">*</span></div><div class="cv-textarea muted">Describe your specific contributions to the project<span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                </div>
+                <div class="cv-helper"><span class="cv-info-icon">i</span><span>请聚焦你的实际工作和成果，避免冗长的论文摘要。</span></div>
+              </div>
+              <aside class="cv-advice">
+                <div class="cv-advice-head"><span class="cv-advice-icon">♢</span><span>填写建议</span></div>
+                <ul>
+                  <li>项目名称简洁准确，突出研究主题</li>
+                  <li>说明你在项目中的具体角色和贡献</li>
+                  <li>可点击 <span class="cv-ai-chip">✧ AI 生成</span> 优化描述内容</li>
+                  <li>如有多段经历，点击上方按钮继续添加</li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <section class="cv-form-section">
+            <h1 class="cv-title"><span class="cv-order">05</span><span>活动 / 志愿经历</span></h1>
+            <p class="cv-subtitle">请填写你的课外活动、社团参与、志愿服务、竞赛等经历。</p>
+            <div class="cv-layout">
+              <div class="cv-form-card">
+                <div class="cv-add-button"><span class="cv-plus">＋</span><span>添加活动经历</span></div>
+                <div class="cv-fields">
+                  <div class="cv-field-row"><div class="cv-label">活动名称<span class="cv-required">*</span></div><div class="cv-input muted">e.g. Student Union Executive Committee</div></div>
+                  <div class="cv-field-row"><div class="cv-label">你的角色<span class="cv-required">*</span></div><div class="cv-input muted">e.g. Team Leader, Volunteer, Member</div></div>
+                  <div class="cv-field-row"><div class="cv-label">活动类型<span class="cv-required">*</span></div><div class="cv-input cv-select muted">Select activity type <span>⌄</span></div></div>
+                  <div class="cv-field-row"><div class="cv-label">起始时间<span class="cv-required">*</span></div><div class="cv-input muted">▣ 选择开始时间</div></div>
+                  <div class="cv-field-row"><div class="cv-label">结束时间<span class="cv-required">*</span></div><div class="cv-input muted">▣ 选择结束时间</div></div>
+                  <div class="cv-field-row"><div class="cv-label">活动地点<span class="cv-required">*</span></div><div class="cv-input muted">e.g. Shanghai</div></div>
+                  <div class="cv-field-row cv-tall"><div class="cv-label">主要内容与贡献<span class="cv-required">*</span></div><div class="cv-textarea muted">Describe your responsibilities and contributions<span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                </div>
+                <div class="cv-helper"><span class="cv-info-icon">i</span><span>请用英文填写 3-4 条你在活动中的具体工作和贡献，每条以动词开头，用 · 符号分隔。</span></div>
+              </div>
+              <aside class="cv-advice">
+                <div class="cv-advice-head"><span class="cv-advice-icon">♢</span><span>填写建议</span></div>
+                <ul>
+                  <li>用于填写课外活动、社团参与、志愿服务、竞赛等经历。</li>
+                  <li><span>支持填写多条活动或志愿经历，如内容不够，可点击 <span class="cv-inline-pill">添加活动经历</span> 继续补充。</span></li>
+                  <li>填写重点不在于“活动多”，而在于你在活动中的角色和实际做了哪些事情。</li>
+                  <li>同样支持中文填写，填写后可点击填写框右下角的“AI 生成”按钮转为英文描述。</li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <section class="cv-form-section">
+            <h1 class="cv-title"><span class="cv-order">06</span><span>获奖情况</span></h1>
+            <p class="cv-subtitle">请填写奖学金、竞赛奖项或荣誉称号等信息。</p>
+            <div class="cv-layout">
+              <div class="cv-form-card">
+                <div class="cv-fields">
+                  <div class="cv-field-row"><div class="cv-label">奖项名称<span class="cv-required">*</span></div><div class="cv-input muted">e.g. National Scholarship, First Prize in Mathematical Modeling</div></div>
+                  <div class="cv-field-row"><div class="cv-label">获奖年份<span class="cv-required">*</span></div><div class="cv-input cv-select muted">Select year <span>⌄</span></div></div>
+                  <div class="cv-field-row"><div class="cv-label">授予机构（可选）</div><div class="cv-input muted">e.g. Ministry of Education, Tsinghua University</div></div>
+                  <div class="cv-field-row"><div class="cv-label">排名 / 比例（可选）</div><div class="cv-input muted">e.g. Top 5%, Top 10</div></div>
+                </div>
+                <div class="cv-helper"><span class="cv-info-icon">i</span><span>优先填写含金量较高、与你申请方向相关的奖项。</span></div>
+              </div>
+              <aside class="cv-advice">
+                <div class="cv-advice-head"><span class="cv-advice-icon">♢</span><span>填写建议</span></div>
+                <ul>
+                  <li>奖项名称尽量写完整</li>
+                  <li>如有排名或比例可一并填写</li>
+                  <li>优先填写含金量较高的奖项</li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+
+          <section class="cv-form-section">
+            <h1 class="cv-title"><span class="cv-order">07</span><span>技能语言</span></h1>
+            <p class="cv-subtitle">请填写您的专业技能、编程语言、外语水平等信息。</p>
+            <div class="cv-layout">
+              <div class="cv-form-card">
+                <div class="cv-fields">
+                  <div class="cv-field-row cv-tall"><div class="cv-label">专业技能<span class="cv-required">*</span></div><div class="cv-textarea muted">例如：Python, SQL, Excel, PowerPoint, Data Analysis<span class="cv-ai-chip cv-ai-inset">✧ AI 生成</span></div></div>
+                  <div class="cv-field-row"><div class="cv-label">英语能力<span class="cv-required">*</span></div><div class="cv-input muted">例如：IELTS 7.0、TOEFL 100、CET-6</div></div>
+                  <div class="cv-field-row"><div class="cv-label">母语<span class="cv-required">*</span></div><div class="cv-input muted">例如：Chinese</div></div>
+                  <div class="cv-field-row"><div class="cv-label">其他语言（可选）</div><div class="cv-input muted">例如：Japanese — Basic、French — Intermediate</div></div>
+                </div>
+                <div class="cv-helper"><span class="cv-info-icon">i</span><span>建议使用逗号分隔技能，语言请注明熟练程度。</span></div>
+              </div>
+              <aside class="cv-advice">
+                <div class="cv-advice-head"><span class="cv-advice-icon">♢</span><span>填写建议</span></div>
+                <ul>
+                  <li>技能请使用逗号分隔</li>
+                  <li>语言请注明考试成绩或熟练程度</li>
+                  <li>优先填写与申请方向相关的技能</li>
+                </ul>
+              </aside>
+            </div>
+          </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="tc-panel" id="panel-ps">
+        <div class="ps-embed-shell">
+          <iframe class="ps-embed-frame" src="ps-sop-tutorial.html" title="PS/SOP 使用教程" loading="lazy" scrolling="no" onload="resizePsFrame(this);"></iframe>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    const buttons = document.querySelectorAll("[data-panel]");
+    const panels = document.querySelectorAll(".tc-panel");
+    const cvPageControls = document.querySelectorAll("[data-cv-goto]");
+    const cvPages = document.querySelectorAll(".cv-tutorial-page");
+    const cvSubnavLinks = document.querySelectorAll(".tc-subnav [data-cv-goto]");
+
+    function showPanel(id) {
+      buttons.forEach((item) => item.classList.toggle("is-active", item.dataset.panel === id));
+      panels.forEach((panel) => panel.classList.toggle("is-active", panel.id === `panel-${id}`));
+      if (id === "ps") resizeActivePsFrame();
+    }
+
+    function resizePsFrame(frame) {
+      const doc = frame.contentDocument || frame.contentWindow?.document;
+      if (!doc) return;
+      doc.documentElement.style.overflow = "hidden";
+      doc.body.style.overflow = "hidden";
+      const resize = () => {
+        const height = Math.max(
+          doc.documentElement.scrollHeight,
+          doc.body.scrollHeight,
+          doc.documentElement.offsetHeight,
+          doc.body.offsetHeight
+        );
+        frame.style.height = `${height + 28}px`;
+      };
+      resize();
+      setTimeout(resize, 120);
+      setTimeout(resize, 600);
+      window.addEventListener("resize", resize);
+      doc.querySelectorAll("img").forEach((img) => img.addEventListener("load", resize, { once: true }));
+    }
+
+    function resizeActivePsFrame() {
+      const frame = document.querySelector(".ps-embed-frame");
+      if (!frame) return;
+      resizePsFrame(frame);
+      setTimeout(() => resizePsFrame(frame), 160);
+      setTimeout(() => resizePsFrame(frame), 700);
+    }
+
+    function showCvPage(page) {
+      cvPages.forEach((item) => item.classList.toggle("is-active", item.dataset.cvPage === page));
+      cvSubnavLinks.forEach((item) => item.classList.toggle("is-current", item.dataset.cvGoto === page));
+      history.replaceState(null, "", `#cv-page-${page}`);
+      document.getElementById("panel-cv")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    cvPageControls.forEach((control) => {
+      control.addEventListener("click", (event) => {
+        event.preventDefault();
+        buttons.forEach((item) => item.classList.toggle("is-active", item.dataset.panel === "cv"));
+        panels.forEach((panel) => panel.classList.toggle("is-active", panel.id === "panel-cv"));
+        showCvPage(control.dataset.cvGoto);
+      });
+    });
+
+    const initialCvPage = location.hash.match(/^#cv-page-([123])$/)?.[1];
+    if (initialCvPage) showCvPage(initialCvPage);
+    if (location.hash === "#ps") showPanel("ps");
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const id = button.dataset.panel;
+        showPanel(id);
+        if (id === "cv") {
+          showCvPage("1");
+        } else {
+          history.replaceState(null, "", "#ps");
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+  </script>
+</body>
+</html>

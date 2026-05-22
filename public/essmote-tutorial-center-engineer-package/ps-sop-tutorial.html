@@ -21,8 +21,8 @@
       --shadow: 0 16px 38px rgba(23, 84, 50, .09);
       --title-size: 58px;
       --subtitle-size: 25px;
-      --section-title-size: 29px;
-      --body-size: 22px;
+      --section-title-size: 22px;
+      --body-size: 16px;
       --caption-size: 18px;
     }
 
@@ -34,7 +34,8 @@
       color: var(--ink);
       font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", Arial, sans-serif;
       letter-spacing: 0;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     .deck {
@@ -227,7 +228,7 @@
 
     .tip b {
       color: var(--green);
-      font-size: 14px;
+      font-size: 23px;
       line-height: 1.28;
     }
 
@@ -261,7 +262,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       align-items: stretch;
-      gap: 4%;
+      gap: 6%;
       margin-bottom: clamp(14px, 1.7%, 28px);
     }
 
@@ -279,14 +280,14 @@
       color: #fff;
       font-size: clamp(24px, 2.7vw, 38px);
       font-weight: 900;
-      box-shadow: 0 14px 26px rgba(0, 118, 49, .22);
+      box-shadow: 0 0 0 18px #fff, 0 14px 26px rgba(0, 118, 49, .22);
       z-index: 2;
     }
 
     .compare-big {
       position: relative;
-      min-height: 360px;
-      padding: 46px 188px 46px 36px;
+      min-height: 388px;
+      padding: 46px 188px 62px 36px;
       display: block;
       height: 100%;
       min-width: 0;
@@ -324,7 +325,7 @@
       align-items: center;
       gap: clamp(10px, 1vw, 16px);
       color: var(--ink);
-      font-size: 20px;
+      font-size: 12px;
       line-height: 1.35;
       min-height: 34px;
       white-space: nowrap;
@@ -339,7 +340,7 @@
 
     .paper-art {
       position: relative;
-      width: 194px;
+      width: 168px;
       aspect-ratio: 580 / 760;
       height: auto;
       border: 0;
@@ -571,7 +572,7 @@
 
     .tips-five .soft-card {
       min-height: 348px;
-      padding: 32px 22px 28px;
+      padding: 30px 22px 34px;
       text-align: center;
       box-shadow: none;
     }
@@ -591,9 +592,9 @@
     }
 
     .tips-five .tip-illustration {
-      width: clamp(100px, 10.2vw, 154px);
-      height: clamp(100px, 10.2vw, 154px);
-      margin-bottom: clamp(10px, 1.2vw, 18px);
+      width: clamp(124px, 12.2vw, 184px);
+      height: clamp(124px, 12.2vw, 184px);
+      margin-bottom: clamp(6px, .8vw, 12px);
       background: transparent;
       box-shadow: none;
       overflow: hidden;
@@ -630,10 +631,10 @@
     .tips-five h2 {
       margin: 0;
       color: var(--green);
-      font-size: 17px;
-      line-height: 1.22;
+      font-size: 20px;
+      line-height: 1.3;
       font-weight: 900;
-      min-height: 46px;
+      min-height: 56px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -641,10 +642,10 @@
 
     .tips-five p {
       max-width: 14em;
-      margin: 22px auto 0;
+      margin: 18px auto 0;
       color: var(--text);
-      font-size: 19px;
-      line-height: 1.7;
+      font-size: 17px;
+      line-height: 1.65;
       text-align: left;
       text-align-last: left;
       word-break: normal;
@@ -682,7 +683,7 @@
       grid-template-columns: minmax(270px, .78fr) 56px minmax(0, 1.34fr);
       gap: 28px;
       align-items: stretch;
-      margin-bottom: 3.5%;
+      margin-bottom: 5.2%;
     }
 
     .small-compare {
@@ -692,8 +693,8 @@
 
     .small-compare h2 {
       margin: 0;
-      padding: 15px;
-      min-height: 58px;
+      padding: 22px 24px;
+      min-height: 70px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -720,12 +721,12 @@
       grid-template-columns: 44px 1fr;
       gap: 16px;
       align-items: center;
-      height: 112px;
-      margin: 0 30px;
-      padding: 14px 0;
+      height: 118px;
+      margin: 0 38px;
+      padding: 18px 0;
       border-bottom: 1px dashed #aac2d6;
       color: var(--text);
-      font-size: 21px;
+      font-size: 19px;
       line-height: 1.42;
     }
 
@@ -736,14 +737,14 @@
     }
 
     .small-compare.bad .line-row {
-      height: 112px;
-      font-size: 21px;
+      height: 118px;
+      font-size: 19px;
     }
 
     .small-compare:not(.bad) .line-row {
-      margin: 0 34px;
-      height: 112px;
-      padding: 14px 0;
+      margin: 0 42px;
+      height: 118px;
+      padding: 18px 0;
     }
 
     .small-compare.bad .line-row span:last-child {
@@ -752,10 +753,10 @@
 
     .match-arrows {
       display: grid;
-      grid-template-rows: repeat(5, 112px);
+      grid-template-rows: repeat(5, 118px);
       align-items: center;
       align-content: start;
-      padding-top: 58px;
+      padding-top: 70px;
       color: var(--green);
       font-size: 24px;
       font-weight: 900;
@@ -765,7 +766,7 @@
 	    .why-card {
 	      width: 100%;
 	      padding: 10px 20px 12px;
-	      margin: 0 auto 3.2%;
+	      margin: 0 auto 5%;
 	    }
 
 	    .why-card.why-card-img {
@@ -860,9 +861,9 @@
 
     .example {
       min-height: 360px;
-      padding: 24px;
+      padding: 32px 34px 40px;
       color: var(--text);
-      font-size: clamp(13px, 1.12vw, 18px);
+      font-size: 20px;
       line-height: 1.82;
     }
 
@@ -877,7 +878,7 @@
     }
 
     .example-pair .example:last-child {
-      padding: 28px clamp(32px, 3.2vw, 44px);
+      padding: 34px clamp(42px, 3.8vw, 56px) 42px;
     }
 
     .example h2 {
@@ -886,8 +887,10 @@
       gap: 12px;
       margin: 0 0 18px;
       color: var(--green);
-      font-size: var(--section-title-size);
+      font-size: 18px;
+      line-height: 1.25;
       font-weight: 900;
+      white-space: nowrap;
     }
 
     .circle-arrow {
@@ -945,7 +948,7 @@
       padding: clamp(12px, 1.1vw, 16px) 0;
       border-bottom: 1px dashed #a9d0b9;
       color: var(--text);
-      font-size: clamp(19px, 1.55vw, 26px);
+      font-size: clamp(23px, 1.9vw, 32px);
       line-height: 1.45;
     }
 
@@ -972,7 +975,7 @@
 
     .module-row b {
       color: var(--green);
-      font-size: clamp(20px, 1.72vw, 28px);
+      font-size: clamp(24px, 2.02vw, 34px);
       white-space: nowrap;
     }
 
@@ -1068,6 +1071,24 @@
       margin-bottom: 14px;
     }
 
+    .service-slide .num {
+      width: 78px;
+      height: 78px;
+      border-radius: 14px;
+      font-size: 42px;
+    }
+
+    .service-slide h1 {
+      font-size: 46px;
+      line-height: 1.14;
+    }
+
+    .service-slide .sub {
+      margin-top: 8px;
+      font-size: 20px;
+      line-height: 1.55;
+    }
+
     .service-slide .service-top {
       grid-template-columns: 1.78fr .78fr .54fr;
       gap: 14px;
@@ -1091,7 +1112,7 @@
     .flow-box h2 {
       margin: 0 0 14px;
       color: var(--green);
-      font-size: var(--section-title-size);
+      font-size: 24px;
       font-weight: 900;
     }
 
@@ -1141,7 +1162,7 @@
 
     .service-mini b {
       color: var(--green);
-      font-size: 18px;
+      font-size: 17px;
       line-height: 1.25;
     }
 
@@ -1149,7 +1170,7 @@
     .service-box p {
       margin: 8px 0 0;
       color: var(--text);
-      font-size: 15px;
+      font-size: 14px;
       line-height: 1.52;
     }
 
@@ -1179,7 +1200,7 @@
 
     .calendar strong {
       color: var(--green);
-      font-size: 34px;
+      font-size: 30px;
       line-height: 1;
     }
 
@@ -1194,7 +1215,7 @@
 
     .period-line .unit {
       color: var(--text);
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
     }
 
@@ -1282,7 +1303,7 @@
     .material-row p {
       margin: 0;
       color: currentColor;
-      font-size: 15px;
+      font-size: 14px;
       line-height: 1.25;
       white-space: nowrap;
     }
@@ -1345,14 +1366,14 @@
 
     .flow-step b {
       color: var(--green);
-      font-size: clamp(16px, 1.55vw, 22px);
+      font-size: 15px;
       line-height: 1.24;
     }
 
     .flow-step p {
       margin: 4px 0 0;
       color: var(--text);
-      font-size: clamp(15px, 1.42vw, 20px);
+      font-size: 13px;
       line-height: 1.38;
     }
 
@@ -1383,11 +1404,10 @@
     .service-choice {
       position: relative;
       display: grid;
-      grid-template-columns: 168px 1fr;
-      gap: 30px;
+      grid-template-columns: 150px 1fr;
+      gap: 24px;
       align-items: center;
       min-height: 236px;
-      margin-top: -16px;
       padding: 30px 44px 42px;
       border: 1px solid rgba(9, 120, 54, .18);
       border-radius: 24px;
@@ -1420,15 +1440,15 @@
       display: grid;
       place-items: center;
       min-width: 0;
-      width: 130px;
-      height: 130px;
+      width: 138px;
+      height: 138px;
       border-radius: 50%;
       background: rgba(7, 150, 66, .07);
     }
 
     .choice-art img {
-      width: 92px;
-      height: 92px;
+      width: 100px;
+      height: 100px;
       object-fit: contain;
       display: block;
       mix-blend-mode: multiply;
@@ -1437,7 +1457,7 @@
     .service-choice h2 {
       margin: 0;
       color: var(--green);
-      font-size: 25px;
+      font-size: 30px;
       line-height: 1.18;
       white-space: nowrap;
     }
@@ -1445,7 +1465,7 @@
     .service-choice p {
       margin: 11px 0 0;
       color: var(--text);
-      font-size: 17px;
+      font-size: 20px;
       line-height: 1.45;
     }
 
@@ -1471,7 +1491,7 @@
       border: 1px solid var(--green);
       border-radius: 12px;
       color: var(--green);
-      font-size: 21px;
+      font-size: 24px;
       font-weight: 900;
       background: #fff;
     }
@@ -1480,6 +1500,34 @@
       color: #fff;
       background: linear-gradient(145deg, #12a84e, #008f3d);
       box-shadow: 0 12px 22px rgba(0, 145, 64, .14);
+    }
+
+    /* Unified content type scale */
+    .deck p,
+    .deck li,
+    .deck .tip,
+    .deck .line-row,
+    .deck .why-flow,
+    .deck .example,
+    .deck .module-row,
+    .deck .result-card,
+    .deck .flow-box,
+    .deck .service-choice p {
+      font-size: 16px;
+    }
+
+    .deck h2,
+    .deck .why-flow b {
+      font-size: 22px;
+    }
+
+    .deck .module-row,
+    .deck .module-row b {
+      font-size: 22px;
+    }
+
+    .deck .line-row {
+      font-size: 20px;
     }
 
     @media (max-width: 320px) {
@@ -1822,12 +1870,12 @@
 
       <div class="example-pair">
         <article class="card example">
-          <h2>你在网站中填写的内容（示例）</h2>
+          <h2>在网站中填写的内容（示例）</h2>
           <p>我做过一个 2D 平台游戏项目，主要负责团队协调、任务分配和进度管理，也参与玩法设计和页面规划。在项目过程中，通过用户调研收集反馈，对游戏体验和视觉效果进行了优化。同时我还参与了视频剪辑、动画制作和 Unity 游戏开发等数字内容与互动媒体相关项目。未来希望申请多媒体和互动媒体方向的研究生项目，继续提升自己的创造力与技术能力。</p>
         </article>
         <div class="circle-arrow">→</div>
         <article class="card example">
-          <h2>AI 生成效果（示例）</h2>
+          <h2>AI 生成效果示例</h2>
           <p>One notable project that inspired my pursuit of multimedia entertainment was working on XYZ Adventure, a 2D platformer game. I took on a leadership role in this project, which deepened my expertise in project management and technology implementation. My responsibilities included coordinating team tasks, creating work schedules, and monitoring progress throughout the project's lifecycle. Within the team, I defined key areas such as narrative brainstorming, mechanic design, and role assignments while establishing clear timelines to align with project milestones. During the execution phase, I introduced sprint reviews and issue resolution meetings to track progress and address challenges proactively. Utilizing a standard work breakdown structure supported by thorough documentation and progress tracking also enhanced transparency and accountability. Additionally, I conducted extensive user research to identify target audiences and incorporated their feedback to refine gameplay mechanics and visual elements, which helped me appreciate the importance of user-centric design in multimedia projects.</p>
         </article>
       </div>
@@ -1932,7 +1980,7 @@
       </article>
 
       <div class="card footer-band" id="manual-polish-application">
-        <a class="service-choice" href="/creation-center" aria-label="开始写文书">
+        <a class="service-choice" href="#" aria-label="开始写文书">
           <div class="choice-art"><img src="assets/icons/writing-suggestion.png" alt=""></div>
           <div>
             <h2>还没写好？先去写文书</h2>
@@ -1940,7 +1988,7 @@
             <span class="choice-button">开始写文书 <span>→</span></span>
           </div>
         </a>
-        <a class="service-choice recommended" href="/study-abroad-consultation" aria-label="开始人工润色">
+        <a class="service-choice recommended" href="#manual-polish-application" aria-label="开始人工润色">
           <div class="choice-art"><img src="assets/icons/fill-suggestion-icon-transparent.png" alt=""></div>
           <div>
             <h2>已经写完？开始人工润色</h2>
@@ -1956,7 +2004,7 @@
       const deck = document.querySelector(".deck");
       if (!deck) return;
       const designWidth = 1380;
-      const scale = Math.min(1, window.innerWidth / designWidth);
+      const scale = Math.min(1, window.innerWidth / designWidth) * 0.85;
       deck.style.transform = `scale(${scale})`;
       document.body.style.width = `${window.innerWidth}px`;
       document.body.style.height = `${Math.ceil(deck.scrollHeight * scale)}px`;

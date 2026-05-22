@@ -122,7 +122,7 @@ export default function TutorialCenterModule({
         lineHeight: "1.42",
       });
       setStyle(".tip b", {
-        fontSize: "16px",
+        fontSize: "14px",
         lineHeight: "1.3",
       });
       setStyle(".tip .tip-copy", {
@@ -359,7 +359,7 @@ export default function TutorialCenterModule({
       lineHeight: "1.42",
     });
     setStyle(".tip b", {
-      fontSize: "16px",
+      fontSize: "14px",
       lineHeight: "1.3",
     });
     setStyle(".tip .tip-copy", {
@@ -857,12 +857,13 @@ export default function TutorialCenterModule({
               z-index: 2 !important;
             }
             .essmote-tutorial-center #panel-ps .footer-band::before {
-              font-size: 24px !important;
+              font-size: 20px !important;
               top: 10px !important;
               line-height: 1.1 !important;
             }
             .essmote-tutorial-center #panel-ps .service-choice {
               min-height: 150px !important;
+              margin-top: -16px !important;
               padding: 14px 18px 18px !important;
               gap: 8px !important;
             }
