@@ -1,14 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
-export default function TutorialCenterModule({
-  onBack,
-}: {
-  onBack: () => void;
-}) {
+export default function TutorialCenterModule() {
   const [payload, setPayload] = useState<{
     styles: string;
     body: string;
@@ -47,6 +41,28 @@ export default function TutorialCenterModule({
         const next = rewriteUrl(href);
         if (next) node.setAttribute("href", next);
       });
+      doc.querySelectorAll<HTMLAnchorElement>("a").forEach((node) => {
+        const href = node.getAttribute("href") ?? "";
+        const isProtectedEmailLink =
+          href.includes("/cdn-cgi/l/email-protection") || href.startsWith("mailto:");
+        const insideInputLikeField = Boolean(
+          node.closest(
+            ".cv-input, .cv-replica-input, .cv-textarea, .cv-replica-textarea"
+          )
+        );
+
+        if (isProtectedEmailLink || insideInputLikeField) {
+          const replacement = doc.createElement("span");
+          replacement.className = node.className;
+          replacement.textContent = node.textContent ?? "";
+          Array.from(node.attributes).forEach((attr) => {
+            if (attr.name !== "href" && !attr.name.toLowerCase().startsWith("on")) {
+              replacement.setAttribute(attr.name, attr.value);
+            }
+          });
+          node.replaceWith(replacement);
+        }
+      });
       doc.querySelectorAll<HTMLElement>("*").forEach((node) => {
         Array.from(node.attributes).forEach((attr) => {
           if (attr.name.toLowerCase().startsWith("on")) {
@@ -57,7 +73,10 @@ export default function TutorialCenterModule({
     };
 
     const applyInlineSizing = (doc: Document) => {
-      const setStyle = (selector: string, styles: Partial<CSSStyleDeclaration>) => {
+      const setStyle = (
+        selector: string,
+        styles: Partial<CSSStyleDeclaration>
+      ) => {
         doc.querySelectorAll<HTMLElement>(selector).forEach((node) => {
           Object.entries(styles).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
@@ -267,13 +286,17 @@ export default function TutorialCenterModule({
         node.classList.toggle("is-active", node.dataset.cvPage === cvPage);
       });
 
-      root.querySelectorAll<HTMLElement>(".tc-nav button[data-panel]").forEach((node) => {
-        node.classList.toggle("is-active", node.dataset.panel === panel);
-      });
+      root
+        .querySelectorAll<HTMLElement>(".tc-nav button[data-panel]")
+        .forEach((node) => {
+          node.classList.toggle("is-active", node.dataset.panel === panel);
+        });
 
-      root.querySelectorAll<HTMLElement>(".tc-subnav [data-cv-goto]").forEach((node) => {
-        node.classList.toggle("is-current", node.dataset.cvGoto === cvPage);
-      });
+      root
+        .querySelectorAll<HTMLElement>(".tc-subnav [data-cv-goto]")
+        .forEach((node) => {
+          node.classList.toggle("is-current", node.dataset.cvGoto === cvPage);
+        });
     };
 
     const aside = root.querySelector<HTMLElement>(".tc-sidebar");
@@ -287,7 +310,10 @@ export default function TutorialCenterModule({
         return;
       }
       const footerRect = footer.getBoundingClientRect();
-      const overlap = Math.min(Math.max(0, viewportHeight - footerRect.top + 18), viewportHeight - top);
+      const overlap = Math.min(
+        Math.max(0, viewportHeight - footerRect.top + 18),
+        viewportHeight - top
+      );
       aside.style.height = `calc(100vh - ${top}px - ${Math.round(overlap)}px)`;
     };
 
@@ -429,18 +455,6 @@ export default function TutorialCenterModule({
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="fixed bottom-6 right-6 z-[90]">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="inline-flex items-center gap-2 border-emerald-200 bg-white text-emerald-700 shadow-md hover:bg-emerald-50"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          {"\u8fd4\u56de\u65e7\u9875\u9762"}
-        </Button>
-      </div>
-
       {payload ? (
         <div
           ref={contentRef}
@@ -451,13 +465,20 @@ export default function TutorialCenterModule({
             const panelButton = target?.closest<HTMLElement>("[data-panel]");
             const cvButton = target?.closest<HTMLElement>("[data-cv-goto]");
 
-            if (panelButton?.dataset.panel === "cv" || panelButton?.dataset.panel === "ps") {
+            if (
+              panelButton?.dataset.panel === "cv" ||
+              panelButton?.dataset.panel === "ps"
+            ) {
               event.preventDefault();
               setPanel(panelButton.dataset.panel);
               return;
             }
 
-            if (cvButton?.dataset.cvGoto === "1" || cvButton?.dataset.cvGoto === "2" || cvButton?.dataset.cvGoto === "3") {
+            if (
+              cvButton?.dataset.cvGoto === "1" ||
+              cvButton?.dataset.cvGoto === "2" ||
+              cvButton?.dataset.cvGoto === "3"
+            ) {
               event.preventDefault();
               setPanel("cv");
               setCvPage(cvButton.dataset.cvGoto);
@@ -495,14 +516,18 @@ export default function TutorialCenterModule({
               border: 1px solid #d9eee3 !important;
               border-radius: 8px !important;
               background: #fff !important;
-              box-shadow: 0 12px 26px rgba(23, 84, 50, .06) !important;
+              box-shadow: 0 12px 26px rgba(23, 84, 50, 0.06) !important;
               z-index: 2 !important;
             }
             .essmote-tutorial-center .tc-brand {
               width: fit-content !important;
               padding: 7px 12px 7px 9px !important;
               border-radius: 999px !important;
-              background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(231,248,239,.9)) !important;
+              background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.96),
+                rgba(231, 248, 239, 0.9)
+              ) !important;
               color: #079642 !important;
             }
             .essmote-tutorial-center .tc-side-label {
@@ -614,7 +639,7 @@ export default function TutorialCenterModule({
             .essmote-tutorial-center #panel-ps .slide {
               margin-bottom: 16px !important;
               border-radius: 8px !important;
-              box-shadow: 0 16px 36px rgba(23, 84, 50, .06) !important;
+              box-shadow: 0 16px 36px rgba(23, 84, 50, 0.06) !important;
             }
             .essmote-tutorial-center #panel-ps .hero-slide {
               padding: 6px !important;
@@ -919,6 +944,15 @@ export default function TutorialCenterModule({
             .essmote-tutorial-center #panel-ps .slide.wide img {
               max-width: 100% !important;
               height: auto !important;
+            }
+            .essmote-tutorial-center .cv-input a,
+            .essmote-tutorial-center .cv-replica-input a,
+            .essmote-tutorial-center .cv-textarea a,
+            .essmote-tutorial-center .cv-replica-textarea a {
+              pointer-events: none !important;
+              color: inherit !important;
+              text-decoration: none !important;
+              cursor: default !important;
             }
           `}</style>
           <div dangerouslySetInnerHTML={{ __html: payload.body }} />
