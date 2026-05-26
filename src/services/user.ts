@@ -5,6 +5,7 @@ import { User } from "@/types/user";
 import { customAuth } from "@/lib/auth";
 import { getOneYearLaterTimestr } from "@/lib/time";
 import { getUserUuidByApiKey } from "@/models/apikey";
+import { unstable_noStore as noStore } from "next/cache";
 import { headers } from "next/headers";
 import { increaseCredits } from "./credit";
 
@@ -35,6 +36,7 @@ export async function saveUser(user: User) {
 }
 
 export async function getUserUuid() {
+  noStore();
   let user_uuid = "";
 
   const token = await getBearerToken();
@@ -71,6 +73,7 @@ export async function getBearerToken() {
 }
 
 export async function getUserEmail() {
+  noStore();
   let user_email = "";
 
   const session = await customAuth.api.getSession({
@@ -85,6 +88,7 @@ export async function getUserEmail() {
 }
 
 export async function getUserInfo() {
+  noStore();
   let user_uuid = await getUserUuid();
 
   if (!user_uuid) {

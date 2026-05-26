@@ -168,6 +168,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
   const [revisingParagraphIndex, setRevisingParagraphIndex] = useState<number | null>(null);
   // 正在保存修改
   const [isSavingRevision, setIsSavingRevision] = useState(false);
+  const [editableParagraphs, setEditableParagraphs] = useState<string[]>([]);
   
   // 获取当前数据库版本内容
   const getCurrentDbVersion = () => {
@@ -191,12 +192,23 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
   const wordCountInfo = useMemo(() => {
     return smartWordCount(displayContent, generationState.languagePreference);
   }, [displayContent, generationState.languagePreference]);
+
+  useEffect(() => {
+    if (!displayContent) {
+      setEditableParagraphs([]);
+      return;
+    }
+
+    setEditableParagraphs(displayContent.split('\n\n'));
+  }, [displayContent]);
   
   // 段落修改处理
   const handleParagraphRevise = async (index: number, newText: string) => {
-    const paragraphs = displayContent.split('\n\n');
+    const paragraphs = [...editableParagraphs];
     paragraphs[index] = newText;
     const newContent = paragraphs.join('\n\n');
+
+    setEditableParagraphs(paragraphs);
     
     // 更新生成的内容
     updateGeneratedContent(newContent);
@@ -1212,7 +1224,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
               {/* 如果还没有使用修改功能且有显示内容，显示可编辑的段落 */}
               {!serverRevisionStatus && displayContent && !isLoadingVersions ? (
                 <div className="space-y-4">
-                  {displayContent.split('\n\n').map((paragraph: string, index: number) => (
+                  {editableParagraphs.map((paragraph: string, index: number) => (
                     <ParagraphRevision
                       key={index}
                       paragraph={paragraph}

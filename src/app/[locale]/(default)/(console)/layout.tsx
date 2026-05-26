@@ -1,6 +1,7 @@
 import ConsoleLayout from "@/components/console/layout";
 import { ReactNode } from "react";
 import { Sidebar } from "@/types/blocks/sidebar";
+import { unstable_noStore as noStore } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { getUserInfo } from "@/services/user";
 import { redirect } from "next/navigation";
@@ -12,6 +13,7 @@ export default async function ({
   children: ReactNode;
   params: Promise<{ locale: string }>;
 }) {
+  noStore();
   const { locale } = await params;
   const userInfo = await getUserInfo();
   if (!userInfo || !userInfo.email) {

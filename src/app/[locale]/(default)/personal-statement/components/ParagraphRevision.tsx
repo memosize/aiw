@@ -55,8 +55,14 @@ export default function ParagraphRevision({
   
   // 修改后的内容状态
   const [revisedText, setRevisedText] = useState<string | null>(null);
-  const [originalText] = useState(paragraph);
+  const [originalText, setOriginalText] = useState(paragraph);
   const [showOriginal, setShowOriginal] = useState(false);
+
+  useEffect(() => {
+    if (revisedText === null) {
+      setOriginalText(paragraph);
+    }
+  }, [paragraph, revisedText]);
 
   const currentWordCount = paragraph.length;
 
@@ -138,9 +144,9 @@ export default function ParagraphRevision({
             <span className="text-sm text-muted-foreground">正在重写段落...</span>
           </div>
         ) : (
-          <p className="whitespace-pre-wrap pr-24">
+          <div className="whitespace-pre-wrap break-words pr-24">
             {showOriginal && revisedText ? originalText : (revisedText || paragraph)}
-          </p>
+          </div>
         )}
         
         {/* 重写按钮 - 固定在段落右上角 */}

@@ -1,5 +1,6 @@
 import SignForm from "@/components/sign/form";
 import { customAuth } from "@/lib/auth";
+import { unstable_noStore as noStore } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -30,6 +31,7 @@ export default async function SignInPage({
 }: {
   searchParams: Promise<{ callbackUrl: string | undefined }>;
 }) {
+  noStore();
   const { callbackUrl } = await searchParams;
   const safeCallbackUrl = normalizeCallbackUrl(callbackUrl);
 
