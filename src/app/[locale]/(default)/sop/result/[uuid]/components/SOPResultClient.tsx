@@ -707,7 +707,14 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
       detail: settings.direction,
       original_context: displayContent,
       whole: '0', // 整篇重写
-      language: generationState.languagePreference || 'Chinese'
+      language: generationState.languagePreference || 'Chinese',
+      username: 'User',
+      target: data.target || '',
+      education: data.education || '',
+      skill: data.skill || '',
+      research: data.research || '',
+      workExperience: data.workExperience || '',
+      plan: data.plan || ''
     };
 
     // Text accumulation - MUST use array pattern
@@ -832,7 +839,14 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
         setRevisingParagraphIndex(paragraphIndex);
         const revisedContent = await runRevision({
           ...params,
-          language: generationState.languagePreference || 'Chinese'
+          language: generationState.languagePreference || 'Chinese',
+          username: 'User',
+          target: data.target || '',
+          education: data.education || '',
+          skill: data.skill || '',
+          research: data.research || '',
+          workExperience: data.workExperience || '',
+          plan: data.plan || ''
         });
         return revisedContent;
       } catch (error) {

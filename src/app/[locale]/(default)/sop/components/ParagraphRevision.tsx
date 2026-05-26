@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface ParagraphRevisionProps {
   paragraph: string;
@@ -60,6 +61,14 @@ export default function ParagraphRevision({
 
   const currentWordCount = paragraph.length;
 
+  const getErrorMessage = (error: unknown) => {
+    if (error instanceof Error && error.message.trim()) {
+      return error.message;
+    }
+
+    return "段落改写失败，请稍后重试";
+  };
+
   const handleStyleToggle = (style: string) => {
     if (selectedStyles.includes(style)) {
       setSelectedStyles(selectedStyles.filter(s => s !== style));
@@ -105,6 +114,7 @@ export default function ParagraphRevision({
       }
     } catch (error) {
       console.error('Revision failed:', error);
+      toast.error(getErrorMessage(error));
     } finally {
       setIsLocalRevising(false);
     }

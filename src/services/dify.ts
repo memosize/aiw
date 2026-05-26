@@ -5,6 +5,18 @@ export interface DifyWorkflowRunRequest {
   user: string;
 }
 
+export class DifyHttpError extends Error {
+  status: number;
+  responseText: string;
+
+  constructor(status: number, responseText: string) {
+    super(`HTTP error! status: ${status}, message: ${responseText}`);
+    this.name = 'DifyHttpError';
+    this.status = status;
+    this.responseText = responseText;
+  }
+}
+
 export interface DifyWorkflowRunResponse {
   workflow_run_id: string;
   task_id: string;
@@ -106,7 +118,8 @@ export class DifyService {
    */
   async runWorkflow(
     request: DifyWorkflowRunRequest, 
-    functionType: DifyFunctionType = 'default'
+    functionType: DifyFunctionType = 'default',
+    options?: { timeoutMs?: number }
   ): Promise<DifyWorkflowRunResponse> {
     try {
       console.log(`[DifyService] Running workflow for function: ${functionType}`);
@@ -119,24 +132,45 @@ export class DifyService {
         Authorization: headers.Authorization ? 'Bearer [HIDDEN]' : undefined
       });
       
-      const response = await fetch(`${this.baseUrl}/workflows/run`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(request),
-      });
+      const timeoutMs = options?.timeoutMs ?? 45000;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+      let response: Response;
+
+      try {
+        response = await fetch(`${this.baseUrl}/workflows/run`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(request),
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       console.log(`[DifyService] Response status: ${response.status}`);
       
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`[DifyService] Error response: ${errorText}`);
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        throw new DifyHttpError(response.status, errorText);
       }
 
       const result = await response.json();
       console.log(`[DifyService] Success response:`, JSON.stringify(result, null, 2));
       return result;
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        const timeoutMs = options?.timeoutMs ?? 45000;
+        const timeoutError = new DifyHttpError(
+          504,
+          `Dify request timed out after ${timeoutMs}ms`
+        );
+        console.error('[DifyService] Dify run workflow timeout:', timeoutError);
+        throw timeoutError;
+      }
+
       console.error('[DifyService] Dify run workflow error:', error);
       throw error;
     }
