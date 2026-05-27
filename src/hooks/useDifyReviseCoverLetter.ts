@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useDify } from './useDify';
 import type { StreamingCallbacks } from '@/services/dify-sse';
+import { sanitizeErrorMessage } from '@/lib/sanitize-error-message';
 
 interface ReviseParams {
   revise_type: string; // "0"代表保持原本，"1"代表扩写，"2"代表缩写
@@ -39,7 +40,12 @@ export function useDifyReviseCoverLetter() {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('[Cover Letter Revision] API error response:', errorText);
-        throw new Error(`Cover Letter Revision API request failed: ${response.status} - ${errorText}`);
+        throw new Error(
+          sanitizeErrorMessage(
+            errorText,
+            'Cover letter revision failed. Please try again shortly.'
+          )
+        );
       }
 
       const data = await response.json();

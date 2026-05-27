@@ -1,3 +1,5 @@
+import { sanitizeErrorMessage } from "@/lib/sanitize-error-message";
+
 export function respData(data: any) {
   return respJson(0, "ok", data || []);
 }
@@ -9,7 +11,7 @@ export function respOk() {
 export function respErr(message: string, status: number = 200) {
   return Response.json({
     code: -1,
-    message: message
+    message: sanitizeErrorMessage(message, "Request failed. Please try again shortly.")
   }, { status });
 }
 

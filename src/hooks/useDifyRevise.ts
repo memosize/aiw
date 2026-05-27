@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { sanitizeErrorMessage } from '@/lib/sanitize-error-message';
 
 interface ReviseParams {
   revise_type: string; // "0"代表保持原本，"1"代表扩写，"2"代表缩写
@@ -34,7 +35,12 @@ export function useDifyRevise() {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('API error response:', errorText);
-        throw new Error(`Revision API request failed: ${response.status} - ${errorText}`);
+        throw new Error(
+          sanitizeErrorMessage(
+            errorText,
+            'Revision failed. Please try again shortly.'
+          )
+        );
       }
 
       const data = await response.json();

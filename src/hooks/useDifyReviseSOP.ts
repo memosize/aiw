@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useDify } from "./useDify";
 import type { StreamingCallbacks } from "@/services/dify-sse";
+import { sanitizeErrorMessage } from "@/lib/sanitize-error-message";
 
 interface ReviseParams {
   revise_type: string;
@@ -55,7 +56,12 @@ export function useDifyReviseSOP() {
           parsedMessage = errorText;
         }
 
-        throw new Error(parsedMessage);
+        throw new Error(
+          sanitizeErrorMessage(
+            parsedMessage,
+            "SOP revision failed. Please try again shortly."
+          )
+        );
       }
 
       const data = await response.json();
