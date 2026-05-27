@@ -120,7 +120,7 @@ export default function ParagraphRevision({
 
   const handleRevertRevision = () => {
     setRevisedText(null);
-    onRevise(index, originalText);
+    setShowOriginal(false);
   };
 
   return (
