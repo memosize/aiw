@@ -1,4 +1,10 @@
 const DEFAULT_MIN_FILL_RATIO = 0.6;
+const LINE_MERGE_THRESHOLD_PX = 1;
+
+interface VerticalSegment {
+  top: number;
+  bottom: number;
+}
 
 function toSortedUniqueIntegers(values: number[]): number[] {
   return Array.from(
@@ -10,8 +16,68 @@ function toSortedUniqueIntegers(values: number[]): number[] {
   ).sort((a, b) => a - b);
 }
 
-function collectTextLineBreaks(element: Element, containerTop: number): number[] {
+function normalizeRectToSegment(
+  rect: DOMRect,
+  containerTop: number
+): VerticalSegment | null {
+  if (rect.height <= 0) {
+    return null;
+  }
+
+  return {
+    top: rect.top - containerTop,
+    bottom: rect.bottom - containerTop
+  };
+}
+
+function mergeVerticalSegments(segments: VerticalSegment[]): VerticalSegment[] {
+  const sortedSegments = segments
+    .filter((segment) => segment.bottom > segment.top)
+    .sort((a, b) => a.top - b.top);
+
+  if (sortedSegments.length === 0) {
+    return [];
+  }
+
+  const mergedSegments: VerticalSegment[] = [sortedSegments[0]];
+
+  for (let index = 1; index < sortedSegments.length; index += 1) {
+    const currentSegment = sortedSegments[index];
+    const previousSegment = mergedSegments[mergedSegments.length - 1];
+
+    if (currentSegment.top <= previousSegment.bottom + LINE_MERGE_THRESHOLD_PX) {
+      previousSegment.bottom = Math.max(previousSegment.bottom, currentSegment.bottom);
+      continue;
+    }
+
+    mergedSegments.push(currentSegment);
+  }
+
+  return mergedSegments;
+}
+
+function buildBreaksFromSegments(segments: VerticalSegment[]): number[] {
   const breaks: number[] = [];
+
+  segments.forEach((segment, index) => {
+    breaks.push(segment.bottom);
+
+    const nextSegment = segments[index + 1];
+    if (!nextSegment) {
+      return;
+    }
+
+    const gap = nextSegment.top - segment.bottom;
+    if (gap >= 0) {
+      breaks.push(segment.bottom + gap / 2);
+    }
+  });
+
+  return breaks;
+}
+
+function collectTextLineBreaks(element: Element, containerTop: number): number[] {
+  const segments: VerticalSegment[] = [];
   const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
 
   while (walker.nextNode()) {
@@ -27,13 +93,14 @@ function collectTextLineBreaks(element: Element, containerTop: number): number[]
     range.detach();
 
     rects.forEach((rect) => {
-      if (rect.height > 0) {
-        breaks.push(rect.bottom - containerTop);
+      const segment = normalizeRectToSegment(rect, containerTop);
+      if (segment) {
+        segments.push(segment);
       }
     });
   }
 
-  return breaks;
+  return buildBreaksFromSegments(mergeVerticalSegments(segments));
 }
 
 export function collectSafePageBreaks(
@@ -50,7 +117,10 @@ export function collectSafePageBreaks(
       return;
     }
 
-    candidates.push(rect.bottom - containerRect.top);
+    const segment = normalizeRectToSegment(rect, containerRect.top);
+    if (segment) {
+      candidates.push(...buildBreaksFromSegments([segment]));
+    }
     candidates.push(...collectTextLineBreaks(element, containerRect.top));
   });
 
