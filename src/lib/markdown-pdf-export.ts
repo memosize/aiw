@@ -1,6 +1,7 @@
 import html2canvas from 'yd-html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'sonner';
+import { buildPageSlices, collectSafePageBreaks } from './pdf-pagination';
 
 export interface MarkdownPDFOptions {
   filename?: string;
@@ -80,10 +81,12 @@ export class MarkdownPDFExporter {
       });
 
       // 5. 移除临时容器
-      document.body.removeChild(container);
 
       // 6. 创建多页 PDF
-      await this.createMultiPagePDF(canvas, filename, margin, quality, title, author);
+      await this.createMultiPagePDF(container, canvas, filename, margin, quality, title, author);
+      if (container.isConnected) {
+        document.body.removeChild(container);
+      }
 
       toast.success('PDF 导出成功！', { id: 'pdf-export' });
     } catch (error) {
@@ -300,6 +303,7 @@ export class MarkdownPDFExporter {
    * 参考简历模块的分页算法
    */
   private static async createMultiPagePDF(
+    container: HTMLElement,
     canvas: HTMLCanvasElement,
     filename: string,
     margin: number,
@@ -329,6 +333,7 @@ export class MarkdownPDFExporter {
     // 计算缩放比例
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
+    const renderScale = canvasHeight / Math.max(container.scrollHeight, container.offsetHeight, 1);
     const widthRatio = (contentWidth * this.MM_TO_PX_RATIO) / canvasWidth;
     const scale = Math.min(widthRatio, 1); // 只缩小，不放大
 
@@ -337,7 +342,11 @@ export class MarkdownPDFExporter {
 
     // 计算每页可容纳的内容高度(px)
     const pageContentHeightPx = (contentHeight * this.MM_TO_PX_RATIO) / scale;
-    const totalPages = Math.ceil(canvasHeight / pageContentHeightPx);
+    const safeBreaks = collectSafePageBreaks(container).map((point) =>
+      Math.round(point * renderScale)
+    );
+    const pageSlices = buildPageSlices(canvasHeight, pageContentHeightPx, safeBreaks);
+    const totalPages = pageSlices.length;
 
     console.log(`[Markdown PDF] 内容总高度: ${canvasHeight}px, 每页高度: ${pageContentHeightPx}px, 总页数: ${totalPages}`);
 
@@ -348,8 +357,7 @@ export class MarkdownPDFExporter {
       }
 
       // 计算当前页的内容区域
-      const startY = pageIndex * pageContentHeightPx;
-      const endY = Math.min(startY + pageContentHeightPx, canvasHeight);
+      const { startY, endY } = pageSlices[pageIndex];
       const currentPageHeight = endY - startY;
 
       // 创建当前页的 canvas

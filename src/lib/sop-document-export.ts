@@ -14,6 +14,7 @@ import {
   NumberFormat
 } from 'docx';
 import { toast } from 'sonner';
+import { buildPageSlices, collectSafePageBreaks } from './pdf-pagination';
 
 /**
  * SOP 导出选项接口
@@ -234,10 +235,12 @@ export async function exportSOPToPDF(
     });
 
     // 移除临时容器
-    document.body.removeChild(container);
 
     // 创建多页 PDF
-    await createMultiPagePDF(canvas, filename, 20, 0.95, title, language);
+    await createMultiPagePDF(container, canvas, filename, 20, 0.95, title, language);
+    if (container.isConnected) {
+      document.body.removeChild(container);
+    }
 
     toast.success(
       language === 'zh' ? 'PDF 导出成功！' : 'PDF exported successfully!',
@@ -622,6 +625,7 @@ function parseInlineMarkdown(text: string): string {
  * 创建多页 PDF
  */
 async function createMultiPagePDF(
+  container: HTMLElement,
   canvas: HTMLCanvasElement,
   filename: string,
   margin: number,
@@ -644,20 +648,24 @@ async function createMultiPagePDF(
 
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
+  const renderScale = canvasHeight / Math.max(container.scrollHeight, container.offsetHeight, 1);
   const widthRatio = (contentWidth * MM_TO_PX_RATIO) / canvasWidth;
   const scale = Math.min(widthRatio, 1);
 
   const scaledWidth = (canvasWidth / MM_TO_PX_RATIO) * scale;
   const pageContentHeightPx = (contentHeight * MM_TO_PX_RATIO) / scale;
-  const totalPages = Math.ceil(canvasHeight / pageContentHeightPx);
+  const safeBreaks = collectSafePageBreaks(container).map((point) =>
+    Math.round(point * renderScale)
+  );
+  const pageSlices = buildPageSlices(canvasHeight, pageContentHeightPx, safeBreaks);
+  const totalPages = pageSlices.length;
 
   for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
     if (pageIndex > 0) {
       pdf.addPage();
     }
 
-    const startY = pageIndex * pageContentHeightPx;
-    const endY = Math.min(startY + pageContentHeightPx, canvasHeight);
+    const { startY, endY } = pageSlices[pageIndex];
     const currentPageHeight = endY - startY;
 
     const pageCanvas = document.createElement('canvas');
