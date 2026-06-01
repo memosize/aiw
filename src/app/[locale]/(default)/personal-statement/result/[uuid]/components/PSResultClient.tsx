@@ -24,7 +24,7 @@ import { toast } from "sonner";
 import { PSProvider, usePS } from "../../../components/PSContext";
 import { useDify } from '@/hooks/useDify';
 import { useDifyRevisePS } from '@/hooks/useDifyRevisePS';
-import { exportMarkdownToPDF } from '@/lib/markdown-pdf-export';
+import { exportMarkdownToPDF } from '@/lib/paged-markdown-pdf-export';
 import { exportTextToDOCX } from '@/lib/text-document-export';
 import { smartWordCount } from '@/lib/word-count';
 import RevisionModal from "../../../components/RevisionModal";

@@ -41,8 +41,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { exportSOPToTXT, exportSOPToPDF, exportSOPToDOCX } from "@/lib/sop-document-export";
-import { exportCoverLetterToTXT, exportCoverLetterToPDF, exportCoverLetterToDOCX } from "@/lib/cover-letter-document-export";
+import { exportMarkdownToPDF } from "@/lib/paged-markdown-pdf-export";
+import { exportSOPToTXT, exportSOPToDOCX } from "@/lib/sop-document-export";
+import { exportSOPToPDF } from "@/lib/paged-sop-pdf-export";
+import { exportCoverLetterToTXT, exportCoverLetterToDOCX } from "@/lib/cover-letter-document-export";
+import { exportCoverLetterToPDF } from "@/lib/paged-cover-letter-pdf-export";
+import { exportTextToDOCX } from "@/lib/text-document-export";
 import { 
   RecommendationLetterIcon, 
   CoverLetterIcon, 
@@ -277,6 +281,66 @@ export default function DocumentPreviewClient({ documentUuid }: DocumentPreviewC
           break;
         case 'docx':
           await exportCoverLetterToDOCX(content, exportOptions);
+          break;
+      }
+    } catch (error) {
+      console.error('导出失败:', error);
+      toast.error(`导出失败: ${error instanceof Error ? error.message : '未知错误'}`);
+    }
+  };
+
+  const handlePersonalStatementExport = async (format: 'txt' | 'pdf' | 'docx') => {
+    if (!document) return;
+
+    const content = document.content || '';
+    const hasChineseChars = /[\u4e00-\u9fa5]/.test(content);
+    const language = hasChineseChars ? 'zh' : 'en';
+
+    let target = '';
+    if (document.form_data) {
+      try {
+        const formData = typeof document.form_data === 'string'
+          ? JSON.parse(document.form_data)
+          : document.form_data;
+        target = formData.target || '';
+      } catch (e) {
+        console.error('Failed to parse form_data:', e);
+      }
+    }
+
+    const baseFilename = `personal-statement-${target || document.title || 'document'}`;
+
+    try {
+      switch (format) {
+        case 'txt': {
+          const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const element = window.document.createElement("a");
+          element.href = url;
+          element.download = `${baseFilename}.txt`;
+          window.document.body.appendChild(element);
+          element.click();
+          window.document.body.removeChild(element);
+          URL.revokeObjectURL(url);
+          toast.success("TXT 文件已导出");
+          break;
+        }
+        case 'pdf':
+          await exportMarkdownToPDF(content, {
+            filename: `${baseFilename}.pdf`,
+            title: 'Personal Statement',
+            language,
+            quality: 0.95,
+            scale: 2,
+            margin: 20
+          });
+          break;
+        case 'docx':
+          await exportTextToDOCX(content, {
+            filename: `${baseFilename}.docx`,
+            title: 'Personal Statement',
+            language
+          });
           break;
       }
     } catch (error) {
@@ -693,6 +757,30 @@ export default function DocumentPreviewClient({ documentUuid }: DocumentPreviewC
                   <DropdownMenuItem onClick={() => handleSOPExport('docx')}>
                     <FileText className="w-4 h-4 mr-2" />
                     导出为 DOCX
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : document.document_type === DocumentType.PersonalStatement ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    <Download className="w-4 h-4 mr-2" />
+                    涓嬭浇
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handlePersonalStatementExport('txt')}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    瀵煎嚭涓?TXT
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handlePersonalStatementExport('pdf')}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    瀵煎嚭涓?PDF
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handlePersonalStatementExport('docx')}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    瀵煎嚭涓?DOCX
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

@@ -26,7 +26,7 @@ import {
   Loader2,
   X,
 } from "lucide-react";
-import { exportMultiPagePDF } from "@/lib/multi-page-pdf-export";
+import { exportMultiPagePDF } from "@/lib/paged-resume-pdf-export";
 import { toast } from "sonner";
 import {
   DropdownMenu,

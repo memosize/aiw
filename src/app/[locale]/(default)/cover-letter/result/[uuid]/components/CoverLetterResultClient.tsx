@@ -31,9 +31,9 @@ import { useDify } from '@/hooks/useDify';
 import { useDifyReviseCoverLetter } from '@/hooks/useDifyReviseCoverLetter';
 import {
   exportCoverLetterToTXT,
-  exportCoverLetterToPDF,
   exportCoverLetterToDOCX
 } from '@/lib/cover-letter-document-export';
+import { exportCoverLetterToPDF } from '@/lib/paged-cover-letter-pdf-export';
 import { smartWordCount } from '@/lib/word-count';
 import Markdown from "@/components/markdown";
 import MarkdownEditor from "@/components/blocks/mdeditor";

@@ -53,7 +53,7 @@ import FinalRecommendationIcon from "../../../components/icons/FinalRecommendati
 // Import Dify Hooks
 import { useDify } from '@/hooks/useDify';
 import { useDifyReviseRecommendationLetter } from '@/hooks/useDifyReviseRecommendationLetter';
-import { exportMarkdownToPDF } from '@/lib/markdown-pdf-export';
+import { exportMarkdownToPDF } from '@/lib/paged-markdown-pdf-export';
 import { exportTextToDOCX } from '@/lib/text-document-export';
 import { smartWordCount } from '@/lib/word-count';
 import type { StreamingCallbacks } from '@/services/dify-sse';
