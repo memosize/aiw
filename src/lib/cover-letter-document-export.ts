@@ -12,7 +12,7 @@ import {
   PageNumber
 } from 'docx';
 import { toast } from 'sonner';
-import { buildPageSlices, collectSafePageBreaks } from './pdf-pagination';
+import { buildPageSlices, collectOccupiedSegments, scaleSegments } from './pdf-pagination';
 
 /**
  * Cover Letter 导出选项接口
@@ -797,10 +797,12 @@ async function createMultiPagePDF(
 
   const scaledWidth = (canvasWidth / MM_TO_PX_RATIO) * scale;
   const pageContentHeightPx = (contentHeight * MM_TO_PX_RATIO) / scale;
-  const safeBreaks = collectSafePageBreaks(container).map((point) =>
-    Math.round(point * renderScale)
+  const occupiedSegments = scaleSegments(
+    collectOccupiedSegments(container),
+    renderScale,
+    canvasHeight
   );
-  const pageSlices = buildPageSlices(canvasHeight, pageContentHeightPx, safeBreaks);
+  const pageSlices = buildPageSlices(canvasHeight, pageContentHeightPx, occupiedSegments);
   const totalPages = pageSlices.length;
 
   for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {

@@ -1,20 +1,15 @@
 const DEFAULT_MIN_FILL_RATIO = 0.6;
 const LINE_MERGE_THRESHOLD_PX = 1;
 const BREAK_PADDING_PX = 2;
+const DEFAULT_SELECTOR = 'h1, h2, h3, h4, h5, h6, p, li, blockquote, ul, ol, div';
 
-interface VerticalSegment {
+export interface VerticalSegment {
   top: number;
   bottom: number;
 }
 
-function toSortedUniqueIntegers(values: number[]): number[] {
-  return Array.from(
-    new Set(
-      values
-        .filter((value) => Number.isFinite(value) && value > 0)
-        .map((value) => Math.round(value))
-    )
-  ).sort((a, b) => a - b);
+function clampToCanvas(value: number, totalHeight: number): number {
+  return Math.max(0, Math.min(totalHeight, Math.round(value)));
 }
 
 function normalizeRectToSegment(
@@ -33,6 +28,7 @@ function normalizeRectToSegment(
 
 function mergeVerticalSegments(segments: VerticalSegment[]): VerticalSegment[] {
   const sortedSegments = segments
+    .filter((segment) => Number.isFinite(segment.top) && Number.isFinite(segment.bottom))
     .filter((segment) => segment.bottom > segment.top)
     .sort((a, b) => a.top - b.top);
 
@@ -40,7 +36,7 @@ function mergeVerticalSegments(segments: VerticalSegment[]): VerticalSegment[] {
     return [];
   }
 
-  const mergedSegments: VerticalSegment[] = [sortedSegments[0]];
+  const mergedSegments: VerticalSegment[] = [{ ...sortedSegments[0] }];
 
   for (let index = 1; index < sortedSegments.length; index += 1) {
     const currentSegment = sortedSegments[index];
@@ -51,48 +47,10 @@ function mergeVerticalSegments(segments: VerticalSegment[]): VerticalSegment[] {
       continue;
     }
 
-    mergedSegments.push(currentSegment);
+    mergedSegments.push({ ...currentSegment });
   }
 
   return mergedSegments;
-}
-
-function buildBreaksFromSegments(
-  segments: VerticalSegment[],
-  totalHeight?: number
-): number[] {
-  const breaks: number[] = [];
-
-  if (segments.length === 0) {
-    return totalHeight && totalHeight > 0 ? [totalHeight] : [];
-  }
-
-  const firstSegment = segments[0];
-  if (firstSegment.top > BREAK_PADDING_PX) {
-    breaks.push(Math.max(BREAK_PADDING_PX, firstSegment.top / 2));
-  }
-
-  segments.forEach((segment, index) => {
-    const nextSegment = segments[index + 1];
-    if (!nextSegment) {
-      if (typeof totalHeight === 'number' && totalHeight - segment.bottom > BREAK_PADDING_PX) {
-        breaks.push(segment.bottom + (totalHeight - segment.bottom) / 2);
-      }
-      return;
-    }
-
-    const gap = nextSegment.top - segment.bottom;
-    if (gap > BREAK_PADDING_PX * 2) {
-      const safeTop = segment.bottom + BREAK_PADDING_PX;
-      const safeBottom = nextSegment.top - BREAK_PADDING_PX;
-
-      if (safeBottom > safeTop) {
-        breaks.push(safeTop + (safeBottom - safeTop) / 2);
-      }
-    }
-  });
-
-  return breaks;
 }
 
 function collectTextLineSegments(
@@ -125,9 +83,9 @@ function collectTextLineSegments(
   return mergeVerticalSegments(segments);
 }
 
-function collectOccupiedSegments(
+export function collectOccupiedSegments(
   container: HTMLElement,
-  selector: string
+  selector = DEFAULT_SELECTOR
 ): VerticalSegment[] {
   const containerRect = container.getBoundingClientRect();
   const segments: VerticalSegment[] = [];
@@ -150,49 +108,90 @@ function collectOccupiedSegments(
   return mergeVerticalSegments(segments);
 }
 
-export function collectSafePageBreaks(
-  container: HTMLElement,
-  selector = 'h1, h2, h3, h4, h5, h6, p, li, blockquote, ul, ol, div'
-): number[] {
-  const totalHeight = Math.ceil(
-    Math.max(container.scrollHeight, container.offsetHeight, container.clientHeight)
+export function scaleSegments(
+  segments: VerticalSegment[],
+  scale: number,
+  totalHeight: number
+): VerticalSegment[] {
+  return mergeVerticalSegments(
+    segments.map((segment) => ({
+      top: clampToCanvas(segment.top * scale, totalHeight),
+      bottom: clampToCanvas(segment.bottom * scale, totalHeight)
+    }))
   );
-  const occupiedSegments = collectOccupiedSegments(container, selector);
-  const candidates = buildBreaksFromSegments(occupiedSegments, totalHeight);
-
-  return toSortedUniqueIntegers(candidates);
 }
 
 export function buildPageSlices(
   totalHeightPx: number,
   pageHeightPx: number,
-  safeBreaksPx: number[],
+  occupiedSegmentsPx: VerticalSegment[],
   minFillRatio = DEFAULT_MIN_FILL_RATIO
 ): Array<{ startY: number; endY: number }> {
   const slices: Array<{ startY: number; endY: number }> = [];
-  const minFillHeight = pageHeightPx * minFillRatio;
-  const breaks = toSortedUniqueIntegers([...safeBreaksPx, totalHeightPx]);
+  const minFillHeight = Math.max(1, Math.round(pageHeightPx * minFillRatio));
+  const normalizedSegments = mergeVerticalSegments(occupiedSegmentsPx).map((segment) => ({
+    top: clampToCanvas(segment.top, totalHeightPx),
+    bottom: clampToCanvas(segment.bottom, totalHeightPx)
+  }));
 
   let startY = 0;
+  let segmentIndex = 0;
 
   while (startY < totalHeightPx) {
-    const idealEnd = Math.min(startY + pageHeightPx, totalHeightPx);
-    const minEnd = Math.min(startY + minFillHeight, idealEnd);
+    while (
+      segmentIndex < normalizedSegments.length &&
+      normalizedSegments[segmentIndex].bottom <= startY + BREAK_PADDING_PX
+    ) {
+      segmentIndex += 1;
+    }
 
-    const preferredBreaks = breaks.filter(
-      (point) => point > startY && point <= idealEnd && point >= minEnd
-    );
-    const fallbackBreaks = breaks.filter(
-      (point) => point > startY && point <= idealEnd
-    );
+    const idealEnd = Math.min(totalHeightPx, startY + Math.round(pageHeightPx));
+    let endY = idealEnd;
+    let probeIndex = segmentIndex;
 
-    let endY =
-      preferredBreaks[preferredBreaks.length - 1] ??
-      fallbackBreaks[fallbackBreaks.length - 1] ??
-      Math.round(idealEnd);
+    while (probeIndex < normalizedSegments.length) {
+      const segment = normalizedSegments[probeIndex];
+
+      if (segment.top >= idealEnd - BREAK_PADDING_PX) {
+        endY = clampToCanvas(segment.top - BREAK_PADDING_PX, totalHeightPx);
+        break;
+      }
+
+      if (segment.bottom > idealEnd - BREAK_PADDING_PX) {
+        const safeEndBeforeSegment = clampToCanvas(
+          segment.top - BREAK_PADDING_PX,
+          totalHeightPx
+        );
+
+        if (safeEndBeforeSegment > startY + BREAK_PADDING_PX) {
+          endY = safeEndBeforeSegment;
+        } else {
+          endY = Math.min(totalHeightPx, clampToCanvas(segment.bottom + BREAK_PADDING_PX, totalHeightPx));
+        }
+        break;
+      }
+
+      probeIndex += 1;
+    }
+
+    if (endY - startY < minFillHeight) {
+      let forcedEnd = endY;
+
+      while (probeIndex < normalizedSegments.length) {
+        const segment = normalizedSegments[probeIndex];
+        forcedEnd = Math.min(totalHeightPx, clampToCanvas(segment.bottom + BREAK_PADDING_PX, totalHeightPx));
+
+        if (forcedEnd - startY >= minFillHeight || forcedEnd >= totalHeightPx) {
+          endY = forcedEnd;
+          break;
+        }
+
+        probeIndex += 1;
+      }
+    }
 
     if (endY <= startY) {
-      endY = Math.min(totalHeightPx, Math.round(startY + pageHeightPx));
+      endY = Math.min(totalHeightPx, clampToCanvas(startY + pageHeightPx, totalHeightPx));
     }
 
     slices.push({ startY, endY });

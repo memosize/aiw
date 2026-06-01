@@ -1,7 +1,7 @@
 import html2canvas from 'yd-html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'sonner';
-import { buildPageSlices, collectSafePageBreaks } from './pdf-pagination';
+import { buildPageSlices, collectOccupiedSegments, scaleSegments } from './pdf-pagination';
 
 export interface MarkdownPDFOptions {
   filename?: string;
@@ -342,10 +342,12 @@ export class MarkdownPDFExporter {
 
     // 计算每页可容纳的内容高度(px)
     const pageContentHeightPx = (contentHeight * this.MM_TO_PX_RATIO) / scale;
-    const safeBreaks = collectSafePageBreaks(container).map((point) =>
-      Math.round(point * renderScale)
+    const occupiedSegments = scaleSegments(
+      collectOccupiedSegments(container),
+      renderScale,
+      canvasHeight
     );
-    const pageSlices = buildPageSlices(canvasHeight, pageContentHeightPx, safeBreaks);
+    const pageSlices = buildPageSlices(canvasHeight, pageContentHeightPx, occupiedSegments);
     const totalPages = pageSlices.length;
 
     console.log(`[Markdown PDF] 内容总高度: ${canvasHeight}px, 每页高度: ${pageContentHeightPx}px, 总页数: ${totalPages}`);
