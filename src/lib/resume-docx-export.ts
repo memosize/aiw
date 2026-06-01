@@ -1498,7 +1498,7 @@ export const exportResumeDocx = async (
     sectionIndex += 1;
   };
 
-  // 妯″潡鍐呭鐢熸垚鍣?
+  // Section content generators
   const sectionGenerators: Record<string, () => void> = {
     summary: () => {
       pushSection('summary', resume.sections.summary.name, resume.sections.summary.visible, [

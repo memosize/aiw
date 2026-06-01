@@ -54,7 +54,7 @@ const Header = ({
 
   return (
     <div>
-      {/* 涓昏澶撮儴鍖哄煙 */}
+      {/* Main header area */}
       <div
         className="relative flex items-center"
         style={{
@@ -63,7 +63,7 @@ const Header = ({
           height: "150px",
         }}
       >
-        {/* 澶村儚 - 缁濆瀹氫綅瀹炵幇璺ㄨ秺鏁堟灉 */}
+        {/* Avatar positioned absolutely for the overlap effect */}
         {basics.picture?.url && !basics.picture?.effects?.hidden && (
           <div
             className="absolute z-10"
@@ -104,7 +104,7 @@ const Header = ({
         </div>
       </div>
 
-      {/* 鑱旂郴淇℃伅鍖哄煙 - 鍒嗙晫绾夸笅闈?*/}
+      {/* Contact information area beneath the divider */}
       <div
         className="bg-white"
         style={{
@@ -147,7 +147,7 @@ const Header = ({
             </div>
           )}
 
-          {/* 閭 */}
+          {/* Email */}
           {basics.email && (
             <div className="flex items-center gap-2">
               <svg
@@ -163,7 +163,7 @@ const Header = ({
             </div>
           )}
 
-          {/* 缃戠珯閾炬帴 */}
+          {/* Website link */}
           {basics.url?.href && (
             <div className="flex items-center gap-2">
               <svg
@@ -195,7 +195,7 @@ const Sidebar = ({
 }) => {
   const { basics, sections } = resume;
 
-  // 鑾峰彇绀句氦濯掍綋鍥炬爣鍜屾樉绀哄悕绉?
+  // Resolve social icons and display names
   const getSocialIcon = (url: string, name: string) => {
     const lowerName = name.toLowerCase();
     const lowerUrl = url.toLowerCase();
@@ -253,7 +253,7 @@ const Sidebar = ({
     return name;
   };
 
-  // 瀹氫箟渚ц竟鏍忓悇涓ā鍧楃殑娓叉煋鍑芥暟
+  // Renderers for each sidebar section
   const renderSidebarContent = (sectionId: string) => {
     switch (sectionId) {
       case "profiles":
@@ -875,7 +875,7 @@ const MainContent = ({
   return (
     <div className="w-2/3 bg-white" style={{ padding: "20px 30px 30px 0px" }}>
       <div className="space-y-0">
-        {/* 鏍规嵁閰嶇疆娓叉煋涓昏鍐呭 */}
+        {/* Render main content according to layout configuration */}
         {mainSections.map((sectionId) => (
           <div key={sectionId}>{renderSectionContent(sectionId)}</div>
         ))}
