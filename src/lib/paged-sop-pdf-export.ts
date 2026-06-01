@@ -27,7 +27,10 @@ function renderParagraphs(container: HTMLElement, content: string, language: 'en
     Object.assign(p.style, {
       margin: '0 0 12pt',
       lineHeight: '1.8',
-      textAlign: language === 'zh' ? 'justify' : 'left'
+      textAlign: language === 'zh' ? 'justify' : 'left',
+      whiteSpace: 'pre-wrap',
+      wordBreak: language === 'zh' ? 'break-all' : 'break-word',
+      overflowWrap: 'anywhere'
     });
     p.textContent = block.trim();
     container.appendChild(p);
@@ -57,7 +60,10 @@ export async function exportSOPToPDF(content: string, options: SOPExportOptions)
     fontSize: '12pt',
     lineHeight: '1.8',
     color: '#000000',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    whiteSpace: 'normal',
+    wordBreak: language === 'zh' ? 'break-all' : 'break-word',
+    overflowWrap: 'anywhere'
   });
 
   const header = document.createElement('div');

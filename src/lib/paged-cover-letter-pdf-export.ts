@@ -61,7 +61,10 @@ export async function exportCoverLetterToPDF(
     fontSize: '12pt',
     lineHeight: '1.6',
     color: '#000000',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    whiteSpace: 'normal',
+    wordBreak: language === 'zh' ? 'break-all' : 'break-word',
+    overflowWrap: 'anywhere'
   });
 
   const sender = document.createElement('div');
@@ -110,7 +113,10 @@ export async function exportCoverLetterToPDF(
     const p = document.createElement('p');
     Object.assign(p.style, {
       margin: '0 0 12pt',
-      lineHeight: '1.6'
+      lineHeight: '1.6',
+      whiteSpace: 'pre-wrap',
+      wordBreak: language === 'zh' ? 'break-all' : 'break-word',
+      overflowWrap: 'anywhere'
     });
     p.textContent = block.trim();
     container.appendChild(p);

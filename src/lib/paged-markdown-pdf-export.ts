@@ -142,7 +142,10 @@ function createMarkdownContainer(
     lineHeight: '1.8',
     color: '#000000',
     overflow: 'visible',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    whiteSpace: 'normal',
+    wordBreak: language === 'zh' ? 'break-all' : 'break-word',
+    overflowWrap: 'anywhere'
   });
 
   if (title) {

@@ -51,15 +51,15 @@ async function renderPageSlice(
 
   Object.assign(viewport.style, {
     position: 'fixed',
-    top: '0',
-    left: '0',
+    top: '-100000px',
+    left: '-100000px',
     width: `${width}px`,
     height: `${sliceHeight}px`,
     overflow: 'hidden',
-    opacity: '0',
     pointerEvents: 'none',
     zIndex: '-1',
-    backgroundColor
+    backgroundColor,
+    boxSizing: 'border-box'
   });
 
   Object.assign(clone.style, {
@@ -71,7 +71,9 @@ async function renderPageSlice(
     minHeight: '0',
     maxWidth: 'none',
     transform: 'none',
-    margin: '0'
+    margin: '0',
+    opacity: '1',
+    visibility: 'visible'
   });
 
   viewport.appendChild(clone);
@@ -194,8 +196,8 @@ export async function exportPagedDOMToPDF(
     const offsetX = (pdfWidth - renderedWidthMm) / 2;
 
     pdf.addImage(
-      sliceCanvas.toDataURL('image/jpeg', quality),
-      'JPEG',
+      sliceCanvas.toDataURL('image/png'),
+      'PNG',
       offsetX,
       margin,
       renderedWidthMm,

@@ -182,7 +182,7 @@ export default function DocumentPreviewClient({ documentUuid }: DocumentPreviewC
       }
     }
 
-    // 检测语言（从内容或标题判断）
+    // 检测语言（从内容判断）
     const content = document.content || '';
     const hasChineseChars = /[\u4e00-\u9fa5]/.test(content);
     const language = hasChineseChars ? 'zh' : 'en';
@@ -240,13 +240,11 @@ export default function DocumentPreviewClient({ documentUuid }: DocumentPreviewC
 
         // 发件人信息
         senderInfo.full_name = formData.full_name || '';
-        senderInfo.address = formData.address || undefined;
         senderInfo.email = formData.email || '';
         senderInfo.phone = formData.phone || '';
 
         // 收件人信息
         recipientInfo.recruiter_name = formData.recruiter_name || undefined;
-        recipientInfo.recruiter_title = formData.recruiter_title || undefined;
         recipientInfo.company_name = formData.company_name || '';
         recipientInfo.company_address = formData.company_address || undefined;
 
@@ -257,7 +255,7 @@ export default function DocumentPreviewClient({ documentUuid }: DocumentPreviewC
       }
     }
 
-    // 检测语言（从内容或标题判断）
+    // 检测语言（从内容判断）
     const content = document.content || '';
     const hasChineseChars = /[\u4e00-\u9fa5]/.test(content);
     const language = hasChineseChars ? 'zh' : 'en';
@@ -406,14 +404,12 @@ export default function DocumentPreviewClient({ documentUuid }: DocumentPreviewC
     } catch (error: any) {
       console.error('Error restoring version:', error);
       toast.error(error.message || "版本恢复失败");
+      setRestoringVersion(false);
     } finally {
       setRestoringVersion(false);
     }
   };
-
-  // 获取当前显示的内容
   const displayContent = document?.content || '';
-
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -474,7 +470,6 @@ export default function DocumentPreviewClient({ documentUuid }: DocumentPreviewC
     );
   }
 
-  // 留学咨询类型的特殊处理
   if (document.document_type === DocumentType.StudyAbroadConsultation) {
     const formData = document.form_data || {};
     
@@ -723,8 +718,8 @@ export default function DocumentPreviewClient({ documentUuid }: DocumentPreviewC
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 头部导航 */}
         <div className="flex items-center justify-between mb-6">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             onClick={() => router.push('/my-documents')}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -765,22 +760,22 @@ export default function DocumentPreviewClient({ documentUuid }: DocumentPreviewC
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline">
                     <Download className="w-4 h-4 mr-2" />
-                    涓嬭浇
+                    下载
                     <ChevronDown className="w-4 h-4 ml-2" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => handlePersonalStatementExport('txt')}>
                     <FileText className="w-4 h-4 mr-2" />
-                    瀵煎嚭涓?TXT
+                    导出为 TXT
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handlePersonalStatementExport('pdf')}>
                     <FileText className="w-4 h-4 mr-2" />
-                    瀵煎嚭涓?PDF
+                    导出为 PDF
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handlePersonalStatementExport('docx')}>
                     <FileText className="w-4 h-4 mr-2" />
-                    瀵煎嚭涓?DOCX
+                    导出为 DOCX
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -868,7 +863,7 @@ export default function DocumentPreviewClient({ documentUuid }: DocumentPreviewC
                     {versions.map((version) => (
                       <option key={version.uuid} value={version.uuid}>
                         版本 {version.version} - {version.version_type === VersionType.Original ? '原始版本' : `修订版本`}
-                        {version.revision_settings?.restored_from && ' (恢复自历史版本)'}
+                        {version.revision_settings?.restored_from && ' (从历史版本恢复)'}
                       </option>
                     ))}
                   </select>
