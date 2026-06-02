@@ -44,7 +44,7 @@ export default function EducationModule() {
       <div className="flex flex-col gap-2">
         <div>
           <p className="text-muted-foreground text-xs">
-            请填写您的教育经历，包括学校信息、学位、时间等详细信息。
+            请使用英文填写教育背景信息。学校名称、城市、国家、学位和专业等固定信息需直接输入英文；相关课程请填写真实课程名称，可由 AI 优化为英文简历格式。
           </p>
         </div>
         <Button

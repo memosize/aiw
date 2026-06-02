@@ -43,7 +43,7 @@ export default function ResearchModule() {
       <div className="flex flex-col gap-2">
         <div>
           <p className="text-xs text-muted-foreground">
-            请填写您的科研经历，包括项目名称、研究单位、地点、时间、研究内容和使用工具等信息。
+            请使用英文填写科研项目中的固定信息，如项目名称、研究单位、城市和国家等。研究内容/贡献支持中文或英文填写，AI 将帮助整理为英文简历表述。
           </p>
           <p className="mt-1 text-[10px] text-muted-foreground">
             英文简历中的城市 / 国家请直接输入英文，例如 Melbourne, Australia

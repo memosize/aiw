@@ -116,7 +116,7 @@ export default function HeaderModule() {
     <div className="space-y-4">
       <div>
         <p className="text-xs text-muted-foreground">
-          请填写您的基本信息和联系方式，确保招生官或招聘方可以顺利联系到您。
+          请使用英文/拼音填写基本信息，确保生成后的简历可直接用于英文申请或求职。姓名、城市、国家等固定信息请按英文简历格式填写。
         </p>
       </div>
 
@@ -143,7 +143,7 @@ export default function HeaderModule() {
 
           <div className="flex-1 text-center xl:text-left">
             <h4 className="mb-2 text-xs font-medium text-foreground">
-              为您的简历添加照片（可选）
+              英文简历通常不建议添加照片。如申请要求或个人需要，可在此上传
             </h4>
 
             <input

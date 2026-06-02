@@ -85,13 +85,17 @@ const AITextarea = React.forwardRef<HTMLTextAreaElement, AITextareaProps>(
         {showLanguageHint && (
           <div className="flex items-center gap-1.5 px-0.5">
             <Languages className="w-3 h-3 text-orange-500/70 flex-shrink-0" />
-            <p className="text-[10px] text-muted-foreground leading-relaxed">
-              中文或英文填写均可，填写后建议点击
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              支持中英文填写。请写清楚真实经历，点击
+                <span className="inline-flex items-center mx-0.5 px-1 py-0.5 rounded bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400 font-medium">
+                <Sparkles className="w-2.5 h-2.5 mr-0.5" />
+                AI 生成
+              </span>
+              整理为英文简历表达；如不满意，可重新生成或手动修改。请在确认生成简历前调整满意，确认后将无法继续使用
               <span className="inline-flex items-center mx-0.5 px-1 py-0.5 rounded bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400 font-medium">
                 <Sparkles className="w-2.5 h-2.5 mr-0.5" />
                 AI 生成
               </span>
-              进行优化，优化结果将自动为英文
             </p>
           </div>
         )}

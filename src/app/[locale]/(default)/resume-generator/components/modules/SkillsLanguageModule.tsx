@@ -21,8 +21,8 @@ export default function SkillsLanguageModule() {
     <div className="space-y-4">
       <div>
         
-        <p className="text-muted-foreground text-xs">
-          请填写您的专业技能、编程语言、外语水平等详细信息。
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          请使用英文填写技能和语言信息。技能名称、软件工具、语言名称和熟练程度建议直接输入英文，确保生成后的英文简历格式统一。如技能较多，AI 可帮助整理分类和优化展示。
         </p>
       </div>
       

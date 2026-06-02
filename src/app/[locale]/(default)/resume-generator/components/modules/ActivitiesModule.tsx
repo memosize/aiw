@@ -44,7 +44,7 @@ export default function ActivitiesModule() {
       <div className="flex flex-col gap-2">
         <div>
           <p className="text-muted-foreground text-xs">
-            请填写您的课外活动、社团参与、志愿者经历等详细信息。
+            请使用英文填写活动经历中的固定信息，如活动名称、组织名称、角色、城市和国家等。具体贡献支持中文或英文填写，您可以先写清楚自己做了什么，AI 将帮助优化为正式英文简历表达。
           </p>
         </div>
         <Button

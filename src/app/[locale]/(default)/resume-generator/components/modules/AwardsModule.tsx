@@ -39,7 +39,7 @@ export default function AwardsModule() {
       <div className="flex flex-col gap-2">
         <div>
           <p className="text-muted-foreground text-xs">
-            请填写您获得的奖项、荣誉、证书等详细信息。
+            请使用英文填写奖项、荣誉和证书信息。奖项名称、颁发机构、证书名称等固定信息建议直接输入英文；如有排名、获奖比例或补充说明，请尽量填写具体信息。
           </p>
         </div>
         <Button

@@ -43,7 +43,7 @@ export default function WorkExperienceModule() {
       <div className="flex flex-col gap-2">
         <div>
           <p className="text-xs text-muted-foreground">
-            请填写您的工作经历，包括公司信息、职位、地点、时间和具体职责。
+            请使用英文填写实习 / 工作经历中的固定信息，如公司名称、职位名称、城市和国家等。具体职责支持中文或英文填写，您可以先写清楚真实工作内容，AI 将帮助优化为正式英文简历。
           </p>
           <p className="mt-1 text-[10px] text-muted-foreground">
             英文简历中的城市 / 国家请直接输入英文，例如 Melbourne, Australia
