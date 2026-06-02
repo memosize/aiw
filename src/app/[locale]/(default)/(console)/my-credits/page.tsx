@@ -96,10 +96,10 @@ export default async function () {
         {Object.entries(serviceLabels).map(([type, label]: [string, string]) => (
           <div
             key={type}
-            className="bg-white dark:bg-gray-950 border rounded-lg p-4 text-center"
+            className="rounded-lg border border-border bg-card p-4 text-center text-card-foreground shadow-sm"
           >
             <p className="text-sm text-muted-foreground mb-1">{label}</p>
-            <p className="text-2xl font-bold">
+            <p className="text-2xl font-bold text-card-foreground">
               {quotaSummary[type as keyof typeof quotaSummary] || 0}
             </p>
             <p className="text-xs text-muted-foreground">{t("my_credits.remaining_unit")}</p>
