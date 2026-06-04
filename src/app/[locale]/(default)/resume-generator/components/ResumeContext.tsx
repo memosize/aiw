@@ -1349,7 +1349,7 @@ export function ResumeProvider({
         }
 
         // Extract the actual resume data fields
-        // ??? education ?????????????????????????????????
+        // Normalize legacy and partial resume payloads before hydrating editor state.
         const resolvedResumeData = resumeData || defaultResumeData;
 
         const normalizeArrayItems = <T extends Record<string, unknown>>(

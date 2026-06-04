@@ -226,7 +226,7 @@ const Sidebar = ({
         </svg>
       );
     }
-    return "馃敆";
+    return "🔗";
   };
 
   const getSocialDisplayName = (url: string, name: string) => {
