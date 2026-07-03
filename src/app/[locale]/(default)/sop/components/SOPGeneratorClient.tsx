@@ -185,7 +185,7 @@ function SOPForm() {
             生成字数
           </CardTitle>
           <CardDescription>
-            填写希望生成的文档字数
+            目标字数用于控制文书长度，实际生成结果可能会因内容完整度、段落结构和表达需要略有浮动
           </CardDescription>
         </CardHeader>
         <CardContent>
