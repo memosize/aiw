@@ -4,9 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTranslations } from "next-intl";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -22,10 +20,10 @@ import {
   BookOpen,
   Trash2
 } from "lucide-react";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import { SOPProvider, useSOP } from "./SOPContext";
 import SOPIcon from "./icons/SOPIcon";
-import { apiRequest } from '@/lib/api-client';
+import { apiRequest } from "@/lib/api-client";
 import {
   Select,
   SelectContent,
@@ -35,16 +33,14 @@ import {
 } from "@/components/ui/select";
 
 function SOPForm() {
-  const t = useTranslations();
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
-  const locale = params.locale || 'zh';
-  
-  const { 
-    data, 
+  const locale = params.locale || "zh";
+
+  const {
+    data,
     updateField,
-    updateData,
     clearCache,
     generationState,
     setGenerationLoading,
@@ -59,7 +55,7 @@ function SOPForm() {
 
   const handleSubmit = async () => {
     if (!canGenerate()) {
-      toast.error('请至少填写申请目标和教育背景');
+      toast.error("请至少填写申请目标和教育背景");
       return;
     }
 
@@ -68,96 +64,90 @@ function SOPForm() {
     setGenerationError(null);
 
     try {
-      // 检查并扣除配额
-      const quotaRes = await fetch('/api/user/deduct-quota', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ function_type: 'sop' }),
+      const quotaRes = await fetch("/api/user/deduct-quota", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ function_type: "sop" }),
       });
       const quotaData = await quotaRes.json();
       if (quotaData.code !== 0) {
-        toast.error(quotaData.message || 'PS/SOP次数不足，请先购买套餐');
+        toast.error(quotaData.message || "PS/SOP 次数不足，请先购买套餐");
         setIsSubmitting(false);
         setGenerationLoading(false);
         return;
       }
 
-      // 保存到缓存
       saveToCache();
 
-      // 创建文档记录
       const formData = getFormData();
-      const { data: document } = await apiRequest('/api/documents', {
-        method: 'POST',
+      const { data: document } = await apiRequest("/api/documents", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          document_type: 'sop',
-          title: `SOP - ${(formData.target || '申请目标').substring(0, 100)}${formData.target && formData.target.length > 100 ? '...' : ''}`,
+          document_type: "sop",
+          title: `SOP - ${(formData.target || "申请目标").substring(0, 100)}${formData.target && formData.target.length > 100 ? "..." : ""}`,
           form_data: {
             ...formData,
             language: generationState.languagePreference
           },
-          language: generationState.languagePreference === 'English' ? 'en' : 'zh'
+          language: generationState.languagePreference === "English" ? "en" : "zh"
         }),
       });
 
       if (!document) {
-        throw new Error('Failed to create document');
+        throw new Error("Failed to create document");
       }
-      
-      // 跳转到结果页面，带上文档ID和自动生成标记
-      const shouldOpenRevision = searchParams.get('intent') === 'free-revision' || searchParams.get('openRevision') === 'true';
-      const resultParams = new URLSearchParams({ autoGenerate: 'true' });
+
+      const shouldOpenRevision =
+        searchParams.get("intent") === "free-revision" ||
+        searchParams.get("openRevision") === "true";
+      const resultParams = new URLSearchParams({ autoGenerate: "true" });
 
       if (shouldOpenRevision) {
-        resultParams.set('openRevision', 'true');
+        resultParams.set("openRevision", "true");
       }
 
       router.push(`/${locale}/sop/result/${document.uuid}?${resultParams.toString()}`);
     } catch (error) {
-      console.error('Error creating document:', error);
-      toast.error('创建文档失败，请重试');
+      console.error("Error creating document:", error);
+      toast.error("创建文档失败，请重试");
       setGenerationLoading(false);
-      setGenerationError('创建文档失败');
+      setGenerationError("创建文档失败");
       setIsSubmitting(false);
     }
   };
 
   return (
     <div className="form-page-scale max-w-4xl mx-auto space-y-6">
-      {/* 页面标题 */}
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
           <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
             <SOPIcon className="w-8 h-8 text-primary" />
           </div>
         </div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          SOP 目的陈述撰写
-        </h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">SOP 目的陈述撰写</h1>
         <p className="text-muted-foreground text-lg">
-          专业的Statement of Purpose撰写服务，清晰表达您的学术目标和研究兴趣
+          专业的 Statement of Purpose 撰写服务，清晰表达您的学术目标和研究兴趣
         </p>
         <div className="mt-4">
           <Link href={`/${locale}/help`}>
             <Button variant="outline" size="sm" className="gap-1.5">
               <BookOpen className="w-4 h-4" />
-              {locale === 'zh' ? '查看教程' : 'View Tutorial'}
+              {locale === "zh" ? "查看教程" : "View Tutorial"}
             </Button>
           </Link>
         </div>
 
-        {/* 一键清空按钮 */}
         <div className="mt-4">
           <Button
             variant="outline"
             size="sm"
             onClick={() => {
-              if (window.confirm('确定要清空所有已填写的内容吗？此操作无法恢复。')) {
+              if (window.confirm("确定要清空所有已填写的内容吗？此操作无法恢复。")) {
                 clearCache();
-                toast.success('已清空所有内容');
+                toast.success("已清空所有内容");
               }
             }}
             className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 hover:border-destructive/50"
@@ -168,7 +158,6 @@ function SOPForm() {
         </div>
       </div>
 
-      {/* 申请目标 */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -182,14 +171,36 @@ function SOPForm() {
         <CardContent>
           <Textarea
             value={data.target}
-            onChange={(e) => updateField('target', e.target.value)}
+            onChange={(e) => updateField("target", e.target.value)}
             placeholder="例如：申请哈佛大学计算机科学博士项目，专注于人工智能和机器学习研究..."
             className="min-h-[100px]"
           />
         </CardContent>
       </Card>
 
-      {/* 教育背景 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="w-5 h-5 text-primary" />
+            生成字数
+          </CardTitle>
+          <CardDescription>
+            填写希望生成的文档字数
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Input
+            type="number"
+            min="1"
+            inputMode="numeric"
+            value={data.count}
+            onChange={(e) => updateField("count", e.target.value.replace(/[^\d]/g, ""))}
+            placeholder="例如：800"
+            className="w-full"
+          />
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -203,14 +214,13 @@ function SOPForm() {
         <CardContent>
           <Textarea
             value={data.education}
-            onChange={(e) => updateField('education', e.target.value)}
+            onChange={(e) => updateField("education", e.target.value)}
             placeholder="例如：清华大学计算机科学与技术本科，GPA 3.8/4.0，主修课程包括算法设计、机器学习、深度学习..."
             className="min-h-[120px]"
           />
         </CardContent>
       </Card>
 
-      {/* 相关技能 */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -224,14 +234,13 @@ function SOPForm() {
         <CardContent>
           <Textarea
             value={data.skill}
-            onChange={(e) => updateField('skill', e.target.value)}
-            placeholder="例如：熟练掌握Python、TensorFlow、PyTorch，具备深度学习模型开发经验，发表过3篇机器学习相关论文..."
+            onChange={(e) => updateField("skill", e.target.value)}
+            placeholder="例如：熟练掌握 Python、TensorFlow、PyTorch，具备深度学习模型开发经验..."
             className="min-h-[100px]"
           />
         </CardContent>
       </Card>
 
-      {/* 研究经历 */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -245,14 +254,13 @@ function SOPForm() {
         <CardContent>
           <Textarea
             value={data.research}
-            onChange={(e) => updateField('research', e.target.value)}
-            placeholder="例如：在XX教授的指导下，参与自然语言处理研究项目，负责模型设计和实验，成果发表在ACL会议..."
+            onChange={(e) => updateField("research", e.target.value)}
+            placeholder="例如：在 XX 教授的指导下，参与自然语言处理研究项目，负责模型设计和实验..."
             className="min-h-[120px]"
           />
         </CardContent>
       </Card>
 
-      {/* 工作经历 */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -266,14 +274,13 @@ function SOPForm() {
         <CardContent>
           <Textarea
             value={data.workExperience}
-            onChange={(e) => updateField('workExperience', e.target.value)}
-            placeholder="例如：在Google AI研究院实习6个月，参与大语言模型优化项目，提升模型推理速度30%..."
+            onChange={(e) => updateField("workExperience", e.target.value)}
+            placeholder="例如：在 Google AI 研究院实习 3 个月，参与大语言模型优化项目..."
             className="min-h-[120px]"
           />
         </CardContent>
       </Card>
 
-      {/* 未来规划 */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -287,14 +294,13 @@ function SOPForm() {
         <CardContent>
           <Textarea
             value={data.plan}
-            onChange={(e) => updateField('plan', e.target.value)}
-            placeholder="例如：希望在博士期间深入研究强化学习在机器人控制中的应用，毕业后在学术界继续从事前沿研究..."
+            onChange={(e) => updateField("plan", e.target.value)}
+            placeholder="例如：希望在博士期间深入研究强化学习在机器人控制中的应用..."
             className="min-h-[100px]"
           />
         </CardContent>
       </Card>
 
-      {/* 语言选择 */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -302,13 +308,13 @@ function SOPForm() {
             生成语言 / Generation Language
           </CardTitle>
           <CardDescription>
-            选择SOP的生成语言 / Choose the language for your SOP
+            选择 SOP 的生成语言 / Choose the language for your SOP
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Select
             value={generationState.languagePreference}
-            onValueChange={(value: 'English' | 'Chinese') => setLanguagePreference(value)}
+            onValueChange={(value: "English" | "Chinese") => setLanguagePreference(value)}
           >
             <SelectTrigger className="w-full">
               <SelectValue />
@@ -321,7 +327,6 @@ function SOPForm() {
         </CardContent>
       </Card>
 
-      {/* 生成按钮 */}
       <div className="flex justify-center pt-6 pb-12">
         <Button
           size="lg"
@@ -336,7 +341,7 @@ function SOPForm() {
             </>
           ) : (
             <>
-              生成SOP
+              生成 SOP
               <ArrowRight className="ml-2 h-5 w-5" />
             </>
           )}

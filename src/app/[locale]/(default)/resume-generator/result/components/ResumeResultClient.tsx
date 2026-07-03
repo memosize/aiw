@@ -114,7 +114,7 @@ const FloatingTip = ({
 }) => {
   return (
     <div
-      className={`absolute z-[80] max-w-[240px] rounded-2xl border border-primary/15 bg-white/98 px-3 py-2.5 shadow-[0_10px_24px_rgba(15,23,42,0.12)] backdrop-blur-sm ${className}`}
+      className={`absolute z-[80] max-w-[240px] rounded-2xl border border-primary/15 bg-popover/95 px-3 py-2.5 text-popover-foreground shadow-[0_10px_24px_rgba(15,23,42,0.12)] backdrop-blur-sm ${className}`}
     >
       <button
         type="button"
@@ -139,7 +139,7 @@ const FloatingTip = ({
         </div>
       </div>
       <div
-        className={`absolute h-4 w-4 rotate-45 border-primary/15 bg-white/98 ${arrowClassName}`}
+        className={`absolute h-4 w-4 rotate-45 border-primary/15 bg-popover/95 ${arrowClassName}`}
       />
     </div>
   );
@@ -218,19 +218,19 @@ const DraggableModuleItem = ({
         drag(drop(node));
       }}
       className={`
-        flex items-center justify-between p-2 xl:p-2.5 bg-white rounded-lg border shadow-sm
+        flex items-center justify-between rounded-lg border bg-card p-2 shadow-sm xl:p-2.5
         cursor-move transition-all duration-200 hover:shadow-md
         ${isDragging ? "opacity-50" : "opacity-100"}
         ${
           area === "main"
-            ? "border-blue-200 bg-blue-50"
-            : "border-green-200 bg-green-50"
+            ? "border-blue-200 bg-blue-50 dark:border-blue-900/60 dark:bg-blue-950/25"
+            : "border-green-200 bg-green-50 dark:border-green-900/60 dark:bg-green-950/25"
         }
       `}
     >
       <div className="flex items-center gap-1.5 xl:gap-2">
-        <GripVertical className="w-3 h-3 xl:w-4 xl:h-4 text-gray-400" />
-        <span className="text-xs xl:text-sm font-medium text-gray-700">
+        <GripVertical className="h-3 w-3 text-muted-foreground xl:h-4 xl:w-4" />
+        <span className="text-xs font-medium text-foreground xl:text-sm">
           {title}
         </span>
       </div>
@@ -1135,7 +1135,7 @@ function ResumeResultContent() {
                                 variant="outline"
                                 size="sm"
                                 disabled={isExporting}
-                                className="bg-white/80 border-white/20 shadow-sm hover:bg-white hover:shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="border-border bg-background/85 shadow-sm transition-all duration-300 hover:bg-background hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
                               >
                                 {isExporting ? (
                                   <Loader2 className="w-3 h-3 mr-1 animate-spin" />
@@ -1149,7 +1149,7 @@ function ResumeResultContent() {
                           <DropdownMenuContent
                             align="end"
                             sideOffset={8}
-                            className="z-[140] w-44 bg-white shadow-xl"
+                            className="z-[140] w-44 bg-popover shadow-xl"
                           >
                             <DropdownMenuLabel>选择导出格式</DropdownMenuLabel>
                             <DropdownMenuItem
@@ -1225,14 +1225,14 @@ function ResumeResultContent() {
 
                       {/* Zoom Controls Hint */}
                       <div className="absolute top-4 right-4">
-                        <div className="text-[10px] text-muted-foreground bg-white/80 backdrop-blur-sm px-2 py-1 rounded-md shadow-sm">
+                        <div className="rounded-md bg-background/85 px-2 py-1 text-[10px] text-muted-foreground shadow-sm backdrop-blur-sm">
                           Ctrl + 滚轮缩放
                         </div>
                       </div>
 
                       {/* Zoom Controls Buttons */}
                       <div className="absolute bottom-4 right-4">
-                        <div className="flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-border p-2">
+                        <div className="flex items-center gap-2 rounded-lg border border-border bg-background/95 p-2 shadow-lg backdrop-blur-sm">
                           <Button
                             size="sm"
                             variant="ghost"
@@ -1316,7 +1316,7 @@ function ResumeResultContent() {
                           </div>
 
                           {/* Template Info */}
-                          <div className="p-1.5 xl:p-2 bg-white border-t border-border">
+                          <div className="border-t border-border bg-card p-1.5 xl:p-2">
                             <div className="flex items-center gap-1 xl:gap-2">
                               <div
                                 className={`w-1.5 h-1.5 xl:w-2 xl:h-2 rounded-full bg-gradient-to-br ${template.color}`}

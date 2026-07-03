@@ -1,6 +1,7 @@
 const DEFAULT_MIN_FILL_RATIO = 0.6;
 const LINE_MERGE_THRESHOLD_PX = 1;
 const BREAK_PADDING_PX = 2;
+const MIN_TEXT_LINE_PADDING_PX = 3;
 const DEFAULT_SELECTOR = 'h1, h2, h3, h4, h5, h6, p, li, blockquote, ul, ol, div';
 
 export interface VerticalSegment {
@@ -23,6 +24,46 @@ function normalizeRectToSegment(
   return {
     top: rect.top - containerTop,
     bottom: rect.bottom - containerTop
+  };
+}
+
+function parsePixelValue(value: string): number | null {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function getTextLinePadding(rect: DOMRect, node: Node): number {
+  const parentElement = node.parentElement;
+  if (!parentElement) {
+    return MIN_TEXT_LINE_PADDING_PX;
+  }
+
+  const style = window.getComputedStyle(parentElement);
+  const fontSize = parsePixelValue(style.fontSize) ?? rect.height;
+  const lineHeight = parsePixelValue(style.lineHeight) ?? (fontSize * 1.5);
+  const lineBoxPadding = Math.max(0, (lineHeight - rect.height) / 2);
+
+  return Math.max(
+    MIN_TEXT_LINE_PADDING_PX,
+    Math.ceil(lineBoxPadding) + BREAK_PADDING_PX
+  );
+}
+
+function normalizeTextRectToSegment(
+  rect: DOMRect,
+  containerTop: number,
+  node: Node
+): VerticalSegment | null {
+  const segment = normalizeRectToSegment(rect, containerTop);
+  if (!segment) {
+    return null;
+  }
+
+  const padding = getTextLinePadding(rect, node);
+
+  return {
+    top: segment.top - padding,
+    bottom: segment.bottom + padding
   };
 }
 
@@ -73,7 +114,7 @@ function collectTextLineSegments(
     range.detach();
 
     rects.forEach((rect) => {
-      const segment = normalizeRectToSegment(rect, containerTop);
+      const segment = normalizeTextRectToSegment(rect, containerTop, node);
       if (segment) {
         segments.push(segment);
       }

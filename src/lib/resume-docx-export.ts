@@ -1836,7 +1836,7 @@ export const exportResumeDocx = async (
     }
   };
 
-  // 榛樿妯″潡椤哄簭
+  // 默认模块顺序
   const DEFAULT_SECTION_ORDER = [
     'summary', 'experience', 'education', 'projects',
     'skills', 'awards', 'activities', 'languages',

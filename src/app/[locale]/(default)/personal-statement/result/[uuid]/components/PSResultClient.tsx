@@ -310,7 +310,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
     try {
       // 直接使用 data 而不是 getFormData()
       const difyInputs = {
-        count: '800',  // 字数要求
+        count: data.count || '800',  // 字数要求
         language: generationState.languagePreference || 'English',  // 语言字段
         username: 'User',  // 用户名字段
         target: data.target || '',
@@ -400,7 +400,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
     try {
       // Prepare Dify inputs
       const difyInputs = {
-        count: '800',
+        count: data.count || '800',
         language: generationState.languagePreference || 'English',
         username: 'User',
         target: data.target || '',

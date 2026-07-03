@@ -180,6 +180,7 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
     try {
       // 直接使用 data 而不是 getFormData()
       const difyInputs = {
+        count: data.count || '800',
         language: generationState.languagePreference || 'English',  // 语言字段
         username: 'User',  // 用户名字段
         target: data.target || '',
@@ -272,6 +273,7 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
 
     try {
       const difyInputs = {
+        count: data.count || '800',
         language: generationState.languagePreference || 'English',
         username: 'User',
         target: data.target || '',

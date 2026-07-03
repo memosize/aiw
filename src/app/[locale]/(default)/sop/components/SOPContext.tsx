@@ -1,18 +1,17 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-// SOP数据结构
 export interface SOPData {
-  target: string;          // 申请目标
-  education: string;       // 教育背景
-  skill: string;          // 相关技能
-  research: string;       // 研究经历
-  workExperience: string; // 工作经历
-  plan: string;           // 未来规划
+  target: string;
+  count: string;
+  education: string;
+  skill: string;
+  research: string;
+  workExperience: string;
+  plan: string;
 }
 
-// 生成状态
 export interface GenerationState {
   isGenerating: boolean;
   generatedContent: string;
@@ -24,7 +23,6 @@ export interface GenerationState {
   languagePreference: 'English' | 'Chinese';
 }
 
-// Context类型定义
 interface SOPContextType {
   data: SOPData;
   updateField: (field: keyof SOPData, value: string) => void;
@@ -43,18 +41,15 @@ interface SOPContextType {
   getFormData: () => SOPData;
 }
 
-// 创建Context
 const SOPContext = createContext<SOPContextType | undefined>(undefined);
 
-// 缓存键
 const CACHE_KEY = 'sop-form-data';
 const GENERATION_CACHE_KEY = 'sop-generation-state';
 
-// Provider组件
 export function SOPProvider({ children }: { children: ReactNode }) {
-  // 初始数据
   const initialData: SOPData = {
     target: '',
+    count: '800',
     education: '',
     skill: '',
     research: '',
@@ -76,25 +71,22 @@ export function SOPProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<SOPData>(initialData);
   const [generationState, setGenerationState] = useState<GenerationState>(initialGenerationState);
 
-  // 更新单个字段
   const updateField = (field: keyof SOPData, value: string) => {
-    setData(prev => ({
+    setData((prev) => ({
       ...prev,
       [field]: value
     }));
   };
 
-  // 批量更新数据
   const updateData = (newData: Partial<SOPData>) => {
-    setData(prev => ({
+    setData((prev) => ({
       ...prev,
       ...newData
     }));
   };
 
-  // 设置生成状态
   const setGenerationLoading = (loading: boolean) => {
-    setGenerationState(prev => ({
+    setGenerationState((prev) => ({
       ...prev,
       isGenerating: loading,
       error: loading ? null : prev.error
@@ -102,14 +94,14 @@ export function SOPProvider({ children }: { children: ReactNode }) {
   };
 
   const setGenerationError = (error: string | null) => {
-    setGenerationState(prev => ({
+    setGenerationState((prev) => ({
       ...prev,
       error
     }));
   };
 
   const updateGeneratedContent = (content: string) => {
-    setGenerationState(prev => ({
+    setGenerationState((prev) => ({
       ...prev,
       generatedContent: content,
       lastGeneratedAt: Date.now()
@@ -117,7 +109,7 @@ export function SOPProvider({ children }: { children: ReactNode }) {
   };
 
   const setWorkflowIds = (workflowRunId: string, taskId: string) => {
-    setGenerationState(prev => ({
+    setGenerationState((prev) => ({
       ...prev,
       workflowRunId,
       taskId,
@@ -126,34 +118,29 @@ export function SOPProvider({ children }: { children: ReactNode }) {
   };
 
   const setWorkflowStatus = (status: GenerationState['workflowStatus']) => {
-    setGenerationState(prev => ({
+    setGenerationState((prev) => ({
       ...prev,
       workflowStatus: status
     }));
   };
 
   const setLanguagePreference = (lang: 'English' | 'Chinese') => {
-    setGenerationState(prev => ({
+    setGenerationState((prev) => ({
       ...prev,
       languagePreference: lang
     }));
   };
 
-  // 检查是否可以生成
   const canGenerate = (): boolean => {
-    // 至少需要填写目标和教育背景
     return !!(data.target && data.education);
   };
 
-  // 获取表单数据（包含语言偏好）
   const getFormData = (): SOPData => {
     return {
-      ...data,
-      // 可以在这里添加语言偏好等额外字段
+      ...data
     };
   };
 
-  // 缓存管理
   const saveToCache = () => {
     try {
       localStorage.setItem(CACHE_KEY, JSON.stringify(data));
@@ -167,16 +154,21 @@ export function SOPProvider({ children }: { children: ReactNode }) {
     try {
       const cachedData = localStorage.getItem(CACHE_KEY);
       const cachedGeneration = localStorage.getItem(GENERATION_CACHE_KEY);
-      
+
       if (cachedData) {
-        setData(JSON.parse(cachedData));
+        const parsed = JSON.parse(cachedData) as Partial<SOPData>;
+        setData({
+          ...initialData,
+          ...parsed
+        });
       }
-      
+
       if (cachedGeneration) {
-        const parsed = JSON.parse(cachedGeneration);
+        const parsed = JSON.parse(cachedGeneration) as Partial<GenerationState>;
         setGenerationState({
+          ...initialGenerationState,
           ...parsed,
-          isGenerating: false // 重置生成状态
+          isGenerating: false
         });
       }
     } catch (error) {
@@ -195,16 +187,14 @@ export function SOPProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // 自动保存
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       saveToCache();
-    }, 1000); // 1秒后自动保存
+    }, 1000);
 
     return () => clearTimeout(timeoutId);
   }, [data, generationState]);
 
-  // 初始加载
   useEffect(() => {
     loadFromCache();
   }, []);
@@ -234,7 +224,6 @@ export function SOPProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// 自定义Hook
 export function useSOP() {
   const context = useContext(SOPContext);
   if (context === undefined) {

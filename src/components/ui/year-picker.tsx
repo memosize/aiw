@@ -47,7 +47,7 @@ export function YearPicker({
       <SelectTrigger 
         id={id}
         className={cn(
-          "h-14 text-lg border-gray-200 focus:border-green-500 focus:ring-green-500/20 rounded-xl",
+          "h-14 rounded-xl text-lg focus:border-green-500 focus:ring-green-500/20",
           className
         )}
       >

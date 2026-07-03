@@ -3,7 +3,8 @@ import { ReactNode } from "react";
 import { Sidebar } from "@/types/blocks/sidebar";
 import { unstable_noStore as noStore } from "next/cache";
 import { getTranslations } from "next-intl/server";
-import { getUserInfo } from "@/services/user";
+import { customAuth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function ({
@@ -15,8 +16,11 @@ export default async function ({
 }) {
   noStore();
   const { locale } = await params;
-  const userInfo = await getUserInfo();
-  if (!userInfo || !userInfo.email) {
+  const session = await customAuth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user?.email) {
     const callbackUrl =
       locale === "zh" ? "/creation-center" : `/${locale}/creation-center`;
     redirect("/auth/signin?callbackUrl=" + encodeURIComponent(callbackUrl));

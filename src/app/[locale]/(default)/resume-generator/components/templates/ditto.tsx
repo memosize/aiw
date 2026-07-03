@@ -461,7 +461,7 @@ const Sidebar = ({
       className="w-1/3 space-y-2"
       style={{ backgroundColor: "#FFFFFF", padding: "25px 20px 20px 20px" }}
     >
-      {/* 鏍规嵁閰嶇疆娓叉煋渚ц竟鏍忓唴瀹?*/}
+      {/* 根据配置渲染侧边栏内容 */}
       {sidebarSections.map((sectionId) => (
         <div key={sectionId}>{renderSidebarContent(sectionId)}</div>
       ))}

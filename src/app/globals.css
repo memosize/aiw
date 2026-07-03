@@ -39,10 +39,15 @@ spline-viewer::part(logo) {
     min-height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
+    color-scheme: light;
   }
 
   * {
     @apply border-border outline-ring/50;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   body {
@@ -50,6 +55,14 @@ spline-viewer::part(logo) {
     min-height: 100%;
     overflow-x: hidden;
     overflow-y: visible;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    color: inherit;
+    accent-color: var(--primary);
   }
 }
 

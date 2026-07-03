@@ -17,6 +17,7 @@ import useOneTapLogin from "@/hooks/useOneTapLogin";
 import { useCustomSession } from "@/hooks/useCustomSession";
 
 const AppContext = createContext({} as ContextValue);
+const DEFAULT_THEME = process.env.NEXT_PUBLIC_DEFAULT_THEME === "dark" ? "dark" : "light";
 
 export const useAppContext = () => useContext(AppContext);
 
@@ -30,9 +31,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
 
   const { data: session } = useCustomSession();
 
-  const [theme, setTheme] = useState<string>(() => {
-    return process.env.NEXT_PUBLIC_DEFAULT_THEME || "";
-  });
+  const [theme, setTheme] = useState<string>(DEFAULT_THEME);
 
   const [showSignModal, setShowSignModal] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
