@@ -73,10 +73,12 @@ async function fetchWithProxy(input: string, init?: RequestInit) {
 }
 
 function getBaseUrl(request: NextRequest) {
+  const requestOrigin = `${request.nextUrl.protocol}//${request.nextUrl.host}`;
+
   return (
+    requestOrigin ||
     process.env.NEXT_PUBLIC_WEB_URL ||
-    process.env.AUTH_URL?.replace(/\/api\/auth\/?$/, "") ||
-    `${request.nextUrl.protocol}//${request.nextUrl.host}`
+    process.env.AUTH_URL?.replace(/\/api\/auth\/?$/, "")
   ).replace(/\/+$/, "");
 }
 

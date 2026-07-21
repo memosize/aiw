@@ -194,6 +194,31 @@ function parseCookieHeader(cookieHeader: string) {
   );
 }
 
+function getCookieValueByNames(
+  parsedCookies: Record<string, string>,
+  cookieNames: string[]
+) {
+  for (const cookieName of cookieNames) {
+    const exactValue = parsedCookies[cookieName];
+    if (exactValue) {
+      return exactValue;
+    }
+
+    const matchedEntries = Object.entries(parsedCookies)
+      .filter(
+        ([name]) =>
+          name === cookieName || name.endsWith(`.${cookieName}`)
+      )
+      .sort(([a], [b]) => a.localeCompare(b));
+
+    if (matchedEntries.length > 0) {
+      return matchedEntries.map(([, value]) => value).join("");
+    }
+  }
+
+  return null;
+}
+
 const SESSION_COOKIE_NAMES = [
   "better-auth.session_token",
   "__Secure-better-auth.session_token",
@@ -227,9 +252,10 @@ export async function getCustomSession(headers?: Headers) {
     if (!cookieHeader) return null;
 
     const parsedCookies = parseCookieHeader(cookieHeader);
-    const sessionToken = SESSION_COOKIE_NAMES.map(
-      (cookieName) => parsedCookies[cookieName]
-    ).find(Boolean);
+    const sessionToken = getCookieValueByNames(
+      parsedCookies,
+      SESSION_COOKIE_NAMES
+    );
 
     if (!sessionToken) {
       console.log(

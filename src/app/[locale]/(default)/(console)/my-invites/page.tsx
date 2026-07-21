@@ -24,7 +24,7 @@ export default async function MyInvitesPage() {
 
   const user_uuid = await getUserUuid();
 
-  const callbackUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/my-invites`;
+  const callbackUrl = "/my-invites";
   if (!user_uuid) {
     redirect(`/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }

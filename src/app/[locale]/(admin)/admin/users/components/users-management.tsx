@@ -1,16 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { User } from "@/types/user";
+import moment from "moment";
+import { Coins, KeyRound, Loader2, ShieldCheck, ShieldOff } from "lucide-react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Header from "@/components/dashboard/header";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -26,13 +40,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { KeyRound, Coins, ShieldCheck, ShieldOff, Loader2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
-import moment from "moment";
+import { User } from "@/types/user";
 
 type DialogType = "password" | "credits" | null;
-type ServiceType = "ps_sop" | "recommendation" | "cover_letter" | "resume" | "universal";
+type ServiceType =
+  | "ps_sop"
+  | "recommendation"
+  | "cover_letter"
+  | "resume"
+  | "universal";
 
 const SERVICE_LABELS: Record<ServiceType, string> = {
   ps_sop: "PS/SOP",
@@ -50,21 +66,35 @@ const ALL_SERVICE_TYPES: ServiceType[] = [
   "universal",
 ];
 
+const DEFAULT_QUOTAS: Record<ServiceType, number> = {
+  ps_sop: 0,
+  recommendation: 0,
+  cover_letter: 0,
+  resume: 0,
+  universal: 0,
+};
+
 function QuotaSummary({ quotas }: { quotas: Record<ServiceType, number> }) {
-  const hasAny = ALL_SERVICE_TYPES.some((t: ServiceType) => (quotas[t] || 0) > 0);
-  if (!hasAny) return <span className="text-muted-foreground text-xs">无</span>;
+  const hasAny = ALL_SERVICE_TYPES.some((type) => (quotas[type] || 0) > 0);
+
+  if (!hasAny) {
+    return <span className="text-muted-foreground text-xs">无</span>;
+  }
 
   return (
     <div className="flex flex-wrap gap-1">
-      {ALL_SERVICE_TYPES.map((t: ServiceType) => {
-        const count = quotas[t] || 0;
-        if (count <= 0) return null;
+      {ALL_SERVICE_TYPES.map((type) => {
+        const count = quotas[type] || 0;
+        if (count <= 0) {
+          return null;
+        }
+
         return (
           <span
-            key={t}
+            key={type}
             className="inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-xs font-medium"
           >
-            {SERVICE_LABELS[t]}:{count}
+            {SERVICE_LABELS[type]}:{count}
           </span>
         );
       })}
@@ -72,24 +102,71 @@ function QuotaSummary({ quotas }: { quotas: Record<ServiceType, number> }) {
   );
 }
 
+function getVisiblePages(currentPage: number, totalPages: number) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_: unknown, index: number) => index + 1);
+  }
+
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, "ellipsis-right", totalPages] as const;
+  }
+
+  if (currentPage >= totalPages - 3) {
+    return [
+      1,
+      "ellipsis-left",
+      totalPages - 4,
+      totalPages - 3,
+      totalPages - 2,
+      totalPages - 1,
+      totalPages,
+    ] as const;
+  }
+
+  return [
+    1,
+    "ellipsis-left",
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+    "ellipsis-right",
+    totalPages,
+  ] as const;
+}
+
 export default function UsersManagement({
   users,
   userQuotasMap,
   adminEmails: initialAdminEmails,
+  currentPage,
+  pageSize,
+  totalUsers,
+  totalPages,
 }: {
   users: User[];
   userQuotasMap: Record<string, Record<ServiceType, number>>;
   adminEmails: string[];
+  currentPage: number;
+  pageSize: number;
+  totalUsers: number;
+  totalPages: number;
 }) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [dialogType, setDialogType] = useState<DialogType>(null);
   const [newPassword, setNewPassword] = useState("");
-  const [selectedServiceType, setSelectedServiceType] = useState<ServiceType>("ps_sop");
+  const [selectedServiceType, setSelectedServiceType] =
+    useState<ServiceType>("ps_sop");
   const [quotaAmount, setQuotaAmount] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [quotasMap, setQuotasMap] = useState(userQuotasMap);
   const [adminList, setAdminList] = useState<string[]>(initialAdminEmails);
   const [togglingAdmin, setTogglingAdmin] = useState<string | null>(null);
+
+  const visiblePages = getVisiblePages(currentPage, totalPages);
+  const startItem = totalUsers === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endItem = totalUsers === 0 ? 0 : Math.min(currentPage * pageSize, totalUsers);
+
+  const buildPageHref = (page: number) => `/admin/users?page=${page}`;
 
   const openDialog = (user: User, type: DialogType) => {
     setSelectedUser(user);
@@ -105,9 +182,12 @@ export default function UsersManagement({
   };
 
   const handleResetPassword = async () => {
-    if (!selectedUser?.uuid || !newPassword) return;
+    if (!selectedUser?.uuid || !newPassword) {
+      return;
+    }
+
     if (newPassword.length < 8) {
-      toast.error("密码至少8个字符");
+      toast.error("密码至少 8 位");
       return;
     }
 
@@ -122,13 +202,14 @@ export default function UsersManagement({
         }),
       });
       const result = await res.json();
+
       if (result.code === 0) {
         toast.success(`已重置 ${selectedUser.email} 的密码`);
         closeDialog();
       } else {
         toast.error(result.message || "重置失败");
       }
-    } catch (error: any) {
+    } catch {
       toast.error("重置失败");
     } finally {
       setIsSubmitting(false);
@@ -136,9 +217,12 @@ export default function UsersManagement({
   };
 
   const handleUpdateQuota = async () => {
-    if (!selectedUser?.uuid || !quotaAmount) return;
+    if (!selectedUser?.uuid || !quotaAmount) {
+      return;
+    }
+
     const amount = Number(quotaAmount);
-    if (isNaN(amount) || amount <= 0 || !Number.isInteger(amount)) {
+    if (Number.isNaN(amount) || amount <= 0 || !Number.isInteger(amount)) {
       toast.error("请输入正整数");
       return;
     }
@@ -155,11 +239,12 @@ export default function UsersManagement({
         }),
       });
       const result = await res.json();
+
       if (result.code === 0) {
         toast.success(
           `已为 ${selectedUser.email} 增加 ${SERVICE_LABELS[selectedServiceType]} ${amount} 次`
         );
-        setQuotasMap((prev: Record<string, Record<ServiceType, number>>) => ({
+        setQuotasMap((prev) => ({
           ...prev,
           [selectedUser.uuid!]: result.data.quotas,
         }));
@@ -167,7 +252,7 @@ export default function UsersManagement({
       } else {
         toast.error(result.message || "修改失败");
       }
-    } catch (error: any) {
+    } catch {
       toast.error("修改失败");
     } finally {
       setIsSubmitting(false);
@@ -175,7 +260,10 @@ export default function UsersManagement({
   };
 
   const handleToggleAdmin = async (user: User) => {
-    if (!user.email) return;
+    if (!user.email) {
+      return;
+    }
+
     const isAdmin = adminList.includes(user.email);
     const action = isAdmin ? "remove" : "add";
 
@@ -187,6 +275,7 @@ export default function UsersManagement({
         body: JSON.stringify({ email: user.email, action }),
       });
       const result = await res.json();
+
       if (result.code === 0) {
         setAdminList(result.data.admin_emails);
         toast.success(
@@ -197,31 +286,23 @@ export default function UsersManagement({
       } else {
         toast.error(result.message || "操作失败");
       }
-    } catch (error: any) {
+    } catch {
       toast.error("操作失败");
     } finally {
       setTogglingAdmin(null);
     }
   };
 
-  const defaultQuotas: Record<ServiceType, number> = {
-    ps_sop: 0,
-    recommendation: 0,
-    cover_letter: 0,
-    resume: 0,
-    universal: 0,
-  };
-
   return (
     <>
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-2xl font-bold">All Users</h2>
-          <p className="text-muted-foreground text-sm mt-1">
-            共 {users.length} 个用户
-          </p>
-        </div>
-        <div className="rounded-md border">
+      <Header />
+      <div className="w-full px-4 py-8 md:px-8">
+        <h1 className="mb-2 text-2xl font-medium">All Users</h1>
+        <p className="mb-8 text-sm text-muted-foreground">
+          共 {totalUsers} 个用户，第 {currentPage}/{totalPages} 页，每页 {pageSize} 条
+        </p>
+
+        <Card className="overflow-x-auto px-6">
           <Table>
             <TableHeader>
               <TableRow>
@@ -239,17 +320,20 @@ export default function UsersManagement({
               {users.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8}>
-                    <div className="flex w-full justify-center items-center py-8 text-muted-foreground">
+                    <div className="flex w-full items-center justify-center py-8 text-muted-foreground">
                       <p>暂无用户数据</p>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
-                users.map((user: User) => {
-                  const isAdmin = user.email ? adminList.includes(user.email) : false;
+                users.map((user) => {
+                  const isAdmin = user.email
+                    ? adminList.includes(user.email)
+                    : false;
+
                   return (
                     <TableRow key={user.uuid}>
-                      <TableCell className="font-mono text-xs max-w-[120px] truncate">
+                      <TableCell className="max-w-[120px] truncate font-mono text-xs">
                         {user.uuid}
                       </TableCell>
                       <TableCell>{user.email}</TableCell>
@@ -258,34 +342,48 @@ export default function UsersManagement({
                         {user.avatar_url ? (
                           <img
                             src={user.avatar_url}
-                            className="w-10 h-10 rounded-full"
+                            className="h-10 w-10 rounded-full"
                             alt=""
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-gray-200" />
+                          <div className="h-10 w-10 rounded-full bg-gray-200" />
                         )}
                       </TableCell>
                       <TableCell>
                         {isAdmin ? (
-                          <Badge className="bg-primary text-primary-foreground">管理员</Badge>
+                          <Badge className="bg-primary text-primary-foreground">
+                            管理员
+                          </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-muted-foreground">普通用户</Badge>
+                          <Badge
+                            variant="outline"
+                            className="text-muted-foreground"
+                          >
+                            普通用户
+                          </Badge>
                         )}
                       </TableCell>
                       <TableCell>
-                        <QuotaSummary quotas={quotasMap[user.uuid!] || defaultQuotas} />
+                        <QuotaSummary
+                          quotas={quotasMap[user.uuid || ""] || DEFAULT_QUOTAS}
+                        />
                       </TableCell>
                       <TableCell>
-                        {moment.utc(user.created_at).utcOffset(8).format("YYYY-MM-DD HH:mm:ss")}
+                        {user.created_at
+                          ? moment
+                              .utc(user.created_at)
+                              .utcOffset(8)
+                              .format("YYYY-MM-DD HH:mm:ss")
+                          : "-"}
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-1 flex-wrap">
+                        <div className="flex flex-wrap gap-1">
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => openDialog(user, "password")}
                           >
-                            <KeyRound className="w-3 h-3 mr-1" />
+                            <KeyRound className="mr-1 h-3 w-3" />
                             重置密码
                           </Button>
                           <Button
@@ -293,7 +391,7 @@ export default function UsersManagement({
                             variant="outline"
                             onClick={() => openDialog(user, "credits")}
                           >
-                            <Coins className="w-3 h-3 mr-1" />
+                            <Coins className="mr-1 h-3 w-3" />
                             修改次数
                           </Button>
                           <Button
@@ -303,11 +401,20 @@ export default function UsersManagement({
                             disabled={togglingAdmin === user.uuid}
                           >
                             {togglingAdmin === user.uuid ? (
-                              <><Loader2 className="w-3 h-3 mr-1 animate-spin" />处理中</>
+                              <>
+                                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                                处理中
+                              </>
                             ) : isAdmin ? (
-                              <><ShieldOff className="w-3 h-3 mr-1" />移除管理</>
+                              <>
+                                <ShieldOff className="mr-1 h-3 w-3" />
+                                移除管理
+                              </>
                             ) : (
-                              <><ShieldCheck className="w-3 h-3 mr-1" />设为管理</>
+                              <>
+                                <ShieldCheck className="mr-1 h-3 w-3" />
+                                设为管理
+                              </>
                             )}
                           </Button>
                         </div>
@@ -318,11 +425,63 @@ export default function UsersManagement({
               )}
             </TableBody>
           </Table>
-        </div>
+        </Card>
+
+        {totalPages > 1 && (
+          <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="text-sm text-muted-foreground">
+              当前展示 {startItem} - {endItem} / {totalUsers}
+            </div>
+            <Pagination className="mx-0 w-auto justify-start md:justify-end">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href={buildPageHref(Math.max(1, currentPage - 1))}
+                    className={
+                      currentPage === 1
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+                {visiblePages.map((page, index) => (
+                  <PaginationItem key={`${page}-${index}`}>
+                    {typeof page === "string" ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        href={buildPageHref(page)}
+                        isActive={currentPage === page}
+                      >
+                        {page}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    href={buildPageHref(Math.min(totalPages, currentPage + 1))}
+                    className={
+                      currentPage === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
 
-      {/* 重置密码弹窗 */}
-      <Dialog open={dialogType === "password"} onOpenChange={(open: boolean) => { if (!open) closeDialog(); }}>
+      <Dialog
+        open={dialogType === "password"}
+        onOpenChange={(open: boolean) => {
+          if (!open) {
+            closeDialog();
+          }
+        }}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>重置用户密码</DialogTitle>
@@ -338,16 +497,21 @@ export default function UsersManagement({
                 id="new-password"
                 type="text"
                 value={newPassword}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPassword(e.target.value)}
-                placeholder="至少8位，包含字母和数字"
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="至少 8 位，包含字母和数字更稳妥"
               />
-              <p className="text-xs text-muted-foreground">
-                重置后该用户的所有会话将失效，需重新登录
+              <p className="text-muted-foreground text-xs">
+                重置后该用户的现有会话会失效，需要重新登录。
               </p>
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={closeDialog}>取消</Button>
-              <Button onClick={handleResetPassword} disabled={isSubmitting || !newPassword}>
+              <Button variant="outline" onClick={closeDialog}>
+                取消
+              </Button>
+              <Button
+                onClick={handleResetPassword}
+                disabled={isSubmitting || !newPassword}
+              >
                 {isSubmitting ? "重置中..." : "确认重置"}
               </Button>
             </div>
@@ -355,8 +519,14 @@ export default function UsersManagement({
         </DialogContent>
       </Dialog>
 
-      {/* 修改服务次数弹窗 */}
-      <Dialog open={dialogType === "credits"} onOpenChange={(open: boolean) => { if (!open) closeDialog(); }}>
+      <Dialog
+        open={dialogType === "credits"}
+        onOpenChange={(open: boolean) => {
+          if (!open) {
+            closeDialog();
+          }
+        }}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>修改用户服务次数</DialogTitle>
@@ -369,13 +539,22 @@ export default function UsersManagement({
 
             <div className="space-y-1">
               <Label className="text-muted-foreground">当前剩余次数</Label>
-              <div className="grid grid-cols-2 gap-2 mt-1">
-                {ALL_SERVICE_TYPES.map((t: ServiceType) => {
-                  const userQuotas = quotasMap[selectedUser?.uuid || ""] || defaultQuotas;
+              <div className="mt-1 grid grid-cols-2 gap-2">
+                {ALL_SERVICE_TYPES.map((type) => {
+                  const userQuotas =
+                    quotasMap[selectedUser?.uuid || ""] || DEFAULT_QUOTAS;
+
                   return (
-                    <div key={t} className="flex items-center justify-between rounded-md border px-3 py-2">
-                      <span className="text-sm text-muted-foreground">{SERVICE_LABELS[t]}</span>
-                      <span className="text-sm font-bold">{userQuotas[t] || 0}</span>
+                    <div
+                      key={type}
+                      className="flex items-center justify-between rounded-md border px-3 py-2"
+                    >
+                      <span className="text-muted-foreground text-sm">
+                        {SERVICE_LABELS[type]}
+                      </span>
+                      <span className="text-sm font-bold">
+                        {userQuotas[type] || 0}
+                      </span>
                     </div>
                   );
                 })}
@@ -386,15 +565,17 @@ export default function UsersManagement({
               <Label>服务类型</Label>
               <Select
                 value={selectedServiceType}
-                onValueChange={(v: string) => setSelectedServiceType(v as ServiceType)}
+                onValueChange={(value: string) =>
+                  setSelectedServiceType(value as ServiceType)
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {ALL_SERVICE_TYPES.map((t: ServiceType) => (
-                    <SelectItem key={t} value={t}>
-                      {SERVICE_LABELS[t]}
+                  {ALL_SERVICE_TYPES.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {SERVICE_LABELS[type]}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -409,17 +590,22 @@ export default function UsersManagement({
                 min="1"
                 step="1"
                 value={quotaAmount}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuotaAmount(e.target.value)}
-                placeholder="输入正整数（如 5）"
+                onChange={(e) => setQuotaAmount(e.target.value)}
+                placeholder="输入正整数，例如 5"
               />
-              <p className="text-xs text-muted-foreground">
-                将为该用户增加指定服务类型的次数，有效期1年
+              <p className="text-muted-foreground text-xs">
+                会为该用户增加对应服务类型的可用次数。
               </p>
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={closeDialog}>取消</Button>
-              <Button onClick={handleUpdateQuota} disabled={isSubmitting || !quotaAmount}>
+              <Button variant="outline" onClick={closeDialog}>
+                取消
+              </Button>
+              <Button
+                onClick={handleUpdateQuota}
+                disabled={isSubmitting || !quotaAmount}
+              >
                 {isSubmitting ? "修改中..." : "确认增加"}
               </Button>
             </div>

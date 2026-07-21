@@ -1,10 +1,24 @@
-import { getUsers } from "@/models/user";
+import { getUsers, getUsersTotal } from "@/models/user";
 import { getUserQuotaSummary, ServiceType } from "@/models/service-quota";
 import { getSiteSetting } from "@/models/site-settings";
 import UsersManagement from "./components/users-management";
 
-export default async function AdminUsersPage() {
-  const users = await getUsers(1, 50);
+const PAGE_SIZE = 10;
+
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ page?: string }>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const requestedPage = Number(resolvedSearchParams?.page || "1");
+  const totalUsers = (await getUsersTotal()) || 0;
+  const totalPages = Math.max(1, Math.ceil(totalUsers / PAGE_SIZE));
+  const currentPage = Math.min(
+    Math.max(Number.isFinite(requestedPage) ? requestedPage : 1, 1),
+    totalPages
+  );
+  const users = await getUsers(currentPage, PAGE_SIZE);
 
   const quotasMap: Record<string, Record<ServiceType, number>> = {};
   if (users && users.length > 0) {
@@ -22,5 +36,15 @@ export default async function AdminUsersPage() {
   const dbAdmins = dbValue ? dbValue.split(",").map((e: string) => e.trim()).filter(Boolean) : [];
   const adminEmails = [...new Set([...envAdmins, ...dbAdmins])];
 
-  return <UsersManagement users={users || []} userQuotasMap={quotasMap} adminEmails={adminEmails} />;
+  return (
+    <UsersManagement
+      users={users || []}
+      userQuotasMap={quotasMap}
+      adminEmails={adminEmails}
+      currentPage={currentPage}
+      pageSize={PAGE_SIZE}
+      totalUsers={totalUsers}
+      totalPages={totalPages}
+    />
+  );
 }

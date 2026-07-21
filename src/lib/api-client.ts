@@ -15,13 +15,19 @@ export async function apiRequest<T = unknown>(
     const response = await fetch(url, options);
     const data = await response.json();
 
-    // 如果是 401 错误且错误代码是 SESSION_EXPIRED，自动退出登录
+    // If the session expired, preserve the current page so sign-in can return here.
     if (response.status === 401 && data.code === "SESSION_EXPIRED") {
       console.log("Session expired, signing out...");
+      const callbackUrl =
+        typeof window !== "undefined"
+          ? `${window.location.pathname}${window.location.search}${window.location.hash}`
+          : "/";
+
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
-            window.location.href = "/auth/signin";
+            window.location.href =
+              "/auth/signin?callbackUrl=" + encodeURIComponent(callbackUrl);
           },
         },
       });
