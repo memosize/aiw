@@ -32,6 +32,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const MAX_TEXT_FIELD_LENGTH = 250;
+
 function PSForm() {
   const router = useRouter();
   const params = useParams();
@@ -54,6 +56,20 @@ function PSForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
+    const textFields = [
+      data.target,
+      data.education,
+      data.skill,
+      data.research,
+      data.workExperience,
+      data.reason,
+    ];
+
+    if (textFields.some((value) => value.length > MAX_TEXT_FIELD_LENGTH)) {
+      toast.error("Each text field must be 250 characters or fewer.");
+      return;
+    }
+
     if (!canGenerate()) {
       toast.error("请至少填写申请目标和教育背景");
       return;
@@ -169,12 +185,18 @@ function PSForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Textarea
-            value={data.target}
-            onChange={(e) => updateField("target", e.target.value)}
-            placeholder="例如：申请麻省理工学院数据科学硕士项目，专注于医疗健康领域的机器学习应用..."
-            className="min-h-[100px] bg-white dark:bg-white"
-          />
+          <div className="space-y-2">
+            <Textarea
+              value={data.target}
+              onChange={(e) => updateField("target", e.target.value)}
+              maxLength={MAX_TEXT_FIELD_LENGTH}
+              placeholder="例如：申请麻省理工学院数据科学硕士项目，专注于医疗健康领域的机器学习应用..."
+              className="min-h-[100px] bg-white dark:bg-white"
+            />
+            <p className="text-right text-xs text-muted-foreground">
+              {data.target.length}/{MAX_TEXT_FIELD_LENGTH}
+            </p>
+          </div>
         </CardContent>
       </Card>
 
@@ -215,6 +237,7 @@ function PSForm() {
           <Textarea
             value={data.education}
             onChange={(e) => updateField("education", e.target.value)}
+            maxLength={MAX_TEXT_FIELD_LENGTH}
             placeholder="例如：北京大学计算机科学与技术本科，GPA 3.85/4.0，主修课程包括数据结构、算法、机器学习..."
             className="min-h-[120px] bg-white dark:bg-white"
           />
@@ -235,6 +258,7 @@ function PSForm() {
           <Textarea
             value={data.skill}
             onChange={(e) => updateField("skill", e.target.value)}
+            maxLength={MAX_TEXT_FIELD_LENGTH}
             placeholder="例如：编程语言：Python、R、SQL；数据科学工具：pandas、scikit-learn、TensorFlow..."
             className="min-h-[100px] bg-white dark:bg-white"
           />
@@ -255,6 +279,7 @@ function PSForm() {
           <Textarea
             value={data.research}
             onChange={(e) => updateField("research", e.target.value)}
+            maxLength={MAX_TEXT_FIELD_LENGTH}
             placeholder="例如：在 PKU 人工智能实验室担任研究助理，开发医学图像分析的机器学习模型..."
             className="min-h-[120px] bg-white dark:bg-white"
           />
@@ -275,6 +300,7 @@ function PSForm() {
           <Textarea
             value={data.workExperience}
             onChange={(e) => updateField("workExperience", e.target.value)}
+            maxLength={MAX_TEXT_FIELD_LENGTH}
             placeholder="例如：腾讯医疗健康部数据科学实习生，构建疾病进展分析的预测模型..."
             className="min-h-[120px] bg-white dark:bg-white"
           />
@@ -295,6 +321,7 @@ function PSForm() {
           <Textarea
             value={data.reason}
             onChange={(e) => updateField("reason", e.target.value)}
+            maxLength={MAX_TEXT_FIELD_LENGTH}
             placeholder="例如：我对利用 AI 解决医疗挑战充满热情，因为我亲眼目睹了技术差距如何影响农村地区的患者护理..."
             className="min-h-[120px] bg-white dark:bg-white"
           />
