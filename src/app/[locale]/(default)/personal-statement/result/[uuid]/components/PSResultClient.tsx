@@ -95,6 +95,22 @@ const AIGeneratingLoader = ({ currentNodeName }: { currentNodeName?: string }) =
   );
 };
 
+function getDifyOutputText(outputs: unknown): string {
+  if (!outputs || typeof outputs !== "object") {
+    return "";
+  }
+
+  const outputRecord = outputs as Record<string, unknown>;
+  for (const key of ["text", "output", "result"]) {
+    const value = outputRecord[key];
+    if (typeof value === "string" && value.trim()) {
+      return value;
+    }
+  }
+
+  return "";
+}
+
 function PSResultContent({ documentUuid }: { documentUuid: string }) {
   const searchParams = useSearchParams();
   const { 
@@ -327,7 +343,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
         runWorkflow({
           inputs: difyInputs,
           response_mode: 'blocking',
-          user: 'sop-user'
+          user: 'personal-statement-user'
         }),
         new Promise(resolve => setTimeout(resolve, 2000))
       ]);
@@ -335,19 +351,15 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
 
       // 提取生成的内容 - useDify 已经解包了响应
       // Dify原始响应格式: { workflow_run_id: "...", task_id: "...", data: { outputs: { text: "..." } } }
-      let generatedContent = (result as any).data?.outputs?.text || 
-                            (result as any).outputs?.text || 
-                            '';
-      
-      // 只有在完全没有内容时才显示错误信息
-      if (!generatedContent || generatedContent.trim() === '') {
-        generatedContent = "个人陈述生成失败，请重试";
+      const generatedContent = getDifyOutputText(
+        (result as any).data?.outputs || (result as any).outputs
+      );
+
+      if (!generatedContent) {
+        throw new Error("Dify 未返回可用的 PS 正文");
       }
-      
-      // 确保内容被正确更新
-      if (generatedContent && generatedContent !== "SOP生成失败，请重试") {
-        updateGeneratedContent(generatedContent);
-      }
+
+      updateGeneratedContent(generatedContent);
       
       // 总是关闭加载状态
       setIsInitialLoading(false);
@@ -461,14 +473,18 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
             console.log('[PS Streaming] Workflow finished');
 
             // Get final content from outputs (fallback if no text_chunk events)
-            const finalContent = data.data.outputs?.text ||
-                                data.data.outputs?.output ||
-                                chunks.join('') ||
-                                '';
+            const finalContent = getDifyOutputText(data.data.outputs) || chunks.join('');
 
-            if (finalContent && !firstChunkReceived) {
-              updateGeneratedContent(finalContent);
+            if (!finalContent.trim()) {
+              const errorMessage = 'Dify 未返回可用的 PS 正文';
+              setGenerationError(errorMessage);
+              setGenerationLoading(false);
+              setIsInitialLoading(false);
+              toast.error(`生成失败: ${errorMessage}`);
+              return;
             }
+
+            updateGeneratedContent(finalContent);
 
             // Save to database with smart word count
             const saveContent = finalContent || chunks.join('');
@@ -890,14 +906,15 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
           console.log('[PS Revision] Workflow finished');
 
           // Get final content from outputs (fallback if no text_chunk events)
-          const finalContent = data.data.outputs?.text ||
-                              data.data.outputs?.output ||
-                              chunks.join('') ||
-                              '';
+          const finalContent = getDifyOutputText(data.data.outputs) || chunks.join('');
 
-          if (finalContent && !revisionFirstChunkReceived) {
-            updateGeneratedContent(finalContent);
+          if (!finalContent.trim()) {
+            setIsRevisionLoading(false);
+            toast.error('PS 优化失败: Dify 未返回可用的正文');
+            return;
           }
+
+          updateGeneratedContent(finalContent);
 
           // Save to database with smart word count
           const saveContent = finalContent || chunks.join('');

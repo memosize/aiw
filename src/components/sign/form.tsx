@@ -39,6 +39,9 @@ export default function SignForm({
       passwordLabel: isZh ? "密码" : "Password",
       loginSuccess: isZh ? "登录成功" : "Signed in successfully",
       loginFailed: isZh ? "登录失败，请重试" : "Sign in failed. Please try again.",
+      sessionNotReady: isZh
+        ? "登录会话创建失败，请重试"
+        : "Your sign-in session could not be verified. Please try again.",
       registerSuccess: isZh ? "注册成功，请使用新账号登录" : "Registration successful. Please sign in.",
       registerFailed: isZh ? "注册失败，请重试" : "Registration failed. Please try again.",
       resetTitle: isZh ? "找回密码" : "Reset password",
@@ -281,6 +284,7 @@ export default function SignForm({
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "same-origin",
         body: JSON.stringify({
           email: email.trim(),
           password,
@@ -294,7 +298,7 @@ export default function SignForm({
       }
 
       const waitForSessionReady = async () => {
-        for (let attempt = 0; attempt < 5; attempt += 1) {
+        for (let attempt = 0; attempt < 20; attempt += 1) {
           try {
             const sessionResponse = await fetch("/api/auth/get-session", {
               method: "GET",
@@ -312,13 +316,18 @@ export default function SignForm({
             console.error("Session verification error:", sessionError);
           }
 
-          await new Promise((resolve) => window.setTimeout(resolve, 200));
+          await new Promise((resolve) => window.setTimeout(resolve, 250));
         }
 
         return false;
       };
 
-      await waitForSessionReady();
+      const sessionReady = await waitForSessionReady();
+      if (!sessionReady) {
+        toast.error(copy.sessionNotReady);
+        return;
+      }
+
       const targetUrl = getPostSignInUrl();
       toast.success(copy.loginSuccess);
       window.location.replace(targetUrl);
