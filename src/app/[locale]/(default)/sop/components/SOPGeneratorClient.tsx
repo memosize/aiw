@@ -32,8 +32,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const MAX_TEXT_FIELD_LENGTH = 250;
-
 function SOPForm() {
   const router = useRouter();
   const params = useParams();
@@ -56,20 +54,6 @@ function SOPForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    const textFields = [
-      data.target,
-      data.education,
-      data.skill,
-      data.research,
-      data.workExperience,
-      data.plan,
-    ];
-
-    if (textFields.some((value) => value.length > MAX_TEXT_FIELD_LENGTH)) {
-      toast.error("每个文本输入项不能超过 250 个字符");
-      return;
-    }
-
     if (!canGenerate()) {
       toast.error("请至少填写申请目标和教育背景");
       return;
@@ -185,18 +169,12 @@ function SOPForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <Textarea
-              value={data.target}
-              onChange={(e) => updateField("target", e.target.value)}
-              maxLength={MAX_TEXT_FIELD_LENGTH}
-              placeholder="例如：申请哈佛大学计算机科学博士项目，专注于人工智能和机器学习研究..."
-              className="min-h-[100px]"
-            />
-            <p className="text-right text-xs text-muted-foreground">
-              {data.target.length}/{MAX_TEXT_FIELD_LENGTH}
-            </p>
-          </div>
+          <Textarea
+            value={data.target}
+            onChange={(e) => updateField("target", e.target.value)}
+            placeholder="例如：申请哈佛大学计算机科学博士项目，专注于人工智能和机器学习研究..."
+            className="min-h-[100px]"
+          />
         </CardContent>
       </Card>
 
@@ -234,18 +212,12 @@ function SOPForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <Textarea
-              value={data.education}
-              onChange={(e) => updateField("education", e.target.value)}
-              maxLength={MAX_TEXT_FIELD_LENGTH}
-              placeholder="例如：清华大学计算机科学与技术本科，GPA 3.8/4.0，主修课程包括算法设计、机器学习、深度学习..."
-              className="min-h-[120px]"
-            />
-            <p className="text-right text-xs text-muted-foreground">
-              {data.education.length}/{MAX_TEXT_FIELD_LENGTH}
-            </p>
-          </div>
+          <Textarea
+            value={data.education}
+            onChange={(e) => updateField("education", e.target.value)}
+            placeholder="例如：清华大学计算机科学与技术本科，GPA 3.8/4.0，主修课程包括算法设计、机器学习、深度学习..."
+            className="min-h-[120px]"
+          />
         </CardContent>
       </Card>
 
@@ -260,18 +232,12 @@ function SOPForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <Textarea
-              value={data.skill}
-              onChange={(e) => updateField("skill", e.target.value)}
-              maxLength={MAX_TEXT_FIELD_LENGTH}
-              placeholder="例如：熟练掌握 Python、TensorFlow、PyTorch，具备深度学习模型开发经验..."
-              className="min-h-[100px]"
-            />
-            <p className="text-right text-xs text-muted-foreground">
-              {data.skill.length}/{MAX_TEXT_FIELD_LENGTH}
-            </p>
-          </div>
+          <Textarea
+            value={data.skill}
+            onChange={(e) => updateField("skill", e.target.value)}
+            placeholder="例如：熟练掌握 Python、TensorFlow、PyTorch，具备深度学习模型开发经验..."
+            className="min-h-[100px]"
+          />
         </CardContent>
       </Card>
 
@@ -286,18 +252,12 @@ function SOPForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <Textarea
-              value={data.research}
-              onChange={(e) => updateField("research", e.target.value)}
-              maxLength={MAX_TEXT_FIELD_LENGTH}
-              placeholder="例如：在 XX 教授的指导下，参与自然语言处理研究项目，负责模型设计和实验..."
-              className="min-h-[120px]"
-            />
-            <p className="text-right text-xs text-muted-foreground">
-              {data.research.length}/{MAX_TEXT_FIELD_LENGTH}
-            </p>
-          </div>
+          <Textarea
+            value={data.research}
+            onChange={(e) => updateField("research", e.target.value)}
+            placeholder="例如：在 XX 教授的指导下，参与自然语言处理研究项目，负责模型设计和实验..."
+            className="min-h-[120px]"
+          />
         </CardContent>
       </Card>
 
@@ -312,18 +272,12 @@ function SOPForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <Textarea
-              value={data.workExperience}
-              onChange={(e) => updateField("workExperience", e.target.value)}
-              maxLength={MAX_TEXT_FIELD_LENGTH}
-              placeholder="例如：在 Google AI 研究院实习 3 个月，参与大语言模型优化项目..."
-              className="min-h-[120px]"
-            />
-            <p className="text-right text-xs text-muted-foreground">
-              {data.workExperience.length}/{MAX_TEXT_FIELD_LENGTH}
-            </p>
-          </div>
+          <Textarea
+            value={data.workExperience}
+            onChange={(e) => updateField("workExperience", e.target.value)}
+            placeholder="例如：在 Google AI 研究院实习 3 个月，参与大语言模型优化项目..."
+            className="min-h-[120px]"
+          />
         </CardContent>
       </Card>
 
@@ -338,18 +292,12 @@ function SOPForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <Textarea
-              value={data.plan}
-              onChange={(e) => updateField("plan", e.target.value)}
-              maxLength={MAX_TEXT_FIELD_LENGTH}
-              placeholder="例如：希望在博士期间深入研究强化学习在机器人控制中的应用..."
-              className="min-h-[100px]"
-            />
-            <p className="text-right text-xs text-muted-foreground">
-              {data.plan.length}/{MAX_TEXT_FIELD_LENGTH}
-            </p>
-          </div>
+          <Textarea
+            value={data.plan}
+            onChange={(e) => updateField("plan", e.target.value)}
+            placeholder="例如：希望在博士期间深入研究强化学习在机器人控制中的应用..."
+            className="min-h-[100px]"
+          />
         </CardContent>
       </Card>
 
