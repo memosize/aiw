@@ -246,10 +246,10 @@
         "label": "⭐ 热门推荐",
         "features_title": "包含内容",
         "features": [
-          "PS/SOP × 7（含赠送1次）",
+          "PS/SOP × 7（含赠送2次）",
           "推荐信 × 2",
           "简历 × 1",
-          "适合申请5-6所学校",
+          "适合申请3-5所学校",
           "12个月有效期"
         ],
         "interval": "one-time",
@@ -257,10 +257,10 @@
         "cn_amount": 39900,
         "currency": "cny",
         "price": "¥399",
-        "original_price": "¥810",
+        "original_price": "¥840",
         "unit": "/10次生成",
         "is_featured": true,
-        "tip": "适合3-5所学校 · 含赠送1次 · 省￥411",
+        "tip": "适合3-5所学校 · 含赠送1次 · 省￥441",
         "button": {
           "title": "立即购买",
           "url": "/#pricing",
