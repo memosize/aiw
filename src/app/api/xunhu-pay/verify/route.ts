@@ -27,6 +27,12 @@ export async function POST(req: Request) {
     }
 
     if (order.status === "paid") {
+      // 支付回调可能在配额写入前中断，重复验证时重试幂等的配额发放。
+      await handlePaidOrder({
+        order_no,
+        paid_detail: "already_paid_verification",
+      });
+
       return respData({
         status: "paid",
         product_name: order.product_name,

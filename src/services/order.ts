@@ -39,9 +39,8 @@ export async function handlePaidOrder({
   await updateOrderStatus(order_no, "paid", paid_at, paid_email, paid_detail);
 
   if (order.user_uuid) {
-    if (order.credits > 0) {
-      await updateCreditForOrder(order);
-    }
+    // 套餐配额由 product_id 决定，不能依赖客户端传入的 credits 值。
+    await updateCreditForOrder(order);
 
     if (order.discount_code) {
       const alreadyRecorded = await findDiscountUsageByOrderNo(order.order_no);
