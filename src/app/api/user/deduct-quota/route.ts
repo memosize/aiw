@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       return Response.json({ code: -1, message: result.message }, { status: 402 });
     }
 
-    return respData({ success: true });
+    return respData({ success: true, service_type: result.deductedServiceType });
   } catch (error: any) {
     return respErr("扣除配额失败: " + error.message);
   }

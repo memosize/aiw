@@ -97,7 +97,8 @@ function PSForm() {
           title: `Personal Statement - ${(formData.target || "申请目标").substring(0, 100)}${formData.target && formData.target.length > 100 ? "..." : ""}`,
           form_data: {
             ...formData,
-            language: generationState.languagePreference
+            language: generationState.languagePreference,
+            quota_service_type: quotaData.data?.service_type || "ps_sop"
           },
           language: generationState.languagePreference === "English" ? "en" : "zh"
         }),

@@ -145,6 +145,55 @@ export async function deductQuota(
 }
 
 /**
+ * 返还一次服务配额。refundKey 用于避免同一生成任务重复返还。
+ */
+export async function refundQuota(
+  userUuid: string,
+  serviceType: ServiceType,
+  refundKey: string
+): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  const now = new Date().toISOString();
+
+  const { data: existingRefund, error: existingRefundError } = await supabase
+    .from("service_quotas")
+    .select("id")
+    .eq("user_uuid", userUuid)
+    .eq("service_type", serviceType)
+    .eq("order_no", refundKey)
+    .limit(1);
+
+  if (existingRefundError) throw existingRefundError;
+  if (existingRefund && existingRefund.length > 0) return true;
+
+  const { data: activeQuota, error: activeQuotaError } = await supabase
+    .from("service_quotas")
+    .select("expired_at")
+    .eq("user_uuid", userUuid)
+    .eq("service_type", serviceType)
+    .gte("expired_at", now)
+    .order("expired_at", { ascending: false })
+    .limit(1);
+
+  if (activeQuotaError) throw activeQuotaError;
+
+  const fallbackExpiration = new Date();
+  fallbackExpiration.setMonth(fallbackExpiration.getMonth() + 3);
+  const expiredAt = activeQuota?.[0]?.expired_at || fallbackExpiration.toISOString();
+
+  const { error } = await supabase.from("service_quotas").insert({
+    user_uuid: userUuid,
+    service_type: serviceType,
+    remaining: 1,
+    order_no: refundKey,
+    expired_at: expiredAt,
+  });
+
+  if (error) throw error;
+  return true;
+}
+
+/**
  * 管理员手动增加指定服务类型的配额
  */
 export async function addAdminQuota(

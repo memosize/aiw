@@ -12,7 +12,7 @@ import {
 export async function checkAndDeductQuota(
   userUuid: string,
   functionType: string
-): Promise<{ ok: boolean; message?: string }> {
+): Promise<{ ok: boolean; message?: string; deductedServiceType?: ServiceType }> {
   const serviceType = FUNCTION_TYPE_TO_SERVICE[functionType];
   if (!serviceType) {
     return { ok: false, message: "未知的服务类型" };
@@ -22,7 +22,7 @@ export async function checkAndDeductQuota(
   const specificAvailable = await getAvailableQuota(userUuid, serviceType);
   if (specificAvailable > 0) {
     const ok = await deductQuota(userUuid, serviceType);
-    if (ok) return { ok: true };
+    if (ok) return { ok: true, deductedServiceType: serviceType };
   }
 
   // 2. 尝试扣通用配额
@@ -30,7 +30,7 @@ export async function checkAndDeductQuota(
     const universalAvailable = await getAvailableQuota(userUuid, "universal");
     if (universalAvailable > 0) {
       const ok = await deductQuota(userUuid, "universal");
-      if (ok) return { ok: true };
+      if (ok) return { ok: true, deductedServiceType: "universal" };
     }
   }
 

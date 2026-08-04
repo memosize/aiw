@@ -158,6 +158,19 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
   
   const { runRevision, runRevisionStreaming, isRevising } = useDifyRevisePS();
 
+  const refundGenerationQuota = useCallback(async () => {
+    try {
+      const response = await fetch('/api/user/refund-quota', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ document_uuid: documentUuid }),
+      });
+      if (!response.ok) console.error('[PS] Failed to refund quota');
+    } catch (error) {
+      console.error('[PS] Error refunding quota:', error);
+    }
+  }, [documentUuid]);
+
   const getVersionContentSafely = useCallback(
     (version: any) => {
       if (typeof version?.content === "string" && version.content.trim() !== "") {
@@ -355,7 +368,8 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
         (result as any).data?.outputs || (result as any).outputs
       );
 
-      if (!generatedContent) {
+      if (!generatedContent.trim()) {
+        await refundGenerationQuota();
         throw new Error("Dify 未返回可用的 PS 正文");
       }
 
@@ -399,7 +413,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
       setGenerationLoading(false);
       setIsInitialLoading(false);  // 关闭初始加载状态
     }
-  }, [documentUuid, data, generationState.languagePreference, runWorkflow, updateGeneratedContent, setGenerationLoading, setGenerationError]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [documentUuid, data, generationState.languagePreference, runWorkflow, updateGeneratedContent, setGenerationLoading, setGenerationError, refundGenerationQuota]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Streaming generation function
   const handleGenerateStreaming = useCallback(async () => {
@@ -467,7 +481,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
             console.log('[PS Streaming] Node finished:', data.data.title || data.data.node_type);
           },
 
-          onWorkflowFinished: (data) => {
+          onWorkflowFinished: async (data) => {
             setIsStreamingText(false);
             setCurrentNodeName('');
             console.log('[PS Streaming] Workflow finished');
@@ -477,6 +491,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
 
             if (!finalContent.trim()) {
               const errorMessage = 'Dify 未返回可用的 PS 正文';
+              await refundGenerationQuota();
               setGenerationError(errorMessage);
               setGenerationLoading(false);
               setIsInitialLoading(false);
@@ -543,7 +558,8 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
     updateGeneratedContent,
     setGenerationLoading,
     setGenerationError,
-    firstChunkReceived
+    firstChunkReceived,
+    refundGenerationQuota
   ]);
 
   // 检查修改状态
