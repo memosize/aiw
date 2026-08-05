@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import moment from "moment";
-import { Coins, KeyRound, Loader2, ShieldCheck, ShieldOff } from "lucide-react";
+import { Coins, KeyRound, Loader2, RotateCcw, Search, ShieldCheck, ShieldOff } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -142,6 +142,7 @@ export default function UsersManagement({
   pageSize,
   totalUsers,
   totalPages,
+  searchQuery,
 }: {
   users: User[];
   userQuotasMap: Record<string, Record<ServiceType, number>>;
@@ -150,6 +151,7 @@ export default function UsersManagement({
   pageSize: number;
   totalUsers: number;
   totalPages: number;
+  searchQuery: string;
 }) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [dialogType, setDialogType] = useState<DialogType>(null);
@@ -166,7 +168,11 @@ export default function UsersManagement({
   const startItem = totalUsers === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const endItem = totalUsers === 0 ? 0 : Math.min(currentPage * pageSize, totalUsers);
 
-  const buildPageHref = (page: number) => `/admin/users?page=${page}`;
+  const buildPageHref = (page: number) => {
+    const params = new URLSearchParams({ page: page.toString() });
+    if (searchQuery) params.set("q", searchQuery);
+    return `/admin/users?${params.toString()}`;
+  };
 
   const openDialog = (user: User, type: DialogType) => {
     setSelectedUser(user);
@@ -309,6 +315,28 @@ export default function UsersManagement({
         <p className="mb-8 text-sm text-muted-foreground">
           共 {totalUsers} 个用户，第 {currentPage}/{totalPages} 页，每页 {pageSize} 条
         </p>
+
+        <form action="/admin/users" className="mb-4 flex max-w-md gap-2">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              name="q"
+              defaultValue={searchQuery}
+              placeholder="按姓名或 Email 搜索"
+              className="pl-9"
+            />
+          </div>
+          <Button type="submit" size="icon" variant="outline" title="搜索" aria-label="搜索">
+            <Search className="h-4 w-4" />
+          </Button>
+          {searchQuery && (
+            <Button asChild size="icon" variant="outline" title="重置搜索" aria-label="重置搜索">
+              <a href="/admin/users">
+                <RotateCcw className="h-4 w-4" />
+              </a>
+            </Button>
+          )}
+        </form>
 
         <Card className="overflow-x-auto px-6">
           <Table>

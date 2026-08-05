@@ -66,7 +66,8 @@ export async function findUserByUuid(uuid: string): Promise<User | undefined> {
 
 export async function getUsers(
   page: number = 1,
-  limit: number = 50
+  limit: number = 50,
+  search?: string
 ): Promise<User[] | undefined> {
   if (page < 1) page = 1;
   if (limit <= 0) limit = 50;
@@ -74,11 +75,19 @@ export async function getUsers(
   const offset = (page - 1) * limit;
   const supabase = getSupabaseClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("users")
     .select("*")
-    .order("created_at", { ascending: false })
-    .range(offset, offset + limit - 1);
+    .order("created_at", { ascending: false });
+
+  const normalizedSearch = normalizeUserSearch(search);
+  if (normalizedSearch) {
+    query = query.or(
+      `email.ilike.%${normalizedSearch}%,nickname.ilike.%${normalizedSearch}%`
+    );
+  }
+
+  const { data, error } = await query.range(offset, offset + limit - 1);
 
   if (error) {
     return undefined;
@@ -164,11 +173,24 @@ export async function getUserUuidsByEmail(email: string) {
   return data.map((user) => user.uuid);
 }
 
-export async function getUsersTotal(): Promise<number | undefined> {
+function normalizeUserSearch(search?: string): string {
+  return (search || "").trim().replace(/[,%()]/g, "").slice(0, 100);
+}
+
+export async function getUsersTotal(search?: string): Promise<number | undefined> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase.from("users").select("count", {
+  let query = supabase.from("users").select("count", {
     count: "exact",
   });
+
+  const normalizedSearch = normalizeUserSearch(search);
+  if (normalizedSearch) {
+    query = query.or(
+      `email.ilike.%${normalizedSearch}%,nickname.ilike.%${normalizedSearch}%`
+    );
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     return undefined;
