@@ -222,8 +222,15 @@ export default function UsersManagement({
     }
 
     const amount = Number(quotaAmount);
-    if (Number.isNaN(amount) || amount <= 0 || !Number.isInteger(amount)) {
-      toast.error("请输入正整数");
+    if (Number.isNaN(amount) || amount === 0 || !Number.isInteger(amount)) {
+      toast.error("请输入非零整数");
+      return;
+    }
+
+    const currentQuota =
+      quotasMap[selectedUser.uuid]?.[selectedServiceType] || 0;
+    if (amount < 0 && Math.abs(amount) > currentQuota) {
+      toast.error("减少次数不能超过当前可用次数");
       return;
     }
 
@@ -241,8 +248,9 @@ export default function UsersManagement({
       const result = await res.json();
 
       if (result.code === 0) {
+        const actionText = amount > 0 ? "增加" : "减少";
         toast.success(
-          `已为 ${selectedUser.email} 增加 ${SERVICE_LABELS[selectedServiceType]} ${amount} 次`
+          `已为 ${selectedUser.email} ${actionText} ${SERVICE_LABELS[selectedServiceType]} ${Math.abs(amount)} 次`
         );
         setQuotasMap((prev) => ({
           ...prev,
@@ -583,18 +591,17 @@ export default function UsersManagement({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="quota-amount">增加次数</Label>
+              <Label htmlFor="quota-amount">变更次数</Label>
               <Input
                 id="quota-amount"
                 type="number"
-                min="1"
                 step="1"
                 value={quotaAmount}
                 onChange={(e) => setQuotaAmount(e.target.value)}
-                placeholder="输入正整数，例如 5"
+                placeholder="正数增加，负数减少，例如 -5"
               />
               <p className="text-muted-foreground text-xs">
-                会为该用户增加对应服务类型的可用次数。
+                正整数增加次数，负整数减少次数；减少数量不能超过当前可用次数。
               </p>
             </div>
 
@@ -606,7 +613,7 @@ export default function UsersManagement({
                 onClick={handleUpdateQuota}
                 disabled={isSubmitting || !quotaAmount}
               >
-                {isSubmitting ? "修改中..." : "确认增加"}
+                {isSubmitting ? "修改中..." : "确认修改"}
               </Button>
             </div>
           </div>

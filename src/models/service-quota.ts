@@ -216,6 +216,53 @@ export async function addAdminQuota(
   }
 }
 
+export async function removeAdminQuota(
+  userUuid: string,
+  serviceType: ServiceType,
+  amount: number
+): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  const now = new Date().toISOString();
+
+  const { data: quotaRecords, error } = await supabase
+    .from("service_quotas")
+    .select("id, remaining")
+    .eq("user_uuid", userUuid)
+    .eq("service_type", serviceType)
+    .gt("remaining", 0)
+    .gte("expired_at", now)
+    .order("expired_at", { ascending: true });
+
+  if (error) throw error;
+
+  const available = (quotaRecords || []).reduce(
+    (total: number, record: { remaining: number }) => total + record.remaining,
+    0
+  );
+  if (available < amount) return false;
+
+  let remainingToRemove = amount;
+  for (const record of quotaRecords || []) {
+    if (remainingToRemove === 0) break;
+
+    const deduction = Math.min(record.remaining, remainingToRemove);
+    const { data: updatedRecord, error: updateError } = await supabase
+      .from("service_quotas")
+      .update({ remaining: record.remaining - deduction })
+      .eq("id", record.id)
+      .eq("remaining", record.remaining)
+      .select("id")
+      .maybeSingle();
+
+    if (updateError || !updatedRecord) {
+      throw updateError || new Error("配额记录已被其他操作修改");
+    }
+    remainingToRemove -= deduction;
+  }
+
+  return remainingToRemove === 0;
+}
+
 /**
  * 获取用户所有配额记录（含已用完和未过期的）
  */

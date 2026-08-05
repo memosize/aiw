@@ -1,7 +1,12 @@
 import { respData, respErr } from "@/lib/resp";
 import { getUserInfo } from "@/services/user";
 import { getOneYearLaterTimestr } from "@/lib/time";
-import { getUserQuotaSummary, addAdminQuota, ServiceType } from "@/models/service-quota";
+import {
+  getUserQuotaSummary,
+  addAdminQuota,
+  removeAdminQuota,
+  ServiceType,
+} from "@/models/service-quota";
 
 const VALID_SERVICE_TYPES: ServiceType[] = [
   "ps_sop",
@@ -26,7 +31,7 @@ export async function POST(req: Request) {
 
     const { user_uuid, service_type, amount } = await req.json();
 
-    if (!user_uuid || !service_type || !amount) {
+    if (!user_uuid || !service_type || amount === undefined || amount === null) {
       return respErr("缺少必要参数");
     }
 
@@ -35,23 +40,35 @@ export async function POST(req: Request) {
     }
 
     const change = Number(amount);
-    if (isNaN(change) || change <= 0 || !Number.isInteger(change)) {
-      return respErr("次数必须为正整数");
+    if (isNaN(change) || change === 0 || !Number.isInteger(change)) {
+      return respErr("次数必须为非零整数");
     }
 
-    await addAdminQuota(
-      user_uuid,
-      service_type as ServiceType,
-      change,
-      getOneYearLaterTimestr()
-    );
+    if (change > 0) {
+      await addAdminQuota(
+        user_uuid,
+        service_type as ServiceType,
+        change,
+        getOneYearLaterTimestr()
+      );
+    } else {
+      const removed = await removeAdminQuota(
+        user_uuid,
+        service_type as ServiceType,
+        Math.abs(change)
+      );
+      if (!removed) {
+        return respErr("减少次数不能超过用户当前可用次数");
+      }
+    }
 
     const updatedQuotas = await getUserQuotaSummary(user_uuid);
 
     return respData({
       quotas: updatedQuotas,
       service_type,
-      amount: change,
+      amount: Math.abs(change),
+      action: change > 0 ? "add" : "remove",
     });
   } catch (error: any) {
     console.error("修改配额失败:", error);

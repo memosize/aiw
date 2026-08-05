@@ -225,25 +225,20 @@ const SESSION_COOKIE_NAMES = [
 ];
 
 async function getCookieHeader(headers?: Headers) {
-  const cookieHeader = headers?.get("cookie");
-  if (cookieHeader) {
-    return cookieHeader;
-  }
-
   try {
     const cookieStore = await cookies();
     const requestCookies = cookieStore.getAll();
 
-    if (requestCookies.length === 0) {
-      return null;
+    if (requestCookies.length > 0) {
+      return requestCookies
+        .map((cookie) => `${cookie.name}=${cookie.value}`)
+        .join("; ");
     }
-
-    return requestCookies
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join("; ");
   } catch {
-    return null;
+    // Route handlers outside a request context can still pass request headers.
   }
+
+  return headers?.get("cookie") || null;
 }
 
 export async function getCustomSession(headers?: Headers) {
