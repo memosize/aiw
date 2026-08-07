@@ -199,7 +199,7 @@ function PSForm() {
             生成字数
           </CardTitle>
           <CardDescription>
-            目标字数用于控制文书长度，实际生成结果可能会因内容完整度、段落结构和表达需要略有浮动
+            多数学校文书要求为 500–800 字。篇幅过长时，内容处理时间及复杂度会相应增加，偶尔可能出现生成中断或内容不完整；如遇异常请联系客服补发次数
           </CardDescription>
         </CardHeader>
         <CardContent>
