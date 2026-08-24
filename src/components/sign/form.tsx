@@ -78,11 +78,14 @@ export default function SignForm({
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
   const [inviteCode, setInviteCode] = useState("");
+  const [registrationCode, setRegistrationCode] = useState("");
   const [resetCode, setResetCode] = useState("");
   const [resetPassword, setResetPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingRegistrationCode, setIsSendingRegistrationCode] = useState(false);
+  const [registrationCodeCooldown, setRegistrationCodeCooldown] = useState(0);
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [sendCodeCooldown, setSendCodeCooldown] = useState(0);
   const [nicknameStatus, setNicknameStatus] = useState<{
@@ -125,6 +128,18 @@ export default function SignForm({
 
     return () => window.clearInterval(timer);
   }, [sendCodeCooldown]);
+
+  useEffect(() => {
+    if (registrationCodeCooldown <= 0) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setRegistrationCodeCooldown((value) => (value > 0 ? value - 1 : 0));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [registrationCodeCooldown]);
 
   const normalizeCallbackUrl = useCallback((value?: string | null) => {
     const fallbackUrl = `/${locale}`;
@@ -349,6 +364,11 @@ export default function SignForm({
       return;
     }
 
+    if (!registrationCode.trim()) {
+      toast.error(isZh ? "请输入验证码" : "Please enter the verification code");
+      return;
+    }
+
     if (nickname && nickname.trim() && nicknameStatus.isAvailable === false) {
       toast.error(copy.invalidNickname);
       return;
@@ -365,6 +385,7 @@ export default function SignForm({
         body: JSON.stringify({
           email: email.trim(),
           password,
+          code: registrationCode.trim(),
           nickname: nickname.trim() || email.trim().split("@")[0],
           invite_code: inviteCode.trim() || undefined,
         }),
@@ -386,12 +407,49 @@ export default function SignForm({
       setPassword("");
       setNickname("");
       setInviteCode("");
+      setRegistrationCode("");
       setNicknameStatus({ isChecking: false, isAvailable: null, message: "" });
     } catch (error) {
       console.error("Registration error:", error);
       toast.error(copy.registerFailed);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSendRegistrationCode = async () => {
+    if (
+      !validateEmail() ||
+      isSendingRegistrationCode ||
+      registrationCodeCooldown > 0
+    ) {
+      return;
+    }
+
+    setIsSendingRegistrationCode(true);
+
+    try {
+      const response = await fetch("/api/auth/register/send-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        toast.error(result.message || copy.registerFailed);
+        return;
+      }
+
+      toast.success(result.message || copy.sendCodeSuccess);
+      setRegistrationCodeCooldown(60);
+    } catch (error) {
+      console.error("Send registration code error:", error);
+      toast.error(copy.registerFailed);
+    } finally {
+      setIsSendingRegistrationCode(false);
     }
   };
 
@@ -581,6 +639,37 @@ export default function SignForm({
 
         {mode === "signup" && (
           <div className="grid gap-2">
+            <Label htmlFor="registration-code">{copy.codeLabel}</Label>
+            <div className="flex gap-2">
+              <Input
+                id="registration-code"
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                placeholder={copy.codePlaceholder}
+                value={registrationCode}
+                onChange={(e) => setRegistrationCode(e.target.value.replace(/\D/g, ""))}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleSendRegistrationCode}
+                disabled={isSendingRegistrationCode || registrationCodeCooldown > 0}
+                className="shrink-0"
+              >
+                {isSendingRegistrationCode
+                  ? copy.sendingCode
+                  : registrationCodeCooldown > 0
+                    ? `${copy.resendCode} (${registrationCodeCooldown}s)`
+                    : copy.sendCode}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {mode === "signup" && (
+          <div className="grid gap-2">
             <Label htmlFor="nickname">
               {copy.nicknameLabel}
               {nicknameStatus.isChecking && (
@@ -691,6 +780,10 @@ export default function SignForm({
             setShowPassword(false);
             setShowResetPassword(false);
             setNickname("");
+            setRegistrationCode("");
+            setResetCode("");
+            setSendCodeCooldown(0);
+            setRegistrationCodeCooldown(0);
             setNicknameStatus({ isChecking: false, isAvailable: null, message: "" });
           }}
         >

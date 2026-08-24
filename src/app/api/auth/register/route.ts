@@ -3,6 +3,10 @@ import { findUserByNickname, findUserByEmail, insertUser } from "@/models/user";
 import { validatePasswordStrength, hashPassword } from "@/lib/password";
 import { v4 as uuidv4 } from "uuid";
 import { getIsoTimestr } from "@/lib/time";
+import {
+  deleteEmailRegistrationVerification,
+  verifyEmailRegistrationCode,
+} from "@/lib/email-registration";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,27 +18,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { email, password, nickname } = await request.json();
+    const { email, password, nickname, code } = await request.json();
+    const normalizedEmail = String(email || "").trim().toLowerCase();
+    const normalizedCode = String(code || "").trim();
 
     // 验证输入
-    if (!email || !password) {
+    if (!normalizedEmail || !password || !normalizedCode) {
       return NextResponse.json(
-        { success: false, message: "邮箱和密码是必填项" },
+        { success: false, message: "邮箱、验证码和密码是必填项" },
         { status: 400 }
       );
     }
 
     // 验证邮箱格式
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(normalizedEmail)) {
       return NextResponse.json(
         { success: false, message: "邮箱格式无效" },
         { status: 400 }
       );
     }
 
+    if (!/^\d{6}$/.test(normalizedCode)) {
+      return NextResponse.json(
+        { success: false, message: "请输入 6 位数字验证码" },
+        { status: 400 }
+      );
+    }
+
     // 检查邮箱是否已被注册
-    const existingUserByEmail = await findUserByEmail(email);
+    const existingUserByEmail = await findUserByEmail(normalizedEmail);
     if (existingUserByEmail) {
       return NextResponse.json(
         { success: false, message: "该邮箱已被注册" },
@@ -43,7 +56,8 @@ export async function POST(request: NextRequest) {
     }
 
     // 验证用户名格式（如果提供了用户名）
-    const finalNickname = nickname || email.split('@')[0];
+    const finalNickname =
+      String(nickname || "").trim() || normalizedEmail.split("@")[0];
     if (finalNickname) {
       // 用户名长度检查
       if (finalNickname.length < 2 || finalNickname.length > 20) {
@@ -81,6 +95,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const verificationResult = await verifyEmailRegistrationCode(
+      normalizedEmail,
+      normalizedCode
+    );
+    if (!verificationResult.ok) {
+      const messageMap = {
+        not_found: "请先获取邮箱验证码",
+        expired: "验证码已过期，请重新获取",
+        invalid: "验证码无效，请重新获取",
+        mismatch: "验证码错误",
+        too_many_attempts: "验证码错误次数过多，请重新获取",
+      } as const;
+
+      return NextResponse.json(
+        { success: false, message: messageMap[verificationResult.reason] },
+        { status: 400 }
+      );
+    }
+
     // 获取客户端 IP
     const forwardedFor = request.headers.get("x-forwarded-for");
     const clientIp = forwardedFor ? forwardedFor.split(",")[0].trim() : "::1";
@@ -95,22 +128,29 @@ export async function POST(request: NextRequest) {
     // 创建用户
     await insertUser({
       uuid: userUuid,
-      email: email,
+      email: normalizedEmail,
       nickname: finalNickname,
       avatar_url: "",
       signin_type: "email",
       signin_ip: clientIp,
       signin_provider: "credentials",
       signin_openid: hashedPassword,
+      email_verified: true,
       created_at: now,
     });
+
+    try {
+      await deleteEmailRegistrationVerification(verificationResult.verification.id);
+    } catch (error) {
+      console.error("Delete registration verification error:", error);
+    }
 
     return NextResponse.json({
       success: true,
       message: "注册成功",
       user: {
         uuid: userUuid,
-        email: email,
+        email: normalizedEmail,
         nickname: finalNickname,
       }
     });
