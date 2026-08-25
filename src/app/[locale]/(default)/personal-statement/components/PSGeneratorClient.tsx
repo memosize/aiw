@@ -173,7 +173,7 @@ function PSForm() {
             申请目标
           </CardTitle>
           <CardDescription>
-            请描述您的申请目标，包括申请的学校、专业和学位
+            请填写申请的学校、专业及希望发展的方向，建议 50–150 字。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -182,7 +182,7 @@ function PSForm() {
               value={data.target}
               onChange={(e) => updateField("target", e.target.value)}
               maxLength={MAX_TEXT_FIELD_LENGTH}
-              placeholder="例如：申请麻省理工学院数据科学硕士项目，专注于医疗健康领域的机器学习应用..."
+              placeholder="例如：我计划申请 The University of Hong Kong 的 Master of Science in Marketing，希望进一步学习消费者分析、市场策略和数字营销，并提升运用数据解决营销问题的能力..."
               className="min-h-[100px] bg-white dark:bg-white"
             />
             <p className="text-right text-xs text-muted-foreground">
@@ -209,7 +209,7 @@ function PSForm() {
             inputMode="numeric"
             value={data.count}
             onChange={(e) => updateField("count", e.target.value.replace(/[^\d]/g, ""))}
-            placeholder="例如：800"
+            placeholder="例如：600"
             className="bg-white dark:bg-white"
           />
         </CardContent>
@@ -222,14 +222,14 @@ function PSForm() {
             教育背景
           </CardTitle>
           <CardDescription>
-            您的教育经历，包括学校、专业、GPA、相关课程等
+            请填写本科院校、专业、相关课程及与申请方向有关的学术背景，建议 100–150 字。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea
             value={data.education}
             onChange={(e) => updateField("education", e.target.value)}
-            placeholder="例如：北京大学计算机科学与技术本科，GPA 3.85/4.0，主修课程包括数据结构、算法、机器学习..."
+            placeholder="例如：本科就读于多伦多大学统计学专业，学习过统计学、概率论、数据分析和经济学等课程，在课程学习和项目实践中逐渐对消费者分析和数据驱动的营销决策产生兴趣..."
             className="min-h-[120px] bg-white dark:bg-white"
           />
         </CardContent>
@@ -242,14 +242,14 @@ function PSForm() {
             相关技能
           </CardTitle>
           <CardDescription>
-            与申请目标相关的专业技能、编程语言、工具等
+            请填写与申请方向相关的技能、软件工具或分析能力，建议 30–80 字。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea
             value={data.skill}
             onChange={(e) => updateField("skill", e.target.value)}
-            placeholder="例如：编程语言：Python、R、SQL；数据科学工具：pandas、scikit-learn、TensorFlow..."
+            placeholder="例如：能够使用 Excel、Python 和 SPSS 进行数据整理和分析，也有问卷设计、消费者调研和数据可视化的相关经验..."
             className="min-h-[100px] bg-white dark:bg-white"
           />
         </CardContent>
@@ -259,17 +259,17 @@ function PSForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ChartBar className="w-5 h-5 text-primary" />
-            研究经历
+            研究 / 项目经历
           </CardTitle>
           <CardDescription>
-            科研项目、论文发表、学术成果等
+            请填写相关科研或项目经历，重点说明项目内容、你的任务、过程及收获，建议 100–250 字。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea
             value={data.research}
             onChange={(e) => updateField("research", e.target.value)}
-            placeholder="例如：在 PKU 人工智能实验室担任研究助理，开发医学图像分析的机器学习模型..."
+            placeholder="例如：曾参与一个年轻消费者购买行为的课程项目，我主要负责设计问卷、收集和整理数据，并分析价格、品牌认知和社交媒体评价对购买意愿的影响，最后完成消费者分析报告。这个项目让我更加关注数据分析在营销决策中的实际应用..."
             className="min-h-[120px] bg-white dark:bg-white"
           />
         </CardContent>
@@ -279,17 +279,17 @@ function PSForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-primary" />
-            工作经历
+            工作 / 实习经历
           </CardTitle>
           <CardDescription>
-            实习、兼职、全职工作经历
+            请填写相关工作或实习经历，包括主要职责、完成的工作及收获，建议 100–250 字。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea
             value={data.workExperience}
             onChange={(e) => updateField("workExperience", e.target.value)}
-            placeholder="例如：腾讯医疗健康部数据科学实习生，构建疾病进展分析的预测模型..."
+            placeholder="例如：曾在一家快消企业市场部门实习，参与新品推广和线上营销活动，主要负责整理销售数据、分析不同渠道的活动表现，并协助完成竞品调研和市场分析报告。这段经历让我更直观地理解了消费者洞察与营销策略之间的联系..."
             className="min-h-[120px] bg-white dark:bg-white"
           />
         </CardContent>
@@ -302,14 +302,14 @@ function PSForm() {
             申请理由
           </CardTitle>
           <CardDescription>
-            为什么选择这个项目，您的动机和目标
+            请说明为什么选择这所学校及该项目，可结合课程设置、项目特色、学习资源与你的兴趣或未来目标展开，建议 100–300 字。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea
             value={data.reason}
             onChange={(e) => updateField("reason", e.target.value)}
-            placeholder="例如：我对利用 AI 解决医疗挑战充满热情，因为我亲眼目睹了技术差距如何影响农村地区的患者护理..."
+            placeholder="例如：我希望申请 The University of Hong Kong 的 Master of Science in Marketing，主要是因为该项目在消费者分析、数字营销和市场策略方面的课程设置与我的兴趣和职业方向高度契合。我希望进一步提升将数据分析应用于营销决策的能力，为未来从事品牌或市场分析相关工作做好准备..."
             className="min-h-[120px] bg-white dark:bg-white"
           />
         </CardContent>

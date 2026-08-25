@@ -49,7 +49,7 @@ const GENERATION_CACHE_KEY = 'ps-generation-state';
 export function PSProvider({ children }: { children: ReactNode }) {
   const initialData: PSData = {
     target: '',
-    count: '800',
+    count: '600',
     education: '',
     skill: '',
     research: '',

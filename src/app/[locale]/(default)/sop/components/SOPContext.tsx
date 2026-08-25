@@ -49,7 +49,7 @@ const GENERATION_CACHE_KEY = 'sop-generation-state';
 export function SOPProvider({ children }: { children: ReactNode }) {
   const initialData: SOPData = {
     target: '',
-    count: '800',
+    count: '600',
     education: '',
     skill: '',
     research: '',

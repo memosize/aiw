@@ -165,14 +165,14 @@ function SOPForm() {
             申请目标
           </CardTitle>
           <CardDescription>
-            请描述您的申请目标，包括申请的学校、专业和学位
+            请填写申请的学校、专业及希望重点学习或研究的方向，建议 50–150 字。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea
             value={data.target}
             onChange={(e) => updateField("target", e.target.value)}
-            placeholder="例如：申请哈佛大学计算机科学博士项目，专注于人工智能和机器学习研究..."
+            placeholder="例如：我计划申请 Columbia University 的 MS in Data Science，希望进一步学习机器学习、统计建模和大规模数据分析，并探索数据科学在医疗与公共政策中的实际应用。"
             className="min-h-[100px]"
           />
         </CardContent>
@@ -195,7 +195,7 @@ function SOPForm() {
             inputMode="numeric"
             value={data.count}
             onChange={(e) => updateField("count", e.target.value.replace(/[^\d]/g, ""))}
-            placeholder="例如：800"
+            placeholder="例如：600"
             className="w-full"
           />
         </CardContent>
@@ -208,14 +208,14 @@ function SOPForm() {
             教育背景
           </CardTitle>
           <CardDescription>
-            您的教育经历，包括学校、专业、GPA、相关课程等
+            请填写本科院校、专业、相关课程及与申请方向有关的学术准备，建议 100–150 字。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea
             value={data.education}
             onChange={(e) => updateField("education", e.target.value)}
-            placeholder="例如：清华大学计算机科学与技术本科，GPA 3.8/4.0，主修课程包括算法设计、机器学习、深度学习..."
+            placeholder="例如：本科就读于浙江大学计算机科学与技术专业，学习过概率统计、数据库、算法设计、机器学习和数据挖掘等课程，并通过课程项目逐渐形成了对数据科学和智能分析的兴趣..."
             className="min-h-[120px]"
           />
         </CardContent>
@@ -228,14 +228,14 @@ function SOPForm() {
             相关技能
           </CardTitle>
           <CardDescription>
-            与申请目标相关的专业技能、编程语言、工具等
+            请填写与申请方向相关的技能、软件工具或研究方法，建议 30–80 字。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea
             value={data.skill}
             onChange={(e) => updateField("skill", e.target.value)}
-            placeholder="例如：熟练掌握 Python、TensorFlow、PyTorch，具备深度学习模型开发经验..."
+            placeholder="例如：能够使用 Python、SQL 和 PyTorch 进行数据处理、模型训练与结果分析，也具备数据可视化、实验设计和基础统计分析经验..."
             className="min-h-[100px]"
           />
         </CardContent>
@@ -245,17 +245,17 @@ function SOPForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-primary" />
-            研究经历
+            研究 / 项目经历
           </CardTitle>
           <CardDescription>
-            科研项目、实验室经历、论文发表等
+            请填写与申请方向相关的科研或项目经历，重点说明项目内容、你的具体任务、使用的方法及主要收获，建议 100–250 字。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea
             value={data.research}
             onChange={(e) => updateField("research", e.target.value)}
-            placeholder="例如：在 XX 教授的指导下，参与自然语言处理研究项目，负责模型设计和实验..."
+            placeholder="例如：参与城市交通流量预测项目，我主要负责整理历史交通数据、构建特征并比较不同预测模型的表现，同时分析天气和时间因素对预测结果的影响。项目让我更深入地理解了数据质量、模型选择与实际应用效果之间的关系，也增强了我继续学习数据科学的兴趣。"
             className="min-h-[120px]"
           />
         </CardContent>
@@ -265,17 +265,17 @@ function SOPForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-primary" />
-            工作经历
+            工作 / 实习经历
           </CardTitle>
           <CardDescription>
-            实习或全职工作经历，特别是与申请领域相关的
+            请填写与申请方向相关的工作或实习经历，包括岗位、主要职责、完成的工作及收获，建议 100–250 字。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea
             value={data.workExperience}
             onChange={(e) => updateField("workExperience", e.target.value)}
-            placeholder="例如：在 Google AI 研究院实习 3 个月，参与大语言模型优化项目..."
+            placeholder="例如：曾在一家互联网公司的数据团队实习，参与用户行为分析和运营数据整理，主要负责清洗数据、制作分析报表并协助评估不同活动的效果。这段经历让我看到数据分析如何真正参与产品和运营决策，也让我意识到自己还需要进一步提升建模和数据解释能力..."
             className="min-h-[120px]"
           />
         </CardContent>
@@ -288,14 +288,14 @@ function SOPForm() {
             未来规划
           </CardTitle>
           <CardDescription>
-            您的职业目标和长期规划
+            请填写完成该项目后的学习或职业目标，可说明短期发展方向及长期希望解决的问题，建议 100–200 字。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea
             value={data.plan}
             onChange={(e) => updateField("plan", e.target.value)}
-            placeholder="例如：希望在博士期间深入研究强化学习在机器人控制中的应用..."
+            placeholder="例如：毕业后希望先从事数据科学或数据分析相关工作，将统计建模和机器学习方法应用于真实业务问题；长期希望进一步参与以数据为基础的产品和决策研究，并逐步成长为能够连接技术分析与实际应用的数据专业人才..."
             className="min-h-[100px]"
           />
         </CardContent>
