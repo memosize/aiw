@@ -21,13 +21,13 @@ const CUSTOM_POLISHING_PRODUCTS: Record<
   }
 > = {
   "polishing-resume": {
-    amount: 29900,
+    amount: 39900,
     interval: "one-time",
     currency: "cny",
     valid_months: 6,
   },
   "polishing-ps-sop": {
-    amount: 59900,
+    amount: 69900,
     interval: "one-time",
     currency: "cny",
     valid_months: 6,

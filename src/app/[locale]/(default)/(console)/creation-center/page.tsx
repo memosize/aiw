@@ -32,18 +32,18 @@ export default async function CreationCenterPage() {
       url: "/sop"
     },
     {
-      icon: "document-polish",
-      title: "Cover Letter撰写",
-      description: "专业的Cover Letter撰写服务，帮助您清晰表达学术目标和研究兴趣，展现个人动机和未来规划",
-      price: 90,
-      url: "/cover-letter"
-    },
-    {
       icon: "recommendation-letter-write",
       title: "推荐信撰写",
       description: "我们提供针对性的推荐信工具，支持科研推荐/实习/理科等专业推荐场景",
       price: 100,
       url: "/recommendation-letter"
+    },
+    {
+      icon: "document-polish",
+      title: "Cover Letter撰写",
+      description: "专业的Cover Letter撰写服务，帮助您清晰表达学术目标和研究兴趣，展现个人动机和未来规划",
+      price: 90,
+      url: "/cover-letter"
     },
     {
       icon: "document-polish",

@@ -37,8 +37,8 @@ function getPolishingConfig(documentType: PolishingDocumentType) {
       title: "简历人工润色服务",
       description: "专业老师人工润色简历",
       productId: "polishing-resume",
-      amount: 29900,
-      priceLabel: "¥299",
+      amount: 39900,
+      priceLabel: "¥399",
       unitLabel: "/份",
       typeLabel: "简历",
     };
@@ -48,8 +48,8 @@ function getPolishingConfig(documentType: PolishingDocumentType) {
     title: "PS / SOP 人工润色服务",
     description: "专业老师人工润色 PS / SOP",
     productId: "polishing-ps-sop",
-    amount: 59900,
-    priceLabel: "¥599",
+    amount: 69900,
+    priceLabel: "¥699",
     unitLabel: "/份",
     typeLabel: "PS / SOP",
   };

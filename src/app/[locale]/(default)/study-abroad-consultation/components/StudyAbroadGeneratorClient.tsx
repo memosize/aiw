@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRouter, useParams } from "next/navigation";
-import { CheckCircle, Square, ArrowRight, AlertTriangle, RefreshCw, User, GraduationCap, Target, Trophy, HelpCircle, FileText } from "lucide-react";
+import { CheckCircle, ArrowRight, CalendarClock, Clock3, RefreshCw, User, GraduationCap, Target, Trophy, HelpCircle, FileText, X } from "lucide-react";
 import { toast } from 'sonner';
 import { GlobalLoading } from "@/components/ui/loading";
 
@@ -24,6 +24,94 @@ export interface StudyAbroadModule {
   title: string;
   icon: React.ComponentType<{ className?: string }>;
   component: React.ComponentType;
+}
+
+const SCHEDULE_NOTICE_ACKNOWLEDGED_KEY = "study-abroad-schedule-notice-acknowledged";
+
+interface ScheduleNoticeModalProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+function ScheduleNoticeModal({ open, onClose }: ScheduleNoticeModalProps) {
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  if (!open) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/45 px-4 py-6 backdrop-blur-[2px]"
+      role="presentation"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="schedule-notice-title"
+        aria-describedby="schedule-notice-description"
+        className="relative w-full max-w-[680px] overflow-hidden rounded-[20px] bg-white shadow-[0_24px_70px_rgba(0,0,0,0.16)]"
+      >
+        <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-emerald-50" />
+        <div className="pointer-events-none absolute -bottom-24 -left-16 h-44 w-44 rounded-full bg-orange-50" />
+
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="关闭排期提醒"
+          className="absolute right-4 top-4 z-10 rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <div className="relative px-6 pb-7 pt-8 sm:px-12 sm:pb-10 sm:pt-10">
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 ring-8 ring-emerald-50/60">
+              <CalendarClock className="h-7 w-7" strokeWidth={1.8} />
+            </div>
+
+            <h2 id="schedule-notice-title" className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-[28px]">
+              人工润色排期提醒
+            </h2>
+
+            <div
+              id="schedule-notice-description"
+              className="mt-6 max-w-[560px] text-left text-[15px] leading-7 text-slate-600 sm:text-base sm:leading-8"
+            >
+              <p>
+                随着申请季进入高峰期，近期人工润色需求持续增加，
+                <strong className="font-semibold text-slate-900">
+                  目前最早可预约时间预计约为 <span className="whitespace-nowrap text-xl text-orange-500">30 天后</span>
+                </strong>
+                。
+              </p>
+              <p className="mt-3">
+                如您可以接受当前排期，可直接下单；如时间较紧，建议下单前点击右下角
+                <strong className="font-semibold text-emerald-700">「客服小助手」</strong>
+                ，添加客服微信确认具体时间。
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3.5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:ring-offset-2 sm:w-[64%]"
+            >
+              我已了解，继续填写
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function ConfirmationPage() {
@@ -240,7 +328,36 @@ function ConfirmationPage() {
 
 function StudyAbroadGeneratorContent() {
   const [activeModule, setActiveModule] = useState("basicInfo");
+  const [showScheduleNotice, setShowScheduleNotice] = useState(false);
   const { data, isSubmitting } = useStudyAbroad();
+
+  useEffect(() => {
+    let hasAcknowledged = false;
+
+    try {
+      hasAcknowledged = window.sessionStorage.getItem(SCHEDULE_NOTICE_ACKNOWLEDGED_KEY) === "true";
+    } catch {
+      // Continue with the in-memory state when browser storage is unavailable.
+    }
+
+    if (hasAcknowledged) return;
+
+    const timer = window.setTimeout(() => {
+      setShowScheduleNotice(true);
+    }, 400);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const dismissScheduleNotice = () => {
+    try {
+      window.sessionStorage.setItem(SCHEDULE_NOTICE_ACKNOWLEDGED_KEY, "true");
+    } catch {
+      // The modal still closes for the current render when storage is unavailable.
+    }
+
+    setShowScheduleNotice(false);
+  };
 
   const modules: StudyAbroadModule[] = [
     {
@@ -316,6 +433,7 @@ function StudyAbroadGeneratorContent() {
   return (
     <>
       <GlobalLoading isVisible={isSubmitting} />
+      <ScheduleNoticeModal open={showScheduleNotice} onClose={dismissScheduleNotice} />
       <div className="form-page-scale min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary/5">
       <div className="bg-background/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 py-8">
@@ -325,6 +443,13 @@ function StudyAbroadGeneratorContent() {
               <p className="text-muted-foreground mt-2 text-lg">
                 提交你的申请材料，获得专业老师的语言优化与逻辑梳理
               </p>
+              <div className="mt-5 flex items-start gap-3 rounded-xl border border-orange-200/80 bg-orange-50/80 px-4 py-3 text-sm leading-6 text-slate-600 shadow-sm sm:items-center">
+                <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-orange-500 sm:mt-0" />
+                <p>
+                  当前人工润色排期约 <strong className="font-semibold text-orange-600">30 天起</strong>
+                  ，时间较紧的同学建议下单前联系客服确认排期
+                </p>
+              </div>
             </div>
             
             <div className="flex items-center gap-4">

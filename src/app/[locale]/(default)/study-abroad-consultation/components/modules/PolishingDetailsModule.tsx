@@ -139,7 +139,7 @@ export default function PolishingDetailsModule() {
                 <p className="text-sm text-muted-foreground">适用于 Resume / CV 人工润色</p>
               </div>
             </div>
-            <span className="text-base font-semibold text-primary">¥299</span>
+            <span className="text-base font-semibold text-primary">¥399</span>
           </label>
 
           <label
@@ -153,7 +153,7 @@ export default function PolishingDetailsModule() {
                 <p className="text-sm text-muted-foreground">适用于 Personal Statement 或 SOP 人工润色</p>
               </div>
             </div>
-            <span className="text-base font-semibold text-primary">¥599</span>
+            <span className="text-base font-semibold text-primary">¥699</span>
           </label>
         </RadioGroup>
       </Card>
