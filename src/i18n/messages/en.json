@@ -90,7 +90,6 @@
     }
   },
   "my_credits": {
-    "load_failed": "Unable to load your remaining uses. Please refresh and try again shortly.",
     "title": "My Credits",
     "left_tip": "left credits: {left_credits}",
     "no_credits": "No credit records",

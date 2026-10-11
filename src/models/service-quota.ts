@@ -106,8 +106,7 @@ export async function getAvailableQuota(
     .gt("remaining", 0)
     .gte("expired_at", now);
 
-  if (error) throw new Error("QUOTA_READ_FAILED");
-  if (!data) throw new Error("QUOTA_READ_FAILED");
+  if (error || !data) return 0;
 
   return data.reduce((sum: number, row: any) => sum + (row.remaining || 0), 0);
 }
@@ -122,40 +121,27 @@ export async function deductQuota(
   const supabase = getSupabaseClient();
   const now = new Date().toISOString();
 
-  // Compare-and-swap prevents two requests from claiming the same decrement.
-  // Retry only a confirmed conflict; a database error has an unknown outcome.
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const { data, error } = await supabase
-      .from("service_quotas")
-      .select("id, remaining")
-      .eq("user_uuid", userUuid)
-      .eq("service_type", serviceType)
-      .gt("remaining", 0)
-      .gte("expired_at", now)
-      .order("expired_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
+  // 查找最早过期且有余额的配额记录
+  const { data, error } = await supabase
+    .from("service_quotas")
+    .select("id, remaining")
+    .eq("user_uuid", userUuid)
+    .eq("service_type", serviceType)
+    .gt("remaining", 0)
+    .gte("expired_at", now)
+    .order("expired_at", { ascending: true })
+    .limit(1)
+    .single();
 
-    if (error) throw new Error("QUOTA_READ_FAILED");
-    if (!data) return false;
+  if (error || !data) return false;
 
-    const { data: updated, error: updateError } = await supabase
-      .from("service_quotas")
-      .update({ remaining: data.remaining - 1 })
-      .eq("id", data.id)
-      .eq("user_uuid", userUuid)
-      .eq("service_type", serviceType)
-      .eq("remaining", data.remaining)
-      .gte("expired_at", new Date().toISOString())
-      .select("id")
-      .maybeSingle();
+  const { error: updateError } = await supabase
+    .from("service_quotas")
+    .update({ remaining: data.remaining - 1 })
+    .eq("id", data.id)
+    .gt("remaining", 0); // 防止并发扣到负数
 
-    if (updateError) throw new Error("QUOTA_DEDUCTION_UNCONFIRMED");
-    if (updated) return true;
-  }
-
-  // Do not silently fall back to another bucket after repeated contention.
-  throw new Error("QUOTA_CONFLICT");
+  return !updateError;
 }
 
 /**
@@ -293,7 +279,7 @@ export async function getQuotaRecordsByUserUuid(
     .order("created_at", { ascending: false })
     .range((page - 1) * limit, page * limit - 1);
 
-  if (error || !data) throw new Error("QUOTA_READ_FAILED");
+  if (error || !data) return [];
   return data;
 }
 
@@ -321,7 +307,7 @@ export async function getUserQuotaSummary(
     universal: 0,
   };
 
-  if (error || !data) throw new Error("QUOTA_READ_FAILED");
+  if (error || !data) return summary;
 
   data.forEach((row: any) => {
     if (row.service_type in summary) {

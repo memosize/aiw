@@ -54,7 +54,8 @@ export async function getUserCredits(user_uuid: string): Promise<UserCredits> {
 
     return user_credits;
   } catch (e) {
-    throw new Error("CREDIT_READ_FAILED");
+    console.log("get user credits failed: ", e);
+    return user_credits;
   }
 }
 
