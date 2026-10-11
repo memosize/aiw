@@ -1,4 +1,6 @@
 "use client";
+import ResultLeaveGuard from "@/components/result-leave-guard";
+import { navigateFromResult } from "@/lib/result-navigation";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useParams, useSearchParams } from "next/navigation";
@@ -68,7 +70,6 @@ import { ChevronDown } from "lucide-react";
 // Import revision components
 import RevisionModal from "../../../components/RevisionModal";
 import FullRevisionModal from "../../../components/FullRevisionModal";
-import ParagraphRevision from "../../../components/ParagraphRevision";
 import VersionComparison from "../../../components/VersionComparison";
 
 export interface RecommendationLetterModule {
@@ -295,7 +296,7 @@ function RecommendationLetterResultContent({ documentUuid }: RecommendationLette
 
   // Dify Hooks for API calls
   const { runWorkflow, runWorkflowStreamingWithCallbacks } = useDify({ functionType: 'recommendation-letter' });
-  const { runRevision, runRevisionStreaming, isRevising } = useDifyReviseRecommendationLetter();
+  const { runRevisionStreaming, isRevising } = useDifyReviseRecommendationLetter();
 
   // 使用数据库版本内容或 Context 中的生成内容，如果没有则使用占位符
   const getCurrentDbVersion = () => {
@@ -526,7 +527,7 @@ function RecommendationLetterResultContent({ documentUuid }: RecommendationLette
         const response = await fetch(`/api/documents/${documentUuid}/revisions`);
         if (response.ok) {
           const { data } = await response.json();
-          setServerRevisionStatus(data.has_used_free_revision);
+          setServerRevisionStatus(data.free_revision_unavailable || data.has_used_free_revision);
         }
       } catch (error) {
         console.error('Error checking revision status:', error);
@@ -756,7 +757,7 @@ function RecommendationLetterResultContent({ documentUuid }: RecommendationLette
   const handleBackToEdit = () => {
     setShowRevisionModal(false);
     // 返回编辑页面
-    window.location.href = `/${locale}/recommendation-letter`;
+    navigateFromResult(`/${locale}/recommendation-letter`);
   };
   
   const handleFullRevision = async (settings: any) => {
@@ -791,6 +792,8 @@ function RecommendationLetterResultContent({ documentUuid }: RecommendationLette
 
       // 调用 DIFY API 进行全文重写 - 使用 streaming
       const params = {
+      document_uuid: documentUuid,
+      revision_token: crypto.randomUUID(),
         revise_type: (settings.wordControl === 'keep' ? 0 : (settings.wordControl === 'expand' ? 1 : 2)).toString(),
         style: styleLabels.join(';'), // 使用分号拼接中文标签
         original_word_count: wordCountInfo.count.toString(),
@@ -864,6 +867,7 @@ function RecommendationLetterResultContent({ documentUuid }: RecommendationLette
                 },
                 body: JSON.stringify({
                   content: finalContent,
+                  revision_token: params.revision_token,
                   revision_settings: settings
                 }),
               });
@@ -910,88 +914,6 @@ function RecommendationLetterResultContent({ documentUuid }: RecommendationLette
       setIsRevisionStreaming(false);
     }
   };
-  
-  const handleParagraphRevise = async (index: number, newText: string) => {
-    // 处理段落修改
-    const paragraphs = displayContent.split('\n\n');
-    paragraphs[index] = newText;
-    const newContent = paragraphs.join('\n\n');
-    
-    try {
-      setIsSavingRevision(true);
-      // 创建修改版本并保存到数据库
-      const response = await fetch(`/api/documents/${documentUuid}/revisions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content: newContent,
-          revision_settings: {
-            type: 'paragraph',
-            paragraphIndex: index
-          }
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save paragraph revision');
-      }
-
-      const { data: revision } = await response.json();
-      
-      // 立即更新修改状态，禁用修改按钮
-      setServerRevisionStatus(true);
-      
-      // 先设置新版本ID，再加载版本历史
-      if (revision.uuid) {
-        setCurrentDbVersionId(revision.uuid);
-      }
-      
-      // 重新加载版本历史
-      await loadDocumentVersions();
-      
-      toast.success("段落已成功修改！");
-    } catch (error) {
-      console.error('Error saving paragraph revision:', error);
-      toast.error("保存段落修改失败");
-      // 如果保存失败，仍然更新本地内容
-      updateGeneratedContent(newContent);
-    } finally {
-      setIsSavingRevision(false);
-    }
-  };
-  
-  // 段落重写 API 调用
-  const handleParagraphRevisionAPI = async (params: any, paragraphIndex: number) => {
-    setRevisingParagraphIndex(paragraphIndex);
-    try {
-      // 获取语言设置
-      const selectedData = getSelectedData();
-      
-      // 添加语言参数 - 使用正确的格式
-      const languageMap: { [key: string]: string } = {
-        'zh': 'Chinese',
-        'en': 'English',
-        'Chinese': 'Chinese',
-        'English': 'English'
-      };
-      
-      const paramsWithLanguage = {
-        ...params,
-        language: languageMap[selectedData.language] || 'Chinese'
-      };
-      
-      const revisedContent = await runRevision(paramsWithLanguage);
-      return revisedContent;
-    } catch (error) {
-      console.error('Paragraph revision failed:', error);
-      toast.error('段落重写失败，请重试');
-      throw error;
-    } finally {
-      setRevisingParagraphIndex(null);
-    }
-  };
 
   const getModuleKey = (moduleId: string) => {
     if (moduleId === 'relationshipBackground') return 'relationshipBackground';
@@ -1011,6 +933,12 @@ function RecommendationLetterResultContent({ documentUuid }: RecommendationLette
   }, [displayContent, isStreamingText, isRevisionStreaming]);
 
   return (<>
+    <ResultLeaveGuard
+      documentUuid={documentUuid}
+      busy={generationState.isGenerating || isRevisionLoading || isRevisionStreaming || isRevising || isStreamingText || isLoadingVersions || isSavingRevision}
+      unavailable={serverRevisionStatus === true}
+      onUseFreeOptimization={() => { setShowRevisionModal(false); setShowFullRevisionModal(true); }}
+    />
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary/5">
       {/* Header */}
       <div className="bg-background/80 backdrop-blur-sm border-b">
@@ -1343,28 +1271,7 @@ function RecommendationLetterResultContent({ documentUuid }: RecommendationLette
                         </Badge>
                       </div>
                     )}
-
-                    {/* 如果开启了修改功能，显示可编辑的段落 */}
-                    {!(serverRevisionStatus !== null ? serverRevisionStatus : hasUsedFreeRevision()) && generationState.generatedContent && !isLoadingVersions ? (
-                      <div className="space-y-4">
-                        {displayContent.split('\n\n').map((paragraph: string, index: number) => (
-                          <ParagraphRevision
-                            key={index}
-                            paragraph={paragraph}
-                            index={index}
-                            onRevise={handleParagraphRevise}
-                            isHighlighted={highlightedParagraphIndex === index}
-                            onHighlightChange={(shouldHighlight) => {
-                              setHighlightedParagraphIndex(shouldHighlight ? index : null);
-                            }}
-                            onStartRevision={handleParagraphRevisionAPI}
-                            isRevising={revisingParagraphIndex === index}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <Markdown content={displayContent} />
-                    )}
+                    <Markdown content={displayContent} />
 
                     {/* Auto-scroll anchor */}
                     <div ref={contentEndRef} />

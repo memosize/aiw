@@ -33,10 +33,6 @@ export const FUNCTION_TYPE_TO_SERVICE: Record<string, ServiceType> = {
   "recommendation-letter": "recommendation",
   "cover-letter": "cover_letter",
   "resume-generator": "resume",
-  "revise-personal-statement": "ps_sop",
-  "revise-sop": "ps_sop",
-  "revise-recommendation-letter": "recommendation",
-  "revise-cover-letter": "cover_letter",
 };
 
 /**

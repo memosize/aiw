@@ -1,3 +1,4 @@
+import DocumentHistoryTracker from "@/components/document-history-tracker";
 import Footer from "@/components/blocks/footer";
 import Header from "@/components/blocks/header";
 import { ReactNode } from "react";
@@ -18,6 +19,7 @@ export default async function DefaultLayout({
 
   return (
     <HeroProvider>
+      <DocumentHistoryTracker />
       {page.header && <Header header={page.header} />}
       <main className="[overflow-x:clip]">{children}</main>
       {page.footer && <Footer footer={page.footer} />}

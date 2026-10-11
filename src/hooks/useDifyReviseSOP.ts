@@ -4,6 +4,8 @@ import type { StreamingCallbacks } from "@/services/dify-sse";
 import { sanitizeErrorMessage } from "@/lib/sanitize-error-message";
 
 interface ReviseParams {
+  document_uuid: string;
+  revision_token: string;
   revise_type: string;
   style: string;
   original_word_count: string;

@@ -4,6 +4,8 @@ import type { StreamingCallbacks } from '@/services/dify-sse';
 import { sanitizeErrorMessage } from '@/lib/sanitize-error-message';
 
 interface ReviseParams {
+  document_uuid: string;
+  revision_token: string;
   revise_type: string; // "0"代表保持原本，"1"代表扩写，"2"代表缩写
   style: string; // 风格要求
   original_word_count: string; // 原字数

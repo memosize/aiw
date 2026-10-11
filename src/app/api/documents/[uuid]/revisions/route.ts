@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { customAuth } from "@/lib/auth";
-import { createDocumentRevision, findDocumentByUuid, getDocumentRevisionCount } from "@/models/document";
+import { findDocumentByUuid, createDocumentRevision, getDocumentRevisionCount } from "@/models/document";
+import { manageFreeRevision, REVISION_DOCUMENT_TYPES } from "@/models/free-revision";
 import { findUserByUuid } from "@/models/user";
 
 export async function POST(
@@ -24,7 +25,7 @@ export async function POST(
 
     const { uuid } = await params;
     const body = await request.json();
-    const { content, revision_settings } = body;
+    const { content, revision_settings, revision_token } = body;
 
     // Verify document belongs to user
     const document = await findDocumentByUuid(uuid);
@@ -32,16 +33,23 @@ export async function POST(
       return NextResponse.json({ error: "Document not found or unauthorized" }, { status: 404 });
     }
 
-    // Check if user has already used their free revision
-    const revisionCount = await getDocumentRevisionCount(uuid);
-    if (revisionCount >= 1) {
-      return NextResponse.json({ 
-        error: "Free revision already used" 
-      }, { status: 403 });
+    const supported = Object.values(REVISION_DOCUMENT_TYPES).includes(document.document_type);
+    if (supported && (typeof content !== "string" ||
+        (typeof revision_token !== "string" && typeof revision_settings?.restored_from !== "string"))) {
+      return NextResponse.json({ error: "请从成稿页完成免费全文优化" }, { status: 400 });
     }
-
-    // Create revision
-    const revision = await createDocumentRevision(uuid, content, revision_settings);
+    const restoring = typeof revision_settings?.restored_from === "string";
+    let revision;
+    if (!supported) {
+      // Preserve the existing revision path for unrelated document types.
+      if (await getDocumentRevisionCount(uuid) >= 1) {
+        return NextResponse.json({ error: "Free revision already used" }, { status: 403 });
+      }
+      revision = await createDocumentRevision(uuid, content, revision_settings);
+    } else {
+      revision = await manageFreeRevision(uuid, user.uuid!, restoring ? "restore" : "save",
+        restoring ? revision_settings.restored_from : revision_token, content, revision_settings);
+    }
 
     return NextResponse.json({ 
       success: true, 
@@ -49,6 +57,9 @@ export async function POST(
     });
   } catch (error) {
     console.error("Error creating revision:", error);
+    if (error instanceof Error && /FREE_REVISION_UNAVAILABLE|INVALID_REVISION_TOKEN/.test(error.message)) {
+      return NextResponse.json({ error: "本篇免费优化不可重复使用" }, { status: 403 });
+    }
     return NextResponse.json(
       { error: "Failed to create revision" },
       { status: 500 }
@@ -82,15 +93,18 @@ export async function GET(
       return NextResponse.json({ error: "Document not found or unauthorized" }, { status: 404 });
     }
 
-    const revisionCount = await getDocumentRevisionCount(uuid);
+    const supported = Object.values(REVISION_DOCUMENT_TYPES).includes(document.document_type);
+    const revisionCount = supported ? 0 : await getDocumentRevisionCount(uuid);
+    const info = supported ? await manageFreeRevision(uuid, user.uuid!, "status") : {
+      revision_count: revisionCount, has_used_free_revision: revisionCount >= 1,
+    };
 
     return NextResponse.json({ 
       success: true, 
       data: {
-        revision_count: revisionCount,
-        has_used_free_revision: revisionCount >= 1
+        ...info
       }
-    });
+    }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Error getting revision info:", error);
     return NextResponse.json(

@@ -1,4 +1,5 @@
 "use client";
+import { navigateFromResult } from "@/lib/result-navigation";
 
 import {
   Accordion,
@@ -58,7 +59,7 @@ export default function Header({ header }: { header: HeaderType }) {
       setIsLoading(true);
       // 添加一个小延迟让 loading 动画显示
       await new Promise(resolve => setTimeout(resolve, 300));
-      router.push("/creation-center");
+      navigateFromResult("/creation-center", () => router.push("/creation-center"));
       // 页面加载完成后，loading 会自动消失
       setTimeout(() => setIsLoading(false), 1500);
     }

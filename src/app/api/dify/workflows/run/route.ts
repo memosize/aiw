@@ -1,17 +1,49 @@
 import { NextRequest } from 'next/server';
+import { headers } from "next/headers";
+import { customAuth } from "@/lib/auth";
+import { findDocumentByUuid } from "@/models/document";
+import { findUserByUuid } from "@/models/user";
+import { manageFreeRevision, REVISION_DOCUMENT_TYPES } from "@/models/free-revision";
+import { observeRevisionStream } from "@/lib/free-revision-stream";
 import { respData, respErr } from '@/lib/resp';
 import { difyService, DifyFunctionType } from '@/services/dify';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { inputs, response_mode = 'blocking', user, function_type = 'default' } = body;
+    let { inputs, response_mode = 'blocking', user, function_type = 'default' } = body;
+    let revision: { uuid: string; user: string; token: string } | undefined;
 
     if (!inputs || !user) {
       return respErr('缺少必要参数：inputs 和 user');
     }
 
     const functionType = function_type as DifyFunctionType;
+
+    if (REVISION_DOCUMENT_TYPES[functionType]) {
+      if (inputs.whole !== "0") return Response.json({ error: "独立段落重写已停用" }, { status: 410 });
+      const { document_uuid, revision_token, ...workflowInputs } = inputs;
+      if (typeof document_uuid !== "string" || typeof revision_token !== "string") {
+        return Response.json({ error: "请从成稿页使用免费全文优化" }, { status: 400 });
+      }
+      const session = await customAuth.api.getSession({ headers: await headers() });
+      if (!session?.user?.uuid) return Response.json({ error: "Unauthorized" }, { status: 401 });
+      const account = await findUserByUuid(session.user.uuid);
+      const document = await findDocumentByUuid(document_uuid);
+      if (!account || !document || document.user_uuid !== account.uuid ||
+          document.document_type !== REVISION_DOCUMENT_TYPES[functionType]) {
+        return Response.json({ error: "Document not found" }, { status: 404 });
+      }
+      // Validate configuration before reserving. No quota function is called here.
+      if (!difyService.checkApiKey(functionType)) return respErr("免费优化暂不可用");
+      try {
+        await manageFreeRevision(document_uuid, account.uuid!, "claim", revision_token);
+      } catch {
+        return Response.json({ error: "本篇免费优化不可重复使用或暂不可用" }, { status: 409 });
+      }
+      revision = { uuid: document_uuid, user: account.uuid!, token: revision_token };
+      inputs = workflowInputs; // Keep Dify prompt inputs unchanged.
+    }
 
     // 检查 API Key 是否可用
     if (!difyService.checkApiKey(functionType)) {
@@ -86,11 +118,17 @@ export async function POST(req: NextRequest) {
           ? errorBody.message
           : errorText || difyResponse.statusText;
 
+        if (revision) await manageFreeRevision(revision.uuid, revision.user, "release", revision.token);
         return respErr(`Dify API 错误 (${difyResponse.status}): ${errorMessage}`);
       }
 
       // 直接转发Dify的流式响应
-      return new Response(difyResponse.body, {
+      const responseBody = revision && difyResponse.body
+        ? observeRevisionStream(difyResponse.body, async (success) => {
+            await manageFreeRevision(revision!.uuid, revision!.user, success ? "ready" : "release", revision!.token);
+          })
+        : difyResponse.body;
+      return new Response(responseBody, {
         headers: {
           'Content-Type': 'text/event-stream',
           'Cache-Control': 'no-cache',
@@ -108,6 +146,10 @@ export async function POST(req: NextRequest) {
         functionType
       );
 
+      if (revision) {
+        await manageFreeRevision(revision.uuid, revision.user,
+          result.data?.status === "succeeded" ? "ready" : "release", revision.token);
+      }
       return respData(result);
     }
   } catch (error) {

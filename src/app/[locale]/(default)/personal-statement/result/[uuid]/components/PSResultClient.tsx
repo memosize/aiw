@@ -1,4 +1,6 @@
 ﻿"use client";
+import ResultLeaveGuard from "@/components/result-leave-guard";
+import { navigateFromResult } from "@/lib/result-navigation";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
@@ -29,7 +31,6 @@ import { exportTextToDOCX } from '@/lib/text-document-export';
 import { smartWordCount } from '@/lib/word-count';
 import RevisionModal from "../../../components/RevisionModal";
 import FullRevisionModal, { RevisionSettings } from "../../../components/FullRevisionModal";
-import ParagraphRevision from "../../../components/ParagraphRevision";
 import VersionComparison from "../../../components/VersionComparison";
 import {
   DropdownMenu,
@@ -156,7 +157,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
   const [currentDbVersionId, setCurrentDbVersionId] = useState<string | null>(null);
   const [isLoadingVersions, setIsLoadingVersions] = useState(false);
   
-  const { runRevision, runRevisionStreaming, isRevising } = useDifyRevisePS();
+  const { runRevisionStreaming, isRevising } = useDifyRevisePS();
 
   const refundGenerationQuota = useCallback(async () => {
     try {
@@ -230,106 +231,6 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
 
     setEditableParagraphs(displayContent.split('\n\n'));
   }, [displayContent]);
-  
-  // 段落修改处理
-  const handleParagraphRevise = async (index: number, newText: string) => {
-    const paragraphs = [...editableParagraphs];
-    paragraphs[index] = newText;
-    const newContent = paragraphs.join('\n\n');
-
-    setEditableParagraphs(paragraphs);
-    
-    // 更新生成的内容
-    updateGeneratedContent(newContent);
-    
-    // 如果有数据库版本管理，更新版本
-    if (currentDbVersionId && dbVersions.length > 0) {
-      const updatedVersions = dbVersions.map(v => 
-        v.uuid === currentDbVersionId 
-          ? { ...v, content: newContent }
-          : v
-      );
-      setDbVersions(updatedVersions);
-    }
-    
-    // 兼容旧版本管理
-    if (currentVersion > 1 && versions.length > 0) {
-      const updatedVersions = versions.map(v => 
-        v.version === currentVersion 
-          ? { ...v, content: newContent }
-          : v
-      );
-      setVersions(updatedVersions);
-    }
-    
-    // 创建修改版本并保存到数据库
-    try {
-      setIsSavingRevision(true);
-      const response = await fetch(`/api/documents/${documentUuid}/revisions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content: newContent,
-          revision_settings: {
-            type: 'paragraph',
-            paragraphIndex: index
-          }
-        }),
-      });
-
-      if (response.ok) {
-        const { data: revision } = await response.json();
-        
-        // 立即更新修改状态，禁用修改按钮
-        setServerRevisionStatus(true);
-        
-        // 重新加载版本历史，并强制选择新版本
-        if (revision?.uuid) {
-          await loadDocumentVersions(revision.uuid);
-        } else {
-          await loadDocumentVersions();
-        }
-        
-        toast.success('段落已成功修改并创建新版本！');
-      } else {
-        throw new Error('Failed to save paragraph revision');
-      }
-    } catch (error) {
-      console.error('Failed to save paragraph revision:', error);
-      toast.error('保存失败，请重试');
-    } finally {
-      setIsSavingRevision(false);
-    }
-  };
-  
-  // 段落重写 API 调用
-  const handleParagraphRevisionAPI = async (params: any, paragraphIndex: number) => {
-    try {
-      // 设置正在修改的段落索引
-      setRevisingParagraphIndex(paragraphIndex);
-      
-      // 添加语言参数 - 使用与生成时相同的语言设置
-      const paramsWithLanguage = {
-        ...params,
-        language: generationState.languagePreference || 'Chinese'
-      };
-      
-      const revisedContent = await runRevision(paramsWithLanguage);
-      
-      // 重置修改状态
-      setRevisingParagraphIndex(null);
-      
-      return revisedContent;
-    } catch (error) {
-      console.error('Paragraph revision failed:', error);
-      toast.error('段落重写失败，请重试');
-      // 出错也要重置状态
-      setRevisingParagraphIndex(null);
-      throw error;
-    }
-  };
 
   // 生成SOP
   const handleGenerate = useCallback(async () => {
@@ -568,7 +469,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
       const response = await fetch(`/api/documents/${documentUuid}/revisions`);
       if (response.ok) {
         const result = await response.json();
-        const hasUsedRevision = result.data?.has_used_free_revision || false;
+        const hasUsedRevision = result.data?.free_revision_unavailable || result.data?.has_used_free_revision || false;
         setServerRevisionStatus(hasUsedRevision);
       }
     } catch (error) {
@@ -842,7 +743,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
   const handleBackToEdit = () => {
     setShowRevisionModal(false);
     // 返回编辑页面的逻辑
-    window.location.href = `/personal-statement?edit=${documentUuid}`;
+    navigateFromResult(`/personal-statement?edit=${documentUuid}`);
   };
 
   const handleFullRevision = async (settings: RevisionSettings) => {
@@ -870,6 +771,8 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
     });
 
     const params = {
+      document_uuid: documentUuid,
+      revision_token: crypto.randomUUID(),
       revise_type: settings.wordControl === 'keep' ? '0' : (settings.wordControl === 'expand' ? '1' : '2'),
       style: styleLabels.join(';'),
       original_word_count: wordCountInfo.count.toString(),
@@ -943,6 +846,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
               },
               body: JSON.stringify({
                 content: saveContent,
+                revision_token: params.revision_token,
                 revision_settings: settings
               }),
             });
@@ -1063,7 +967,13 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
     );
   }
 
-  return (
+  return (<>
+    <ResultLeaveGuard
+      documentUuid={documentUuid}
+      busy={generationState.isGenerating || isRevisionLoading || isRevisionStreaming || isRevising || isStreamingText || isLoadingVersions || isSavingRevision}
+      unavailable={serverRevisionStatus === true}
+      onUseFreeOptimization={() => { setShowRevisionModal(false); setShowFullRevisionModal(true); }}
+    />
     <div className="max-w-5xl mx-auto space-y-6">
       {/* 标题和操作栏 */}
       <div className="flex items-center justify-between">
@@ -1202,7 +1112,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
           variant="outline" 
           size="sm" 
           onClick={handleRevisionClick}
-          disabled={serverRevisionStatus || isRevising || isLoadingVersions || revisingParagraphIndex !== null}
+          disabled={serverRevisionStatus || isRevising || isLoadingVersions}
         >
           <Wand2 className="mr-2 h-4 w-4" />
           免费优化一次
@@ -1254,30 +1164,10 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
             </div>
           ) : (
             <div className="p-8 prose prose-slate dark:prose-invert max-w-none">
-              {/* 如果还没有使用修改功能且有显示内容，显示可编辑的段落 */}
-              {!serverRevisionStatus && displayContent && !isLoadingVersions ? (
-                <div className="space-y-4">
-                  {editableParagraphs.map((paragraph: string, index: number) => (
-                    <ParagraphRevision
-                      key={index}
-                      paragraph={paragraph}
-                      index={index}
-                      onRevise={handleParagraphRevise}
-                      isHighlighted={highlightedParagraphIndex === index}
-                      onHighlightChange={(shouldHighlight) => {
-                        setHighlightedParagraphIndex(shouldHighlight ? index : null);
-                      }}
-                      onStartRevision={handleParagraphRevisionAPI}
-                      isRevising={revisingParagraphIndex === index}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <>
+              <>
                   <Markdown content={displayContent} />
                   <div ref={contentEndRef} />
                 </>
-              )}
             </div>
           )}
         </CardContent>
@@ -1315,7 +1205,7 @@ function PSResultContent({ documentUuid }: { documentUuid: string }) {
         />
       )}
     </div>
-  );
+  </>);
 }
 
 export default function PSResultClient({ documentUuid }: { documentUuid: string }) {

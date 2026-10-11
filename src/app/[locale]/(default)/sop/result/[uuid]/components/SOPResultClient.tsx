@@ -1,4 +1,6 @@
 "use client";
+import ResultLeaveGuard from "@/components/result-leave-guard";
+import { navigateFromResult } from "@/lib/result-navigation";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
@@ -33,7 +35,6 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RevisionModal from "../../../components/RevisionModal";
 import FullRevisionModal, { RevisionSettings } from "../../../components/FullRevisionModal";
-import ParagraphRevision from "../../../components/ParagraphRevision";
 import VersionComparison from "../../../components/VersionComparison";
 import {
   DropdownMenu,
@@ -156,7 +157,7 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
   const [isLoadingVersions, setIsLoadingVersions] = useState(false);
   const [showVersionComparison, setShowVersionComparison] = useState(false);
   
-  const { runRevision, runRevisionStreaming, isRevising } = useDifyReviseSOP();
+  const { runRevisionStreaming, isRevising } = useDifyReviseSOP();
 
   useEffect(() => {
     setShouldAutoOpenRevision(searchParams.get('openRevision') === 'true');
@@ -403,7 +404,7 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
       const response = await fetch(`/api/documents/${documentUuid}/revisions`);
       if (response.ok) {
         const result = await response.json();
-        setServerRevisionStatus(result.data?.has_used_free_revision || false);
+        setServerRevisionStatus(result.data?.free_revision_unavailable || result.data?.has_used_free_revision || false);
       }
     } catch (error) {
       console.error('Error checking revision status:', error);
@@ -675,7 +676,7 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
   const handleBackToEdit = () => {
     setShowRevisionModal(false);
     // 返回编辑页面的逻辑
-    window.location.href = `/sop?edit=${documentUuid}`;
+    navigateFromResult(`/sop?edit=${documentUuid}`);
   };
 
   const handleFullRevision = async (settings: RevisionSettings) => {
@@ -703,6 +704,8 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
     });
 
     const params = {
+      document_uuid: documentUuid,
+      revision_token: crypto.randomUUID(),
       revise_type: settings.wordControl === 'keep' ? '0' : (settings.wordControl === 'expand' ? '1' : '2'),
       style: styleLabels.join(';'),
       original_word_count: wordCountInfo.count.toString(),
@@ -782,6 +785,7 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
               },
               body: JSON.stringify({
                 content: saveContent,
+                revision_token: params.revision_token,
                 revision_settings: settings
               }),
             });
@@ -832,86 +836,6 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
       toast.error("修改失败，请重试");
       setIsRevisionLoading(false);
       setIsRevisionStreaming(false);
-    }
-  };
-
-  // 创建段落修改的工厂函数，为每个段落绑定索引
-  const createParagraphRevisionHandler = (paragraphIndex: number) => {
-    return async (params: any): Promise<string> => {
-      try {
-        setRevisingParagraphIndex(paragraphIndex);
-        const revisedContent = await runRevision({
-          ...params,
-          language: generationState.languagePreference || 'Chinese',
-          username: 'User',
-          target: data.target || '',
-          education: data.education || '',
-          skill: data.skill || '',
-          research: data.research || '',
-          workExperience: data.workExperience || '',
-          plan: data.plan || ''
-        });
-        return revisedContent;
-      } catch (error) {
-        console.error('Paragraph revision failed:', error);
-        throw error;
-      } finally {
-        setRevisingParagraphIndex(null);
-      }
-    };
-  };
-
-  const handleParagraphRevise = async (index: number, newText: string) => {
-    const paragraphs = displayContent.split('\n\n');
-    paragraphs[index] = newText;
-    const newContent = paragraphs.join('\n\n');
-    
-    try {
-      setIsSavingRevision(true);
-      // 创建修改版本并保存到数据库
-      const response = await fetch(`/api/documents/${documentUuid}/revisions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content: newContent,
-          revision_settings: {
-            type: 'paragraph',
-            paragraphIndex: index
-          }
-        }),
-      });
-
-      if (response.ok) {
-        const { data: revision } = await response.json();
-        
-        // 更新本地内容
-        updateGeneratedContent(newContent);
-        
-        // 立即更新修改状态，禁用修改按钮
-        setServerRevisionStatus(true);
-        
-        // 重新加载版本历史，并强制选择新版本
-        if (revision?.uuid) {
-          await loadDocumentVersions(revision.uuid);
-        } else {
-          await loadDocumentVersions();
-        }
-        
-        toast.success("段落已成功修改！");
-      } else {
-        // 如果保存失败，仍然更新本地内容
-        updateGeneratedContent(newContent);
-        toast.error("保存段落修改失败");
-      }
-    } catch (error) {
-      console.error('Error saving paragraph revision:', error);
-      // 如果出错，仍然更新本地内容
-      updateGeneratedContent(newContent);
-      toast.error("保存段落修改时出错");
-    } finally {
-      setIsSavingRevision(false);
     }
   };
 
@@ -982,7 +906,13 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
     );
   }
 
-  return (
+  return (<>
+    <ResultLeaveGuard
+      documentUuid={documentUuid}
+      busy={generationState.isGenerating || isRevisionLoading || isRevisionStreaming || isRevising || isStreamingText || isLoadingVersions || isSavingRevision}
+      unavailable={serverRevisionStatus === true}
+      onUseFreeOptimization={() => { setShowRevisionModal(false); setShowFullRevisionModal(true); }}
+    />
     <div className="max-w-5xl mx-auto space-y-6">
       {/* 标题和操作栏 */}
       <div className="flex items-center justify-between">
@@ -1127,7 +1057,7 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
           variant="outline" 
           size="sm" 
           onClick={handleRevisionClick}
-          disabled={serverRevisionStatus || isRevising || isLoadingVersions || revisingParagraphIndex !== null}
+          disabled={serverRevisionStatus || isRevising || isLoadingVersions}
         >
           <Wand2 className="mr-2 h-4 w-4" />
           免费优化一次
@@ -1181,24 +1111,7 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
           ) : (
             <div className="p-8 prose prose-slate dark:prose-invert max-w-none">
               {/* 如果开启了修改功能且未使用过，显示可编辑的段落 */}
-              {!serverRevisionStatus && displayContent && !isLoadingVersions ? (
-                <div className="space-y-4">
-                  {displayContent.split('\n\n').map((paragraph: string, index: number) => (
-                    <ParagraphRevision
-                      key={index}
-                      paragraph={paragraph}
-                      index={index}
-                      onRevise={handleParagraphRevise}
-                      isRevising={revisingParagraphIndex === index}
-                      isHighlighted={highlightedParagraph === index}
-                      onHighlightChange={(highlight) => setHighlightedParagraph(highlight ? index : null)}
-                      onStartRevision={createParagraphRevisionHandler(index)}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <Markdown content={displayContent} />
-              )}
+              <Markdown content={displayContent} />
 
               {/* 自动滚动锚点 */}
               <div ref={contentEndRef} />
@@ -1239,7 +1152,7 @@ function SOPResultContent({ documentUuid }: { documentUuid: string }) {
         />
       )}
     </div>
-  );
+  </>);
 }
 
 export default function SOPResultClient({ documentUuid }: { documentUuid: string }) {

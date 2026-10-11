@@ -1,4 +1,6 @@
 "use client";
+import ResultLeaveGuard from "@/components/result-leave-guard";
+import { navigateFromResult } from "@/lib/result-navigation";
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
@@ -67,7 +69,6 @@ import FitAndClosingIcon from "../../../components/icons/FitAndClosingIcon";
 // Import revision components
 import RevisionModal from "../../../components/RevisionModal";
 import FullRevisionModal from "../../../components/FullRevisionModal";
-import ParagraphRevision from "../../../components/ParagraphRevision";
 import VersionComparison from "../../../components/VersionComparison";
 
 export interface CoverLetterModule {
@@ -221,7 +222,7 @@ function CoverLetterResultContent({ documentUuid }: CoverLetterResultContentProp
   const [isLoadingVersions, setIsLoadingVersions] = useState(false);
   
   const { runWorkflow, runWorkflowStreamingWithCallbacks } = useDify({ functionType: 'cover-letter' });
-  const { runRevision, runRevisionStreaming, isRevising } = useDifyReviseCoverLetter();
+  const { runRevisionStreaming, isRevising } = useDifyReviseCoverLetter();
 
   useEffect(() => {
     setShouldAutoOpenRevision(searchParams.get('openRevision') === 'true');
@@ -530,7 +531,7 @@ function CoverLetterResultContent({ documentUuid }: CoverLetterResultContentProp
         const response = await fetch(`/api/documents/${documentUuid}/revisions`);
         if (response.ok) {
           const { data } = await response.json();
-          setServerRevisionStatus(data.has_used_free_revision);
+          setServerRevisionStatus(data.free_revision_unavailable || data.has_used_free_revision);
         }
       } catch (error) {
         console.error('[Cover Letter] Error checking revision status:', error);
@@ -774,7 +775,7 @@ function CoverLetterResultContent({ documentUuid }: CoverLetterResultContentProp
   const handleBackToEdit = () => {
     setShowRevisionModal(false);
     // 返回编辑页面
-    window.location.href = `/${locale}/cover-letter`;
+    navigateFromResult(`/${locale}/cover-letter`);
   };
 
   const handleFullRevision = async (settings: any) => {
@@ -804,6 +805,8 @@ function CoverLetterResultContent({ documentUuid }: CoverLetterResultContentProp
     });
 
     const params = {
+      document_uuid: documentUuid,
+      revision_token: crypto.randomUUID(),
       revise_type: (settings.wordControl === 'keep' ? 0 : (settings.wordControl === 'expand' ? 1 : 2)).toString(),
       style: styleLabels.join(';'),
       original_word_count: wordCountInfo.count.toString(),
@@ -881,6 +884,7 @@ function CoverLetterResultContent({ documentUuid }: CoverLetterResultContentProp
                 },
                 body: JSON.stringify({
                   content: saveContent,
+                  revision_token: params.revision_token,
                   revision_settings: settings
                 })
               });
@@ -927,78 +931,6 @@ function CoverLetterResultContent({ documentUuid }: CoverLetterResultContentProp
     }
   };
 
-  // 段落修改API调用
-  const handleParagraphRevisionAPI = async (params: any, paragraphIndex: number) => {
-    setRevisingParagraphIndex(paragraphIndex);
-    try {
-      // 获取语言设置
-      const selectedData = getSelectedData();
-      const paramsWithLanguage = {
-        ...params,
-        language: generationState.languagePreference // API要求的格式
-      };
-
-      const revisedContent = await runRevision(paramsWithLanguage);
-      return revisedContent;
-    } catch (error) {
-      console.error('Paragraph revision failed:', error);
-      toast.error('段落重写失败，请重试');
-      throw error;
-    } finally {
-      setRevisingParagraphIndex(null);
-    }
-  };
-
-  // 处理段落修改并保存
-  const handleParagraphRevise = async (index: number, newText: string) => {
-    const paragraphs = displayContent.split('\n\n');
-    paragraphs[index] = newText;
-    const newContent = paragraphs.join('\n\n');
-    setEditingContent(newContent);
-    setGeneratedContent(newContent);
-    
-    // 创建修改版本并保存到数据库
-    try {
-      setIsSavingRevision(true);
-      const response = await fetch(`/api/documents/${documentUuid}/revisions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content: newContent,
-          revision_settings: {
-            type: 'paragraph',
-            paragraphIndex: index
-          }
-        }),
-      });
-
-      if (response.ok) {
-        const { data: revision } = await response.json();
-        
-        // 立即更新修改状态，禁用修改按钮
-        setServerRevisionStatus(true);
-        
-        // 重新加载版本历史，并强制选择新版本
-        if (revision?.uuid) {
-          await loadDocumentVersions(revision.uuid);
-        } else {
-          await loadDocumentVersions();
-        }
-        
-        toast.success('段落已成功修改并创建新版本！');
-      } else {
-        throw new Error('Failed to save paragraph revision');
-      }
-    } catch (error) {
-      console.error('Failed to save paragraph revision:', error);
-      toast.error('保存失败，请重试');
-    } finally {
-      setIsSavingRevision(false);
-    }
-  };
-
   // 版本切换处理
   const handleVersionChange = (versionId: string) => {
     setCurrentDbVersionId(versionId);
@@ -1032,7 +964,13 @@ function CoverLetterResultContent({ documentUuid }: CoverLetterResultContentProp
     return <AIGeneratingLoader currentNodeName={currentNodeName || revisionCurrentNodeName} />;
   }
 
-  return (
+  return (<>
+    <ResultLeaveGuard
+      documentUuid={documentUuid}
+      busy={isGenerating || isRevisionLoading || isRevisionStreaming || isRevising || isStreamingText || isLoadingVersions || isSavingRevision}
+      unavailable={serverRevisionStatus === true}
+      onUseFreeOptimization={() => { setShowRevisionModal(false); setShowFullRevisionModal(true); }}
+    />
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary/5">
       {/* Header */}
       <div className="bg-background/80 backdrop-blur-sm border-b">
@@ -1249,7 +1187,7 @@ function CoverLetterResultContent({ documentUuid }: CoverLetterResultContentProp
                       variant="outline" 
                       size="sm" 
                       onClick={handleRevisionClick}
-                      disabled={serverRevisionStatus || revisingParagraphIndex !== null || isLoadingVersions}
+                      disabled={serverRevisionStatus || isLoadingVersions}
                     >
                       <Wand2 className="mr-2 h-4 w-4" />
                       免费优化一次
@@ -1315,27 +1253,7 @@ function CoverLetterResultContent({ documentUuid }: CoverLetterResultContentProp
                     )}
 
                     <div className="prose prose-slate dark:prose-invert max-w-none">
-                      {/* 如果还没有使用修改功能且有显示内容，显示可编辑的段落 */}
-                      {!serverRevisionStatus && displayContent && !isLoadingVersions ? (
-                        <div className="space-y-4">
-                          {displayContent.split('\n\n').map((paragraph: string, index: number) => (
-                            <ParagraphRevision
-                              key={index}
-                              paragraph={paragraph}
-                              index={index}
-                              onRevise={handleParagraphRevise}
-                              isHighlighted={highlightedParagraphIndex === index}
-                              onHighlightChange={(shouldHighlight) => {
-                                setHighlightedParagraphIndex(shouldHighlight ? index : null);
-                              }}
-                              onStartRevision={handleParagraphRevisionAPI}
-                              isRevising={revisingParagraphIndex === index}
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <Markdown content={displayContent} />
-                      )}
+                      <Markdown content={displayContent} />
                       <div ref={contentEndRef} />
                     </div>
                   </div>
@@ -1371,7 +1289,7 @@ function CoverLetterResultContent({ documentUuid }: CoverLetterResultContentProp
         />
       )}
     </div>
-  );
+  </>);
 }
 
 interface CoverLetterResultClientProps {
