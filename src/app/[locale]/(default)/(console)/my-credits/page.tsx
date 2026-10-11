@@ -15,8 +15,14 @@ export default async function () {
     return <Empty message="no auth" />;
   }
 
-  const quotaSummary = await getUserQuotaSummary(user_uuid);
-  const quotaRecords = await getQuotaRecordsByUserUuid(user_uuid, 1, 100);
+  let quotaSummary;
+  let quotaRecords;
+  try {
+    quotaSummary = await getUserQuotaSummary(user_uuid);
+    quotaRecords = await getQuotaRecordsByUserUuid(user_uuid, 1, 100);
+  } catch {
+    return <Empty message={t("my_credits.load_failed")} />;
+  }
 
   const serviceLabels: Record<string, string> = {
     ps_sop: "PS/SOP",

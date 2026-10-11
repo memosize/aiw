@@ -61,7 +61,7 @@ export async function getUserValidCredits(
     .order("expired_at", { ascending: true });
 
   if (error) {
-    return undefined;
+    throw new Error("CREDIT_READ_FAILED");
   }
 
   return data;

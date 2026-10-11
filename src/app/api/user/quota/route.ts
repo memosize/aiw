@@ -10,8 +10,12 @@ export async function GET() {
     }
 
     const summary = await getUserQuotaSummary(userUuid);
-    return respData(summary);
+    const response = respData(summary);
+    response.headers.set("Cache-Control", "no-store");
+    return response;
   } catch (error: any) {
-    return respErr("获取配额失败: " + error.message);
+    const response = respErr("暂时无法读取次数，请稍后重试。", 503);
+    response.headers.set("Cache-Control", "no-store");
+    return response;
   }
 }

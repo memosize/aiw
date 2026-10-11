@@ -110,6 +110,7 @@
     }
   },
   "my_credits": {
+    "load_failed": "暂时无法读取次数，请稍后刷新重试。",
     "title": "我的次数",
     "left_tip": "剩余次数: {left_credits}",
     "no_credits": "暂无次数记录",
