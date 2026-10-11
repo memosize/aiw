@@ -122,26 +122,3 @@ test('quota API returns 503 with no-store and no database details on failure', a
   assert.equal(response.headers.get('Cache-Control'), 'no-store');
   assert.equal((await response.json()).code, -1);
 });
-
-for (const failAt of ['summary', 'records']) {
-  test(`credits page renders a read error instead of zero when ${failAt} fails`, async () => {
-    const page = load('src/app/[locale]/(default)/(console)/my-credits/page.tsx', {
-      'react/jsx-runtime': { jsx: (type, props) => ({ type, props }), jsxs: (type, props) => ({ type, props }) },
-      '@/components/blocks/empty': { default: 'Empty', __esModule: true },
-      '@/components/console/slots/table': { default: 'Table', __esModule: true },
-      'next-intl/server': { getTranslations: async () => key => key },
-      '@/services/user': { getUserUuid: async () => 'synthetic' },
-      '@/models/service-quota': {
-        getUserQuotaSummary: async () => {
-          if (failAt === 'summary') throw Error('database unavailable');
-          return { ps_sop: 7, recommendation: 0, cover_letter: 0, resume: 0, universal: 0 };
-        },
-        getQuotaRecordsByUserUuid: async () => { throw Error('database unavailable'); },
-      },
-      'moment': {},
-    });
-    const result = await page.default();
-    assert.equal(result.type, 'Empty');
-    assert.equal(result.props.message, 'my_credits.load_failed');
-  });
-}

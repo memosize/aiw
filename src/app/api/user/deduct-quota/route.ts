@@ -21,6 +21,6 @@ export async function POST(req: Request) {
 
     return respData({ success: true, service_type: result.deductedServiceType });
   } catch (error: any) {
-    return respErr("暂时无法确认扣次结果，请刷新次数后核对，勿重复提交。", 503);
+    return respErr("扣除配额失败: " + error.message);
   }
 }
