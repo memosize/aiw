@@ -56,12 +56,13 @@ export default function Header({ header }: { header: HeaderType }) {
     if (!session) {
       setShowSignModal(true);
     } else {
-      setIsLoading(true);
-      // 添加一个小延迟让 loading 动画显示
-      await new Promise(resolve => setTimeout(resolve, 300));
-      navigateFromResult("/creation-center", () => router.push("/creation-center"));
-      // 页面加载完成后，loading 会自动消失
-      setTimeout(() => setIsLoading(false), 1500);
+      navigateFromResult("/creation-center", async () => {
+        setIsLoading(true);
+        // Show the existing loading state only after leaving has been confirmed.
+        await new Promise(resolve => setTimeout(resolve, 300));
+        router.push("/creation-center");
+        setTimeout(() => setIsLoading(false), 1500);
+      });
     }
   };
 

@@ -15,13 +15,16 @@ import { Link } from "@/i18n/navigation";
 import { User } from "@/types/user";
 import { useTranslations } from "next-intl";
 import { NavItem } from "@/types/blocks/base";
+import { navigateFromResult } from "@/lib/result-navigation";
 
 export default function SignUser({ user }: { user: User }) {
   const t = useTranslations();
 
-  const handleSignOut = async () => {
-    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
-    window.location.reload();
+  const handleSignOut = () => {
+    navigateFromResult(window.location.href, async () => {
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+      window.location.reload();
+    });
   };
 
   const dropdownItems: NavItem[] = [

@@ -10,6 +10,7 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 
 import { MdLanguage } from "react-icons/md";
 import { localeNames } from "@/i18n/locale";
+import { navigateFromResult } from "@/lib/result-navigation";
 
 export default function ({ isIcon = false }: { isIcon?: boolean }) {
   const params = useParams();
@@ -23,7 +24,7 @@ export default function ({ isIcon = false }: { isIcon?: boolean }) {
       if (!newPathName.startsWith(`/${value}`)) {
         newPathName = `/${value}${newPathName}`;
       }
-      router.push(newPathName);
+      navigateFromResult(newPathName, () => router.push(newPathName));
     }
   };
 

@@ -2,30 +2,47 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { ChevronLeft, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { HISTORY_INDEX, registerDocumentPopGuard } from "@/components/document-history-tracker";
 import { navigateFromResult, RESULT_NAVIGATION_EVENT } from "@/lib/result-navigation";
+import styles from "./result-leave-guard.module.css";
 
-export default function ResultLeaveGuard({ documentUuid, busy, unavailable, onUseFreeOptimization }: {
-  documentUuid: string; busy: boolean; unavailable: boolean; onUseFreeOptimization: () => void;
+async function readFreeRevisionStatus(documentUuid: string) {
+  const response = await fetch(`/api/documents/${documentUuid}/free-revision`, { cache: "no-store" });
+  if (!response.ok) throw new Error("FREE_REVISION_STATE_UNAVAILABLE");
+  const result = await response.json();
+  if (typeof result?.data?.state !== "string" || typeof result.data.can_abandon !== "boolean") {
+    throw new Error("FREE_REVISION_STATE_UNAVAILABLE");
+  }
+  return result.data as { state: string; can_abandon: boolean };
+}
+
+export default function ResultLeaveGuard({ documentUuid, busy, unavailable, onUseFreeOptimization, wide }: {
+  documentUuid: string; busy: boolean; unavailable: boolean; onUseFreeOptimization: () => void; wide?: "cover-letter" | "recommendation-letter";
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const pending = useRef<(() => void) | null>(null);
   const checking = useRef(false);
+  const savingRef = useRef(false);
   const bypass = useRef(false);
   const latest = useRef({ busy, unavailable, onUseFreeOptimization });
   latest.current = { busy, unavailable, onUseFreeOptimization };
   const eligible = useRef(false);
   useEffect(() => {
+    bypass.current = false;
+    pending.current = null;
+    setOpen(false);
+  }, [documentUuid]);
+  useEffect(() => {
     let active = true;
     eligible.current = false;
     if (!busy && !unavailable) {
-      fetch(`/api/documents/${documentUuid}/free-revision`, { cache: "no-store" })
-        .then(async (response) => response.ok ? response.json() : null)
-        .then((result) => { if (active) eligible.current = result?.data?.can_abandon === true; })
+      readFreeRevisionStatus(documentUuid)
+        .then((data) => { if (active) eligible.current = data.can_abandon; })
         .catch(() => {});
     }
     return () => { active = false; };
@@ -43,13 +60,13 @@ export default function ResultLeaveGuard({ documentUuid, busy, unavailable, onUs
       if (latest.current.busy || latest.current.unavailable || bypass.current) { proceed(); return; }
       checking.current = true;
       try {
-        const response = await fetch(`/api/documents/${documentUuid}/free-revision`, { cache: "no-store" });
-        if (!response.ok) throw new Error();
-        const { data } = await response.json();
+        const data = await readFreeRevisionStatus(documentUuid);
         if (!active) return;
         if (latest.current.busy) return;
+        if (latest.current.unavailable) { proceed(); return; }
+        eligible.current = data.can_abandon;
         if (data.can_abandon) { pending.current = proceed; setOpen(true); }
-        else { bypass.current = true; proceed(); }
+        else { proceed(); }
       } catch {
         if (active) toast.error("无法确认文书保存及免费优化状态，请稍后重试。");
       } finally { checking.current = false; }
@@ -57,12 +74,13 @@ export default function ResultLeaveGuard({ documentUuid, busy, unavailable, onUs
     const click = (event: MouseEvent) => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const anchor = (event.target as Element)?.closest?.("a[href]") as HTMLAnchorElement | null;
-      if (!anchor || anchor.hasAttribute("download") || (anchor.target && anchor.target !== "_self")) return;
+      if (!anchor || anchor.hasAttribute("download") || (anchor.target && !["_self", "_top", "_parent"].includes(anchor.target.toLowerCase()))) return;
       const url = new URL(anchor.href, window.location.href);
-      if (url.origin !== window.location.origin || !["http:", "https:"].includes(url.protocol)) return;
-      if (url.pathname === location.pathname && url.search === location.search) return;
+      if (!["http:", "https:"].includes(url.protocol)) return;
+      const internal = url.origin === window.location.origin;
+      if (internal && url.pathname === location.pathname && url.search === location.search) return;
       event.preventDefault(); event.stopImmediatePropagation();
-      void requestLeave(() => router.push(url.pathname + url.search + url.hash));
+      void requestLeave(() => internal ? router.push(url.pathname + url.search + url.hash) : window.location.assign(url.href));
     };
     const custom = (event: Event) => {
       event.preventDefault();
@@ -81,10 +99,10 @@ export default function ResultLeaveGuard({ documentUuid, busy, unavailable, onUs
       const delta = target - index;
       event.stopImmediatePropagation();
       restoring = true;
-      window.history.go(-delta);
       afterRestore = () => {
         void requestLeave(() => { bypass.current = true; window.history.go(delta); });
       };
+      window.history.go(-delta);
     };
     const beforeUnload = (event: BeforeUnloadEvent) => {
       if (!bypass.current && eligible.current && !latest.current.unavailable) { event.preventDefault(); event.returnValue = ""; }
@@ -105,35 +123,58 @@ export default function ResultLeaveGuard({ documentUuid, busy, unavailable, onUs
     };
   }, [documentUuid, router]);
 
-  const close = () => { if (!saving) { pending.current = null; setOpen(false); } };
+  const close = () => { if (!savingRef.current) { pending.current = null; setOpen(false); } };
   const abandon = async () => {
-    if (saving || !pending.current) return;
+    if (savingRef.current || !pending.current) return;
+    savingRef.current = true;
     setSaving(true);
+    const proceed = () => {
+      const destination = pending.current;
+      pending.current = null;
+      eligible.current = false;
+      bypass.current = true;
+      setOpen(false);
+      destination?.();
+    };
     try {
       const response = await fetch(`/api/documents/${documentUuid}/free-revision`, { method: "POST" });
       if (!response.ok) throw new Error();
-      const proceed = pending.current;
-      pending.current = null; bypass.current = true; setOpen(false); proceed?.();
-    } catch { toast.error("未能保存放弃状态，请留在本页重试。"); }
-    finally { setSaving(false); }
+      const result = await response.json();
+      if (result?.data?.state !== "abandoned") throw new Error();
+      proceed();
+    } catch {
+      // A lost response can follow a committed abandonment. Reconcile before navigating.
+      try {
+        const data = await readFreeRevisionStatus(documentUuid);
+        eligible.current = data.can_abandon;
+        if (data.state === "abandoned" || data.state === "used") { proceed(); return; }
+        if (!data.can_abandon) {
+          pending.current = null;
+          setOpen(false);
+        }
+      } catch { /* Unknown outcome stays on this page for a later status check. */ }
+      toast.error("未能确认放弃状态，请留在本页重试。");
+    }
+    finally { savingRef.current = false; setSaving(false); }
   };
   return <>
-    <div className="max-w-7xl mx-auto px-6 pt-4">
-      <Button variant="ghost" onClick={() => navigateFromResult("/creation-center", () => router.push("/creation-center"))}>← 返回创作中心</Button>
+    <div className={`${styles.returnContainer}${wide ? ` ${styles.returnWide}` : ""}${wide === "recommendation-letter" ? ` ${styles.returnRecommendation}` : ""}`}>
+      <Button variant="ghost" className={styles.returnButton} onClick={() => navigateFromResult("/creation-center", () => router.push("/creation-center"))}><ChevronLeft aria-hidden="true" />返回创作中心</Button>
     </div>
     <Dialog open={open} onOpenChange={(value) => { if (!value) close(); }}>
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className={styles.dialog} overlayClassName={styles.overlay}>
+        <DialogHeader className={styles.heading}>
+          <span className={styles.documentIcon} aria-hidden="true"><FileText /></span>
           <DialogTitle>确定要离开当前文书吗？</DialogTitle>
-          <DialogDescription>
-            您还有一次免费全文优化机会。如果对当前文书还不太满意，建议先使用。
-            <strong>确认离开后，本篇未使用的免费优化机会将失效，无法再次使用。</strong>
-            已保存的文书仍可在「我的文档」中查看和下载。
-          </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
-          <Button disabled={saving} onClick={() => { close(); latest.current.onUseFreeOptimization(); }}>使用免费优化</Button>
-          <Button variant="outline" disabled={saving} onClick={abandon}>{saving ? "正在保存…" : "我已了解，直接离开"}</Button>
+        <DialogDescription asChild><div className={styles.description}>
+          <p>您还有一次免费全文优化机会，建议先使用。</p>
+          <p className={styles.warning}><strong>确认离开后，本篇未使用的免费优化机会将失效，<span className={styles.noWrap}>无法再次使用。</span></strong></p>
+          <p>已保存的文书仍可在「我的文档」中查看和下载。</p>
+        </div></DialogDescription>
+        <div className={styles.actions}>
+          <Button className={styles.primary} disabled={saving} onClick={() => { close(); latest.current.onUseFreeOptimization(); }}>使用免费优化</Button>
+          <Button className={styles.secondary} variant="outline" disabled={saving} onClick={abandon}>{saving ? "正在保存…" : "我已了解，直接离开"}</Button>
         </div>
       </DialogContent>
     </Dialog>

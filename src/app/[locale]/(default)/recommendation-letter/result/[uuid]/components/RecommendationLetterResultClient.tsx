@@ -934,6 +934,7 @@ function RecommendationLetterResultContent({ documentUuid }: RecommendationLette
 
   return (<>
     <ResultLeaveGuard
+      wide="recommendation-letter"
       documentUuid={documentUuid}
       busy={generationState.isGenerating || isRevisionLoading || isRevisionStreaming || isRevising || isStreamingText || isLoadingVersions || isSavingRevision}
       unavailable={serverRevisionStatus === true}

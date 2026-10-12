@@ -966,6 +966,7 @@ function CoverLetterResultContent({ documentUuid }: CoverLetterResultContentProp
 
   return (<>
     <ResultLeaveGuard
+      wide="cover-letter"
       documentUuid={documentUuid}
       busy={isGenerating || isRevisionLoading || isRevisionStreaming || isRevising || isStreamingText || isLoadingVersions || isSavingRevision}
       unavailable={serverRevisionStatus === true}
