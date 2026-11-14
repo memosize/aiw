@@ -11,7 +11,7 @@
 - `www.essmote.com` 和根域名 `essmote.com` 的 Spaceship A 记录均指向 `155.138.201.101`。
 - 根域名旧 Vercel/Cloudflare A、AAAA 和 HTTPS hint 已移除；`essmote.com` 会跳转到规范域名 `https://www.essmote.com`。
 - Nginx 为根域名和 `www` 配置 HTTP 到 HTTPS/规范域名跳转；`www` 反代到 AIW 的 `127.0.0.1:5180`。
-- `www.essmote.com` 证书位于 `/etc/letsencrypt/live/www.essmote.com/`，根域名证书位于 `/etc/letsencrypt/live/essmote-apex/`；两者均通过手动 DNS 验证签发，有效期至 2027-02-12，尚未配置自动续期。
+- `www.essmote.com` 证书位于 `/etc/letsencrypt/live/www.essmote.com/`，根域名证书位于 `/etc/letsencrypt/live/essmote-apex/`；两者有效期至 2027-02-12，已配置 HTTP-01 webroot 自动续期，webroot 为 `/var/www/aiw-acme`，续期成功后执行 `systemctl reload nginx`。
 
 ## 已通过
 
@@ -33,7 +33,7 @@
 - Google 登录代码已通过授权 URL 与错误回跳检查；完整 Google 账号授权后的建号/登录/会话流程仍待用户实测。
 - 邮件/密码登录、密码重置尚未完整走通。
 - 用户已确认支付和文章生成测试通过；文件上传、取消生成、管理员操作等流程仍未完整验收。
-- 两张证书均为手动 DNS 验证签发，不会自动续期；须在 2027-02-12 前配置自动 DNS 验证或重新手动签发。
+- 两张证书的 Certbot staging dry-run 均已通过；`certbot.timer` 已启用并处于 active 状态，每天运行两次。
 - `http://155.138.201.101` 是临时 IP 预览，不适合作为完整业务验收入口：OAuth 回调、Secure Cookie 和绝对链接均依赖正式 HTTPS 域名。
 
 ## 回滚
