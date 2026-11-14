@@ -1,8 +1,9 @@
-FROM node:18-alpine AS base
+# syntax=docker/dockerfile:1
+FROM node:22-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-RUN apk add --no-cache libc6-compat && yarn global add pnpm
+RUN apk add --no-cache libc6-compat && npm install --global pnpm@10.2.0
 
 WORKDIR /app
 
@@ -17,7 +18,8 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY . .
-RUN pnpm build
+# Mount public build settings without copying environment files into layers.
+RUN --mount=type=secret,id=build_env,target=/app/.env.production.local,required=true pnpm build
 
 # Production image, copy all the files and run next
 FROM base AS runner

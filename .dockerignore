@@ -9,3 +9,8 @@ node_modules
 .git
 vercel.json
 wrangler.toml
+.env
+.env.*
+!.env.example
+deploy/*.env
+*.tsbuildinfo

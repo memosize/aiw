@@ -14,7 +14,7 @@
     "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "cf:upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
     "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
-    "docker:build": "docker build -f Dockerfile -t Essmote AI-template-one:latest ."
+    "docker:build": "docker build --secret id=build_env,src=deploy/build.env -f Dockerfile -t aiw-web:local ."
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^0.1.11",

@@ -73,13 +73,17 @@ async function fetchWithProxy(input: string, init?: RequestInit) {
 }
 
 function getBaseUrl(request: NextRequest) {
-  const requestOrigin = `${request.nextUrl.protocol}//${request.nextUrl.host}`;
+  const configuredBaseUrl =
+    process.env.AUTH_URL?.replace(/\/api\/auth\/?$/, "") ||
+    process.env.BETTER_AUTH_URL?.replace(/\/api\/auth\/?$/, "") ||
+    process.env.NEXT_PUBLIC_WEB_URL;
+  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0];
+  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0];
+  const requestOrigin = forwardedHost && forwardedProto
+    ? `${forwardedProto}://${forwardedHost}`
+    : `${request.nextUrl.protocol}//${request.nextUrl.host}`;
 
-  return (
-    requestOrigin ||
-    process.env.NEXT_PUBLIC_WEB_URL ||
-    process.env.AUTH_URL?.replace(/\/api\/auth\/?$/, "")
-  ).replace(/\/+$/, "");
+  return (configuredBaseUrl || requestOrigin).replace(/\/+$/, "");
 }
 
 function getRedirectUri(request: NextRequest) {

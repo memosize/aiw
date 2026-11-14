@@ -42,6 +42,8 @@ cp .env.example .env.development
 
 ## Deploy
 
+- Self-host with Docker and HTTPS, keeping Supabase: [deployment guide](deploy/README.md).
+
 - Deploy to Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FEssmote AIai%2FEssmote AI-template-one&project-name=my-Essmote AI-project&repository-name=my-Essmote AI-project&redirect-url=https%3A%2F%2FEssmote AI.ai&demo-title=Essmote AI&demo-description=Ship%20Any%20AI%20Startup%20in%20hours%2C%20not%20days&demo-url=https%3A%2F%2FEssmote AI.ai&demo-image=https%3A%2F%2Fpbs.twimg.com%2Fmedia%2FGgGSW3La8AAGJgU%3Fformat%3Djpg%26name%3Dlarge)

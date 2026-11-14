@@ -1,0 +1,10 @@
+{
+  email {$ACME_EMAIL}
+}
+
+{$SITE_DOMAIN} {
+  reverse_proxy web:3000 {
+    # Forward AI/SSE chunks immediately.
+    flush_interval -1
+  }
+}
